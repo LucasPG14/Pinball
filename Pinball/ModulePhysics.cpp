@@ -3,8 +3,8 @@
 #include "ModuleInput.h"
 #include "ModuleRender.h"
 #include "ModulePhysics.h"
+#include "ModuleTextures.h"
 #include "math.h"
-#include "chains.h"
 
 #include "Box2D/Box2D/Box2D.h"
 
@@ -32,22 +32,12 @@ bool ModulePhysics::Start()
 	world = new b2World(b2Vec2(GRAVITY_X, -GRAVITY_Y));
 
 	// big static circle as "ground" in the middle of the screen
-	int x = SCREEN_WIDTH / 2;
-	int y = SCREEN_HEIGHT / 1.5f;
+	/*int x = SCREEN_WIDTH / 3;
+	int y = SCREEN_HEIGHT / 3;
 	int diameter = SCREEN_WIDTH / 2;
 
-	b2BodyDef body;
-	body.type = b2_staticBody;
-	body.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
+	*/
 
-	b2Body* b = world->CreateBody(&body);
-
-	b2CircleShape shape;
-	shape.m_radius = PIXEL_TO_METERS(diameter) * 0.5f;
-
-	b2FixtureDef fixture;
-	fixture.shape = &shape;
-	b->CreateFixture(&fixture);
 
 	return true;
 }
@@ -142,7 +132,7 @@ update_status ModulePhysics::PostUpdate()
 			}
 		}
 	}
-
+	
 	return UPDATE_CONTINUE;
 }
 
@@ -211,7 +201,7 @@ PhysBody* ModulePhysics::CreateBox(int x, int y)
 	pBody = nullptr;
 }
 
-PhysBody* ModulePhysics::CreateChain(int x, int y, const int n)
+PhysBody* ModulePhysics::CreateChain(int x, int y, int* chainName, const int n, b2BodyType bodyType)
 {
 	// TODO 3: Create a chain shape using those vertices
 		// remember to convert them from pixels to meters!
@@ -221,11 +211,11 @@ PhysBody* ModulePhysics::CreateChain(int x, int y, const int n)
 	b2Vec2* vs = new b2Vec2[n / 2];
 	for (uint i = 0, j = 0; i < n/2 && j < n; ++i, j += 2)
 	{
-		vs[i] = b2Vec2(PIXEL_TO_METERS(a[j]), PIXEL_TO_METERS(a[j + 1]));
+		vs[i] = b2Vec2(PIXEL_TO_METERS(chainName[j]), PIXEL_TO_METERS(chainName[j + 1]));
 	}
 
 	b2BodyDef bodyDef;
-	bodyDef.type = b2_dynamicBody;
+	bodyDef.type = bodyType;
 	bodyDef.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
 
 	b2Body* b = App->physics->GetWorld()->CreateBody(&bodyDef);

@@ -5,6 +5,7 @@
 #include "ModuleInput.h"
 #include "ModuleTextures.h"
 #include "ModulePhysics.h"
+#include "chains.h"
 #include "Box2D/Box2D/Box2D.h"
 
 ModuleSceneIntro::ModuleSceneIntro(Application* app, bool start_enabled) : Module(app, start_enabled)
@@ -27,6 +28,9 @@ bool ModuleSceneIntro::Start()
 	box = App->textures->Load("Assets/crate.png");
 	rick = App->textures->Load("Assets/rick_head.png");
 	background = App->textures->Load("Assets/Assets/a.png");
+
+	App->physics->CreateChain(0, 0, a, 72, b2BodyType::b2_staticBody);
+
 
 	return ret;
 }
@@ -56,10 +60,13 @@ update_status ModuleSceneIntro::Update()
 	if (App->input->GetKey(SDL_SCANCODE_3) == KEY_DOWN)
 	{
 		// Create Rick
-		ricks.add(App->physics->CreateChain(App->input->GetMouseX(), App->input->GetMouseY(), 72));
+		ricks.add(App->physics->CreateChain(App->input->GetMouseX(), App->input->GetMouseY(), rick_head, 84, b2BodyType::b2_dynamicBody));
 	}
 
-	// TODO 7: Draw all the circles using "circle" texture
+	// Draw Background
+	App->renderer->Blit(background, 0, 0, NULL);
+
+	// Draw Figures
 	p2List_item<PhysBody*>* c = circles.getFirst();
 	while (c != NULL)
 	{
@@ -78,7 +85,7 @@ update_status ModuleSceneIntro::Update()
 	c = ricks.getFirst();
 	while (c != NULL)
 	{
-		App->renderer->Blit(background, c->data->GetPosition().x, c->data->GetPosition().y, 0, 1.0f, c->data->GetRotation());
+		App->renderer->Blit(rick, c->data->GetPosition().x, c->data->GetPosition().y, 0, 1.0f, c->data->GetRotation());
 		c = c->next;
 	}
 

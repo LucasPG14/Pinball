@@ -15,7 +15,9 @@ class b2World;
 class b2Body;
 class b2Vec2;
 class b2Shape;
+enum b2BodyType;
 
+class SDL_Texture;
 // TODO 6: Create a small class that keeps a pointer to tghe b2Body
 // and has a method to request the position
 // then write the implementation in the .cpp
@@ -49,13 +51,13 @@ public:
 	// TODO 4: Move body creation to 3 functions to create circles, rectangles and chains
 	PhysBody* CreateCircle(int x, int y, int rad);
 	PhysBody* CreateBox(int x, int y);
-	PhysBody* CreateChain(int x, int y, const int n);
+	PhysBody* CreateChain(int x, int y, int* chainName, const int numPoints, b2BodyType bodyType);
 
 	b2World* const GetWorld()const;
 
 
 private:
-
+	SDL_Texture* bg;
 	bool debug;
 	b2World* world;
 
