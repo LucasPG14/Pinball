@@ -221,7 +221,7 @@ PhysBody* ModulePhysics::CreateChain(int x, int y, const int n)
 	b2Vec2* vs = new b2Vec2[n / 2];
 	for (uint i = 0, j = 0; i < n/2 && j < n; ++i, j += 2)
 	{
-		vs[i] = b2Vec2(PIXEL_TO_METERS(rick_head[j]), PIXEL_TO_METERS(rick_head[j + 1]));
+		vs[i] = b2Vec2(PIXEL_TO_METERS(a[j]), PIXEL_TO_METERS(a[j + 1]));
 	}
 
 	b2BodyDef bodyDef;

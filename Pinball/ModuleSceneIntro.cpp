@@ -23,9 +23,10 @@ bool ModuleSceneIntro::Start()
 
 	App->renderer->camera.x = App->renderer->camera.y = 0;
 
-	circle = App->textures->Load("pinball/wheel.png"); 
-	box = App->textures->Load("pinball/crate.png");
-	rick = App->textures->Load("pinball/rick_head.png");
+	circle = App->textures->Load("Assets/wheel.png");
+	box = App->textures->Load("Assets/crate.png");
+	rick = App->textures->Load("Assets/rick_head.png");
+	background = App->textures->Load("Assets/Assets/a.png");
 
 	return ret;
 }
@@ -55,7 +56,7 @@ update_status ModuleSceneIntro::Update()
 	if (App->input->GetKey(SDL_SCANCODE_3) == KEY_DOWN)
 	{
 		// Create Rick
-		ricks.add(App->physics->CreateChain(App->input->GetMouseX(), App->input->GetMouseY(), 84));
+		ricks.add(App->physics->CreateChain(App->input->GetMouseX(), App->input->GetMouseY(), 72));
 	}
 
 	// TODO 7: Draw all the circles using "circle" texture
@@ -77,7 +78,7 @@ update_status ModuleSceneIntro::Update()
 	c = ricks.getFirst();
 	while (c != NULL)
 	{
-		App->renderer->Blit(rick, c->data->GetPosition().x, c->data->GetPosition().y, 0, 1.0f, c->data->GetRotation());
+		App->renderer->Blit(background, c->data->GetPosition().x, c->data->GetPosition().y, 0, 1.0f, c->data->GetRotation());
 		c = c->next;
 	}
 
