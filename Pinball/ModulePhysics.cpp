@@ -149,10 +149,10 @@ bool ModulePhysics::CleanUp()
 	return true;
 }
 
-PhysBody* ModulePhysics::CreateCircle(int x, int y, int rad)
+PhysBody* ModulePhysics::CreateCircle(int x, int y, int rad, b2BodyType bodyType)
 {
 	b2BodyDef body;
-	body.type = b2_dynamicBody;
+	body.type = bodyType;
 	body.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
 
 	b2Body* b = world->CreateBody(&body);
@@ -172,18 +172,19 @@ PhysBody* ModulePhysics::CreateCircle(int x, int y, int rad)
 
 }
 
-PhysBody* ModulePhysics::CreateBox(int x, int y)
+PhysBody* ModulePhysics::CreateBox(int x, int y, int w, int h, float a, b2BodyType bodyType)
 {
 	// TODO 1: When pressing 2, create a box on the mouse position
 	b2BodyDef body;
-	body.type = b2_dynamicBody;
+	body.type = bodyType;
 	body.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
+	body.angle = a;
 
 	// Created a getter for the world to call it wherever I want
 	b2Body* b = App->physics->GetWorld()->CreateBody(&body);
 
 	b2PolygonShape boxShape;
-	boxShape.SetAsBox(PIXEL_TO_METERS(50), PIXEL_TO_METERS(25));
+	boxShape.SetAsBox(PIXEL_TO_METERS(w), PIXEL_TO_METERS(h));
 
 	b2FixtureDef fixture;
 	fixture.shape = &boxShape;

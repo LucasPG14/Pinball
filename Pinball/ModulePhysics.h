@@ -54,8 +54,8 @@ public:
 	bool CleanUp();
 
 	// TODO 4: Move body creation to 3 functions to create circles, rectangles and chains
-	PhysBody* CreateCircle(int x, int y, int rad);
-	PhysBody* CreateBox(int x, int y);
+	PhysBody* CreateCircle(int x, int y, int rad, b2BodyType bodyType);
+	PhysBody* CreateBox(int x, int y, int w, int h, float a, b2BodyType bodyType);
 	PhysBody* CreateChain(int x, int y, int* chainName, const int numPoints, b2BodyType bodyType);
 
 	b2World* const GetWorld()const;

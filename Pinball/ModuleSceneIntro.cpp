@@ -28,6 +28,7 @@ bool ModuleSceneIntro::Start()
 	box = App->textures->Load("Assets/crate.png");
 	rick = App->textures->Load("Assets/rick_head.png");
 	background = App->textures->Load("Assets/Assets/background2.png");
+	flippers = App->textures->Load("Assets/Assets/Flippers3.png");
 
 	//App->physics->CreateChain(0, 0, bgPoints, 82, b2BodyType::b2_staticBody);
 	//App->physics->CreateChain(0, 0, upLeftPoints, 18, b2BodyType::b2_staticBody);
@@ -50,8 +51,15 @@ bool ModuleSceneIntro::Start()
 	App->physics->CreateChain(0, 0, bg, 112, b2_staticBody);
 
 
-	ballBody = App->physics->CreateCircle(472, 846, 15);
+	ballBody = App->physics->CreateCircle(472, 846, 15, b2_dynamicBody);
 
+	leftBodyJointed = App->physics->CreateCircle(155, 900, 10, b2_staticBody);
+
+	leftFlipper = App->physics->CreateBox(180, 915, 40, 15, -21.5f, b2_kinematicBody);
+
+	rightBodyJointed = App->physics->CreateCircle(351, 900, 10, b2_staticBody);
+
+	rightFlipper = App->physics->CreateBox(325, 915, 40, 15, -201.5f, b2_kinematicBody);
 
 	return ret;
 }
@@ -79,7 +87,9 @@ update_status ModuleSceneIntro::Update()
 
 	App->renderer->Blit(circle, ballBody->GetPosition().x - 15, ballBody->GetPosition().y - 15, 0, 1.0f, ballBody->GetRotation());
 
-	
+	App->renderer->Blit(flippers, leftFlipper->GetPosition().x - 35, leftFlipper->GetPosition().y - 30, &leftSection, 0);
+
+	App->renderer->Blit(flippers, rightFlipper->GetPosition().x - 45, rightFlipper->GetPosition().y - 30, &rightSection, 0);
 
 	return UPDATE_CONTINUE;
 }
