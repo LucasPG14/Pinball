@@ -24,12 +24,19 @@ bool ModuleSceneIntro::Start()
 
 	App->renderer->camera.x = App->renderer->camera.y = 0;
 
-	circle = App->textures->Load("Assets/wheel.png");
+	circle = App->textures->Load("Assets/Assets/ball.png");
 	box = App->textures->Load("Assets/crate.png");
 	rick = App->textures->Load("Assets/rick_head.png");
 	background = App->textures->Load("Assets/Assets/a.png");
 
-	App->physics->CreateChain(0, 0, a, 72, b2BodyType::b2_staticBody);
+	App->physics->CreateChain(0, 0, bgPoints, 82, b2BodyType::b2_staticBody);
+	App->physics->CreateChain(0, 0, upLeftPoints, 18, b2BodyType::b2_staticBody);
+	App->physics->CreateChain(0, 0, leftMiddlePoints, 40, b2BodyType::b2_staticBody);
+	App->physics->CreateChain(0, 0, bottomLeftPoints, 14, b2BodyType::b2_staticBody);
+	App->physics->CreateChain(0, 0, rightMiddlePoints, 28, b2BodyType::b2_staticBody);
+	App->physics->CreateChain(0, 0, bottomRightPoints, 14, b2BodyType::b2_staticBody);
+
+	ballBody = App->physics->CreateCircle(460, 440, 10);
 
 
 	return ret;
@@ -46,32 +53,25 @@ bool ModuleSceneIntro::CleanUp()
 // Update: draw background
 update_status ModuleSceneIntro::Update()
 {
-	// TODO 5: Move all creation of bodies on 1,2,3 key press here in the scene
-	if (App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
+	if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
 	{
-		circles.add(App->physics->CreateCircle(App->input->GetMouseX(), App->input->GetMouseY(), 25));
+		b2Vec2 force(0, -500);
+		ballBody->ApplyForce(force);
 	}
 
-	if (App->input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
-	{
-		boxes.add(App->physics->CreateBox(App->input->GetMouseX(), App->input->GetMouseY()));
-	}
-
-	if (App->input->GetKey(SDL_SCANCODE_3) == KEY_DOWN)
-	{
-		// Create Rick
-		ricks.add(App->physics->CreateChain(App->input->GetMouseX(), App->input->GetMouseY(), rick_head, 84, b2BodyType::b2_dynamicBody));
-	}
-
+	
 	// Draw Background
 	App->renderer->Blit(background, 0, 0, NULL);
+
+
+	App->renderer->Blit(circle, ballBody->GetPosition().x-22, ballBody->GetPosition().y-19, 0, 1.0f, ballBody->GetRotation());
 
 	// Draw Figures
 	p2List_item<PhysBody*>* c = circles.getFirst();
 	while (c != NULL)
 	{
 		// Offset takes the radius value
-		App->renderer->Blit(circle, c->data->GetPosition().x - 25, c->data->GetPosition().y - 25, 0, 1.0f, c->data->GetRotation());
+		App->renderer->Blit(circle, c->data->GetPosition().x -22, c->data->GetPosition().y -19, 0, 1.0f, c->data->GetRotation());
 		c = c->next;
 	}
 

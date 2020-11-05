@@ -167,10 +167,9 @@ PhysBody* ModulePhysics::CreateCircle(int x, int y, int rad)
 	b->CreateFixture(&fixture);
 	PhysBody* pBody = new PhysBody(b);
 
+
 	return pBody;
 
-	delete pBody;
-	pBody = nullptr;
 }
 
 PhysBody* ModulePhysics::CreateBox(int x, int y)
@@ -196,9 +195,6 @@ PhysBody* ModulePhysics::CreateBox(int x, int y)
 	PhysBody* pBody = new PhysBody(b);
 
 	return pBody;
-
-	delete pBody; 
-	pBody = nullptr;
 }
 
 PhysBody* ModulePhysics::CreateChain(int x, int y, int* chainName, const int n, b2BodyType bodyType)
@@ -219,7 +215,6 @@ PhysBody* ModulePhysics::CreateChain(int x, int y, int* chainName, const int n, 
 	bodyDef.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
 
 	b2Body* b = App->physics->GetWorld()->CreateBody(&bodyDef);
-
 	b2ChainShape chainShape;
 	chainShape.CreateLoop(vs, n/2);
 
@@ -263,4 +258,11 @@ const b2Vec2& PhysBody::GetPosition()
 const double& PhysBody::GetRotation()
 {
 	return (double)RADTODEG * body->GetTransform().q.GetAngle();
+}
+
+void PhysBody::ApplyForce(b2Vec2 force)
+{
+	b2Vec2 pos = body->GetWorldCenter();
+	body->ApplyForce(force, body->GetPosition(), true);
+
 }

@@ -33,6 +33,11 @@ public:
 
 	const b2Vec2& GetPosition();
 	const double& GetRotation();
+	inline const b2Body& GetBody()
+	{
+		return *body;
+	}
+	void ApplyForce(b2Vec2 force);
 };
 
 

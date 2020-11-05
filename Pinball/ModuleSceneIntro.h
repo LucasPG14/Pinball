@@ -4,6 +4,7 @@
 #include "Globals.h"
 
 class PhysBody;
+class b2Body;
 
 class ModuleSceneIntro : public Module
 {
@@ -16,6 +17,8 @@ public:
 	bool CleanUp();
 
 public:
+	PhysBody* ballBody;
+
 
 	SDL_Texture* circle;
 	SDL_Texture* box;
