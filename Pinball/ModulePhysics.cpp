@@ -247,11 +247,11 @@ PhysBody::PhysBody(b2Body *b)
 }
 
 // Return PhysBody's position in degrees.
-const b2Vec2& PhysBody::GetPosition()
+const b2Vec2& PhysBody::GetPosition(float offset)
 {
 	b2Vec2 pos = body->GetPosition();
-	pos.x = METERS_TO_PIXELS(pos.x);
-	pos.y = METERS_TO_PIXELS(pos.y);
+	pos.x = METERS_TO_PIXELS(pos.x + offset);
+	pos.y = METERS_TO_PIXELS(pos.y + offset);
 	return pos;
 }
 
@@ -266,4 +266,20 @@ void PhysBody::ApplyForce(b2Vec2 force)
 	b2Vec2 pos = body->GetWorldCenter();
 	body->ApplyForce(force, body->GetPosition(), true);
 
+}
+
+b2RevoluteJointDef ModulePhysics::CreateRevoluteJoint(b2Body* b1, b2Body* b2, float max, float min, float anchorX, float anchorY, float initAngle)
+{
+	b2RevoluteJointDef jointDef;
+
+	jointDef.bodyA = b1;
+	jointDef.bodyB = b2;
+	jointDef.localAnchorA.Set(anchorX, anchorY);//the top right corner of the box
+	jointDef.localAnchorB.Set(0, 0);//center of the circle
+	jointDef.enableLimit = true;
+	jointDef.referenceAngle = initAngle * DEGTORAD;
+	jointDef.lowerAngle = min * DEGTORAD;
+	jointDef.upperAngle = max * DEGTORAD;
+
+	return jointDef;
 }

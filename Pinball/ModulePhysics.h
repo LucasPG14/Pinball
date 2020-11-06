@@ -1,6 +1,7 @@
 #pragma once
 #include "Module.h"
 #include "Globals.h"
+#include "Box2D/Box2D/Box2D.h"
 
 #define GRAVITY_X 0.0f
 #define GRAVITY_Y -7.0f
@@ -10,12 +11,6 @@
 
 #define METERS_TO_PIXELS(m) ((int) floor(PIXELS_PER_METER * m))
 #define PIXEL_TO_METERS(p)  ((float) METER_PER_PIXEL * p)
-
-class b2World;
-class b2Body;
-class b2Vec2;
-class b2Shape;
-enum b2BodyType;
 
 class SDL_Texture;
 // TODO 6: Create a small class that keeps a pointer to tghe b2Body
@@ -31,9 +26,9 @@ private:
 public:
 	PhysBody(b2Body* b);
 
-	const b2Vec2& GetPosition();
+	const b2Vec2& GetPosition( float offset);
 	const double& GetRotation();
-	inline const b2Body& GetBody()
+	inline b2Body& GetBody()
 	{
 		return *body;
 	}
@@ -42,7 +37,7 @@ public:
 
 
 
-class ModulePhysics : public Module
+class ModulePhysics : public Module 
 {
 public:
 	ModulePhysics(Application* app, bool start_enabled = true);
@@ -57,6 +52,8 @@ public:
 	PhysBody* CreateCircle(int x, int y, int rad, b2BodyType bodyType);
 	PhysBody* CreateBox(int x, int y, int w, int h, float a, b2BodyType bodyType);
 	PhysBody* CreateChain(int x, int y, int* chainName, const int numPoints, b2BodyType bodyType);
+
+	b2RevoluteJointDef CreateRevoluteJoint(b2Body* b1, b2Body* b2, float max, float min, float anchorX, float anchorY, float initAngle);
 
 	b2World* const GetWorld()const;
 

@@ -2,9 +2,24 @@
 #include "Module.h"
 #include "p2List.h"
 #include "Globals.h"
+#include "Box2D/Box2D/Box2D.h"
 
 class PhysBody;
 class b2Body;
+
+class Flipper
+{
+public:
+	PhysBody* flipper;
+	PhysBody* bodyJointed;
+
+	b2RevoluteJointDef jointDef;
+	b2RevoluteJoint* joint;
+
+	float minA;
+	float maxA;
+	float initAngle;
+};
 
 class ModuleSceneIntro : public Module
 {
@@ -17,20 +32,18 @@ public:
 	bool CleanUp();
 
 public:
-	PhysBody* ballBody;
-	PhysBody* leftBodyJointed;
-	PhysBody* leftFlipper;
-	PhysBody* rightBodyJointed;
-	PhysBody* rightFlipper;
+	PhysBody* ballBody = nullptr;
+	Flipper* leftFlipper = nullptr;
+	Flipper* rightFlipper = nullptr;
 
 	SDL_Rect leftSection = {0, 0, 81, 43};
 	SDL_Rect rightSection = {84, 0, 81, 43};
 
-	SDL_Texture* circle;
-	SDL_Texture* box;
-	SDL_Texture* rick;
-	SDL_Texture* background;
-	SDL_Texture* flippers;
+	SDL_Texture* circle = nullptr;
+	SDL_Texture* box = nullptr;
+	SDL_Texture* rick = nullptr;
+	SDL_Texture* background = nullptr;
+	SDL_Texture* flippers = nullptr;
 
 	p2List<PhysBody*> circles;
 	p2List<PhysBody*> boxes;
