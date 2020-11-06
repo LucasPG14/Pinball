@@ -31,28 +31,20 @@ bool ModuleSceneIntro::Start()
 	background = App->textures->Load("Assets/Assets/background2.png");
 	flippers = App->textures->Load("Assets/Assets/Flippers3.png");
 
-	//App->physics->CreateChain(0, 0, bgPoints, 82, b2BodyType::b2_staticBody);
-	//App->physics->CreateChain(0, 0, upLeftPoints, 18, b2BodyType::b2_staticBody);
-	//App->physics->CreateChain(0, 0, leftMiddlePoints, 40, b2BodyType::b2_staticBody);
-	//App->physics->CreateChain(0, 0, bottomLeftPoints, 14, b2BodyType::b2_staticBody);
-	//App->physics->CreateChain(0, 0, rightMiddlePoints, 28, b2BodyType::b2_staticBody);
-	//App->physics->CreateChain(0, 0, bottomRightPoints, 14, b2BodyType::b2_staticBody);
-
-	/*App->physics->CreateChain(0, 0, externBackground, 72, b2BodyType::b2_staticBody);
-	App->physics->CreateChain(0, 0, bottomRight, 20, b2BodyType::b2_staticBody);
-	App->physics->CreateChain(0, 0, bottomLeft, 22, b2BodyType::b2_staticBody);
-	App->physics->CreateChain(0, 0, bottomR, 16, b2BodyType::b2_staticBody);
-	App->physics->CreateChain(0, 0, rightSide, 50, b2BodyType::b2_staticBody);
-	App->physics->CreateChain(0, 0, leftSide, 24, b2BodyType::b2_staticBody);
-	App->physics->CreateChain(0, 0, left, 10, b2BodyType::b2_staticBody);
-	App->physics->CreateChain(0, 0, rightSide2, 18, b2BodyType::b2_staticBody);
-	App->physics->CreateChain(0, 0, right, 10, b2BodyType::b2_staticBody);*/
-	//App->physics->CreateChain(0, 0, externBackground2, 28, b2BodyType::b2_staticBody);
 	
+	// Chains Creation
 	App->physics->CreateChain(0, 0, bg, 112, b2_staticBody);
+	App->physics->CreateChain(0, 0, bottomR, 22, b2_staticBody);
+	App->physics->CreateChain(0, 0, bottomL, 20, b2_staticBody);
+	App->physics->CreateChain(0, 0, littleBottomL, 12, b2_staticBody);
+	App->physics->CreateChain(0, 0, littleBottomR, 12, b2_staticBody);
+	App->physics->CreateChain(0, 0, veryLittleL, 8, b2_staticBody);
+	App->physics->CreateChain(0, 0, middleLittle, 14, b2_staticBody);
+	App->physics->CreateChain(0, 0, upL, 42, b2_staticBody);
+	App->physics->CreateChain(0, 0, middle, 38, b2_staticBody);
 
 
-	ballBody = App->physics->CreateCircle(472, 846, 15, b2_dynamicBody);
+	ballBody = App->physics->CreateCircle(472, 846, 12, b2_dynamicBody);
 
 	leftFlipper = new Flipper;
 	rightFlipper = new Flipper;
@@ -93,7 +85,7 @@ update_status ModuleSceneIntro::Update()
 {
 	if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
 	{
-		b2Vec2 force(0, -500);
+		b2Vec2 force(0, -250);
 		ballBody->ApplyForce(force);
 	}
 
