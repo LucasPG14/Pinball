@@ -31,10 +31,13 @@ public:
 	update_status Update();
 	bool CleanUp();
 
+	void FillFlipper(Flipper* flipper, SDL_Rect rect, int x, int y, int rad, b2BodyType rectType, b2BodyType circType, float initAngle, bool invert);
+
 public:
 	PhysBody* ballBody = nullptr;
 	Flipper* leftFlipper = nullptr;
 	Flipper* rightFlipper = nullptr;
+	Flipper* topFlipper = nullptr;
 
 	SDL_Rect leftSection = {0, 0, 81, 43};
 	SDL_Rect rightSection = {84, 0, 81, 43};

@@ -56,22 +56,16 @@ bool ModuleSceneIntro::Start()
 
 	leftFlipper = new Flipper;
 	rightFlipper = new Flipper;
+	topFlipper = new Flipper;
 
-	leftFlipper->maxA = JOINTLIMIT;
-	leftFlipper->minA = -1 * JOINTLIMIT;
-	leftFlipper->initAngle = -180.0f; // for some reason gets multiplied by -1
-	leftFlipper->flipper = App->physics->CreateBox(180, 915, 50, 15, DEGTORAD * leftFlipper->initAngle, b2_dynamicBody);
-	leftFlipper->bodyJointed = App->physics->CreateCircle(155, 900, 10, b2_staticBody);
-	leftFlipper->jointDef = App->physics->CreateRevoluteJoint(&leftFlipper->flipper->GetBody(), &leftFlipper->bodyJointed->GetBody(), leftFlipper->maxA, leftFlipper->minA, 0.6f, 0.0f, leftFlipper->initAngle * -1); // initAngle multiplied by -1 so it becomes 0.0f whe we change reference Angle because for some reason it gets multiplied by -1 (new reference angle = init angle, init angle * -1)
-	leftFlipper->joint = (b2RevoluteJoint*)App->physics->GetWorld()->CreateJoint(&leftFlipper->jointDef);
+	SDL_Rect rect = { 180, 915, 40, 15 };
+	FillFlipper(leftFlipper, rect, 155, 900, 10, b2_dynamicBody, b2_staticBody, -180.0f, true);
 
-	rightFlipper->maxA = JOINTLIMIT;
-	rightFlipper->minA = -1 * JOINTLIMIT;
-	rightFlipper->initAngle = 0.0f;
-	rightFlipper->flipper = App->physics->CreateBox(325, 915, 50, 15, DEGTORAD * rightFlipper->initAngle, b2_dynamicBody);
-	rightFlipper->bodyJointed = App->physics->CreateCircle(351, 900, 10, b2_staticBody);
-	rightFlipper->jointDef = App->physics->CreateRevoluteJoint(&rightFlipper->flipper->GetBody(), &rightFlipper->bodyJointed->GetBody(), rightFlipper->maxA, rightFlipper->minA, 0.6f, 0.0f, rightFlipper->initAngle);
-	rightFlipper->joint = (b2RevoluteJoint*)App->physics->GetWorld()->CreateJoint(&rightFlipper->jointDef);
+	rect = { 325, 915, 40, 15 };
+	FillFlipper(rightFlipper, rect, 351, 900, 10, b2_dynamicBody, b2_staticBody, 0.0f, false);
+
+	rect = { 395, 390, 33, 15 };
+	FillFlipper(topFlipper, rect, 391, 375, 10, b2_dynamicBody, b2_staticBody, 0.0f, false);
 
 	return ret;
 }
@@ -93,7 +87,7 @@ update_status ModuleSceneIntro::Update()
 {
 	if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
 	{
-		b2Vec2 force(0, -500);
+		b2Vec2 force(0, -400);
 		ballBody->ApplyForce(force);
 	}
 
@@ -111,25 +105,45 @@ update_status ModuleSceneIntro::Update()
 		rightFlipper->joint->SetMotorSpeed(-80.0f);
 	}
 
+	if (App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT && topFlipper->joint->IsMotorEnabled() == false)
+	{
+		topFlipper->joint->EnableMotor(true);
+		topFlipper->joint->SetMaxMotorTorque(100.0f);
+		topFlipper->joint->SetMotorSpeed(-80.0f);
+	}
+
 	if (leftFlipper->joint->GetJointAngle() >= leftFlipper->joint->GetUpperLimit()) leftFlipper->joint->EnableMotor(false);
 
-	int l = RADTODEG * rightFlipper->joint->GetLowerLimit();
-	int h = RADTODEG * rightFlipper->joint->GetUpperLimit();
-	int y = RADTODEG * rightFlipper->joint->GetJointAngle();
+	if (rightFlipper->joint->GetJointAngle() <= rightFlipper->joint->GetLowerLimit()) rightFlipper->joint->EnableMotor(false);
 
-	if (rightFlipper->joint->GetJointAngle() <= rightFlipper->joint->GetLowerLimit()) 
-		rightFlipper->joint->EnableMotor(false);
+	if (topFlipper->joint->GetJointAngle() <= topFlipper->joint->GetLowerLimit()) topFlipper->joint->EnableMotor(false);
 
-	// Draw Background
+	// Draw Background && UI elements
 	App->renderer->Blit(background, 0, 0, NULL);
 
 	App->renderer->Blit(circle, ballBody->GetPosition(0.0f).x - 15, ballBody->GetPosition(0.0f).y - 15, 0, 1.0f, ballBody->GetRotation());
 
-	App->renderer->Blit(flippers, leftFlipper->bodyJointed->GetPosition(0.0f).x, leftFlipper->bodyJointed->GetPosition(0.0f).y, &leftSection, 0, leftFlipper->flipper->GetRotation() + 180 - JOINTLIMIT, 0, 0);
+	// we add JOINTLIMIT to the angle to fix the displacement between the sprite (drawn at 21.5º) and rotation (21.5fº), this makes the sprite look like its rotated (21.5 * 2º))
+	App->renderer->Blit(flippers, leftFlipper->bodyJointed->GetPosition(-12.0f).x, leftFlipper->bodyJointed->GetPosition(-15.0f).y, &leftSection, 0, leftFlipper->flipper->GetRotation() + 180 - JOINTLIMIT, 12, 15);
 
-	//App->renderer->Blit(flippers, rightFlipper->flipper->GetPosition(-10.0f).x, rightFlipper->flipper->GetPosition(-10.0f).y, &rightSection, 0);
+	App->renderer->Blit(flippers, rightFlipper->flipper->GetPosition(-42.0f).x,  rightFlipper->flipper->GetPosition(-28.0f).y, &rightSection, 0, rightFlipper->flipper->GetRotation() + JOINTLIMIT, 42, 28);
 
-	App->renderer->Blit(flippers, rightFlipper->flipper->GetPosition(0.0f).x, rightFlipper->flipper->GetPosition(0.0f).y, &rightSection, 0, rightFlipper->flipper->GetRotation() + JOINTLIMIT, 0, 0);
+	App->renderer->Blit(flippers, topFlipper->flipper->GetPosition(-40.0f).x, topFlipper->flipper->GetPosition(-28.0f).y, &rightSection, 0, topFlipper->flipper->GetRotation() + JOINTLIMIT, 40, 28);
 
 	return UPDATE_CONTINUE;
+}
+
+void ModuleSceneIntro::FillFlipper(Flipper* flipper, SDL_Rect rect, int x, int y, int rad, b2BodyType rectType, b2BodyType circType, float initAngle, bool invert)
+{
+	int mult = 1;
+	if (invert == true) mult = -1;
+
+	flipper->maxA = JOINTLIMIT;
+	flipper->minA = -1 * JOINTLIMIT;
+	flipper->initAngle = initAngle;
+	flipper->flipper = App->physics->CreateBox(rect.x, rect.y, rect.w, rect.h, DEGTORAD * flipper->initAngle, rectType);
+	flipper->bodyJointed = App->physics->CreateCircle(x, y, rad, circType);
+	// Sometimes initAngle is multiplied by -1 so it becomes 0.0f because when we change reference Angle, this amount of angle is added to our curret angles (new reference angle = init angle, init angle += refernce angle). In our case, multipling by -1 solves this problem because we use 180º and -180 & 180 are the same
+	flipper->jointDef = App->physics->CreateRevoluteJoint(&flipper->flipper->GetBody(), &flipper->bodyJointed->GetBody(), flipper->maxA, flipper->minA, 0.6f, 0.0f, flipper->initAngle * mult);
+	flipper->joint = (b2RevoluteJoint*)App->physics->GetWorld()->CreateJoint(&flipper->jointDef);
 }
