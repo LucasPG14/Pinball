@@ -31,28 +31,20 @@ bool ModuleSceneIntro::Start()
 	background = App->textures->Load("Assets/Assets/background2.png");
 	flippers = App->textures->Load("Assets/Assets/Flippers3.png");
 
-	//App->physics->CreateChain(0, 0, bgPoints, 82, b2BodyType::b2_staticBody);
-	//App->physics->CreateChain(0, 0, upLeftPoints, 18, b2BodyType::b2_staticBody);
-	//App->physics->CreateChain(0, 0, leftMiddlePoints, 40, b2BodyType::b2_staticBody);
-	//App->physics->CreateChain(0, 0, bottomLeftPoints, 14, b2BodyType::b2_staticBody);
-	//App->physics->CreateChain(0, 0, rightMiddlePoints, 28, b2BodyType::b2_staticBody);
-	//App->physics->CreateChain(0, 0, bottomRightPoints, 14, b2BodyType::b2_staticBody);
-
-	/*App->physics->CreateChain(0, 0, externBackground, 72, b2BodyType::b2_staticBody);
-	App->physics->CreateChain(0, 0, bottomRight, 20, b2BodyType::b2_staticBody);
-	App->physics->CreateChain(0, 0, bottomLeft, 22, b2BodyType::b2_staticBody);
-	App->physics->CreateChain(0, 0, bottomR, 16, b2BodyType::b2_staticBody);
-	App->physics->CreateChain(0, 0, rightSide, 50, b2BodyType::b2_staticBody);
-	App->physics->CreateChain(0, 0, leftSide, 24, b2BodyType::b2_staticBody);
-	App->physics->CreateChain(0, 0, left, 10, b2BodyType::b2_staticBody);
-	App->physics->CreateChain(0, 0, rightSide2, 18, b2BodyType::b2_staticBody);
-	App->physics->CreateChain(0, 0, right, 10, b2BodyType::b2_staticBody);*/
-	//App->physics->CreateChain(0, 0, externBackground2, 28, b2BodyType::b2_staticBody);
 	
+	// Chains Creation
 	App->physics->CreateChain(0, 0, bg, 112, b2_staticBody);
+	App->physics->CreateChain(0, 0, bottomR, 22, b2_staticBody);
+	App->physics->CreateChain(0, 0, bottomL, 20, b2_staticBody);
+	App->physics->CreateChain(0, 0, littleBottomL, 12, b2_staticBody);
+	App->physics->CreateChain(0, 0, littleBottomR, 12, b2_staticBody);
+	App->physics->CreateChain(0, 0, veryLittleL, 8, b2_staticBody);
+	App->physics->CreateChain(0, 0, middleLittle, 14, b2_staticBody);
+	App->physics->CreateChain(0, 0, upL, 42, b2_staticBody);
+	App->physics->CreateChain(0, 0, middle, 38, b2_staticBody);
 
 
-	ballBody = App->physics->CreateCircle(472, 846, 15, b2_dynamicBody);
+	ballBody = App->physics->CreateCircle(472, 846, 12, b2_dynamicBody);
 
 	leftFlipper = new Flipper;
 	rightFlipper = new Flipper;
@@ -87,7 +79,7 @@ update_status ModuleSceneIntro::Update()
 {
 	if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
 	{
-		b2Vec2 force(0, -400);
+		b2Vec2 force(0, -250);
 		ballBody->ApplyForce(force);
 	}
 
@@ -123,7 +115,7 @@ update_status ModuleSceneIntro::Update()
 
 	App->renderer->Blit(circle, ballBody->GetPosition(0.0f).x - 15, ballBody->GetPosition(0.0f).y - 15, 0, 1.0f, ballBody->GetRotation());
 
-	// we add JOINTLIMIT to the angle to fix the displacement between the sprite (drawn at 21.5º) and rotation (21.5fº), this makes the sprite look like its rotated (21.5 * 2º))
+	// we add JOINTLIMIT to the angle to fix the displacement between the sprite (drawn at 21.5ï¿½) and rotation (21.5fï¿½), this makes the sprite look like its rotated (21.5 * 2ï¿½))
 	App->renderer->Blit(flippers, leftFlipper->bodyJointed->GetPosition(-12.0f).x, leftFlipper->bodyJointed->GetPosition(-15.0f).y, &leftSection, 0, leftFlipper->flipper->GetRotation() + 180 - JOINTLIMIT, 12, 15);
 
 	App->renderer->Blit(flippers, rightFlipper->flipper->GetPosition(-42.0f).x,  rightFlipper->flipper->GetPosition(-28.0f).y, &rightSection, 0, rightFlipper->flipper->GetRotation() + JOINTLIMIT, 42, 28);
@@ -143,7 +135,7 @@ void ModuleSceneIntro::FillFlipper(Flipper* flipper, SDL_Rect rect, int x, int y
 	flipper->initAngle = initAngle;
 	flipper->flipper = App->physics->CreateBox(rect.x, rect.y, rect.w, rect.h, DEGTORAD * flipper->initAngle, rectType);
 	flipper->bodyJointed = App->physics->CreateCircle(x, y, rad, circType);
-	// Sometimes initAngle is multiplied by -1 so it becomes 0.0f because when we change reference Angle, this amount of angle is added to our curret angles (new reference angle = init angle, init angle += refernce angle). In our case, multipling by -1 solves this problem because we use 180º and -180 & 180 are the same
+	// Sometimes initAngle is multiplied by -1 so it becomes 0.0f because when we change reference Angle, this amount of angle is added to our curret angles (new reference angle = init angle, init angle += refernce angle). In our case, multipling by -1 solves this problem because we use 180ï¿½ and -180 & 180 are the same
 	flipper->jointDef = App->physics->CreateRevoluteJoint(&flipper->flipper->GetBody(), &flipper->bodyJointed->GetBody(), flipper->maxA, flipper->minA, 0.6f, 0.0f, flipper->initAngle * mult);
 	flipper->joint = (b2RevoluteJoint*)App->physics->GetWorld()->CreateJoint(&flipper->jointDef);
 }
