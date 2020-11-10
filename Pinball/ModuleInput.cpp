@@ -62,6 +62,18 @@ update_status ModuleInput::PreUpdate()
 	if(keyboard[SDL_SCANCODE_ESCAPE] == KEY_UP)
 		return UPDATE_STOP;
 
+	// Quit pressing the cross up-right
+	SDL_Event event;
+	while (SDL_PollEvent(&event) != 0)
+	{
+		switch (event.type)
+		{
+		case(SDL_QUIT):
+			return UPDATE_STOP;
+			break;
+		}
+	}
+
 	SDL_GetMouseState(&mouse_x, &mouse_y);
 	mouse_x /= SCREEN_SIZE;
 	mouse_y /= SCREEN_SIZE;

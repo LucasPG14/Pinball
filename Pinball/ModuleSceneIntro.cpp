@@ -6,6 +6,7 @@
 #include "ModuleTextures.h"
 #include "ModulePhysics.h"
 #include "chains.h"
+#include "ModuleFonts.h"
 
 #define JOINTLIMIT 21.5f
 
@@ -59,6 +60,12 @@ bool ModuleSceneIntro::Start()
 	rect = { 395, 390, 33, 15 };
 	FillFlipper(topFlipper, rect, 391, 375, 10, b2_dynamicBody, b2_staticBody, 0.0f, false);
 
+
+	//Font
+
+	char lookupTable[] = { "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ " };
+	uiText = App->fonts->Load("Assets/Assets/mafiafont.png", lookupTable, 1);
+
 	return ret;
 }
 
@@ -104,11 +111,11 @@ update_status ModuleSceneIntro::Update()
 		topFlipper->joint->SetMotorSpeed(-80.0f);
 	}
 
-	if (leftFlipper->joint->GetJointAngle() >= leftFlipper->joint->GetUpperLimit()) leftFlipper->joint->EnableMotor(false);
+	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_UP) leftFlipper->joint->EnableMotor(false);
 
-	if (rightFlipper->joint->GetJointAngle() <= rightFlipper->joint->GetLowerLimit()) rightFlipper->joint->EnableMotor(false);
+	if (App->input->GetKey(SDL_SCANCODE_D) == KEY_UP) rightFlipper->joint->EnableMotor(false);
 
-	if (topFlipper->joint->GetJointAngle() <= topFlipper->joint->GetLowerLimit()) topFlipper->joint->EnableMotor(false);
+	if (App->input->GetKey(SDL_SCANCODE_W) == KEY_UP) topFlipper->joint->EnableMotor(false);
 
 	// Draw Background && UI elements
 	App->renderer->Blit(background, 0, 0, NULL);
@@ -121,6 +128,8 @@ update_status ModuleSceneIntro::Update()
 	App->renderer->Blit(flippers, rightFlipper->flipper->GetPosition(-42.0f).x,  rightFlipper->flipper->GetPosition(-28.0f).y, &rightSection, 0, rightFlipper->flipper->GetRotation() + JOINTLIMIT, 42, 28);
 
 	App->renderer->Blit(flippers, topFlipper->flipper->GetPosition(-40.0f).x, topFlipper->flipper->GetPosition(-28.0f).y, &rightSection, 0, topFlipper->flipper->GetRotation() + JOINTLIMIT, 40, 28);
+
+	App->fonts->BlitText(0,0, uiText, "SCORE: ");
 
 	return UPDATE_CONTINUE;
 }
