@@ -15,4 +15,6 @@ public:
 
 public:
 
+	int uiText;
+
 };

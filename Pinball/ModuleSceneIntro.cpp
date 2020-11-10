@@ -61,10 +61,7 @@ bool ModuleSceneIntro::Start()
 	FillFlipper(topFlipper, rect, 391, 375, 10, b2_dynamicBody, b2_staticBody, 0.0f, false);
 
 
-	//Font
-
-	char lookupTable[] = { "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ " };
-	uiText = App->fonts->Load("Assets/Assets/mafiafont.png", lookupTable, 1);
+	
 
 	return ret;
 }
@@ -129,7 +126,7 @@ update_status ModuleSceneIntro::Update()
 
 	App->renderer->Blit(flippers, topFlipper->flipper->GetPosition(-40.0f).x, topFlipper->flipper->GetPosition(-28.0f).y, &rightSection, 0, topFlipper->flipper->GetRotation() + JOINTLIMIT, 40, 28);
 
-	App->fonts->BlitText(0,0, uiText, "SCORE: ");
+	
 
 	return UPDATE_CONTINUE;
 }

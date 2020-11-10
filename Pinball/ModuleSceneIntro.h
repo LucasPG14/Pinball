@@ -48,7 +48,7 @@ public:
 	SDL_Texture* background = nullptr;
 	SDL_Texture* flippers = nullptr;
 
-	int uiText;
+	
 
 	p2List<PhysBody*> circles;
 	p2List<PhysBody*> boxes;
