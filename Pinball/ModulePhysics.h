@@ -28,6 +28,8 @@ public:
 
 	const b2Vec2& GetPosition( float offset);
 	const double& GetRotation();
+	bool Contains(int x, int y) const;
+
 	inline b2Body& GetBody()
 	{
 		return *body;

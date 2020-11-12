@@ -36,6 +36,11 @@ bool ModuleSceneIntro::Start()
 	// Chains Creation
 	CreateChains();
 
+	// Sensors creation
+	
+	rightSensor = App->physics->CreateBox(403, 502, 12, 12, 0, b2_staticBody);
+	rightSensor->GetBody().GetFixtureList()->SetSensor(true);
+
 
 	ballBody = App->physics->CreateCircle(472, 846, 12, b2_dynamicBody);
 
@@ -52,8 +57,6 @@ bool ModuleSceneIntro::Start()
 	rect = { 395, 390, 33, 15 };
 	FillFlipper(topFlipper, rect, 391, 375, 10, b2_dynamicBody, b2_staticBody, 0.0f, false);
 
-
-	
 
 	return ret;
 }
@@ -73,9 +76,16 @@ bool ModuleSceneIntro::CleanUp()
 // Update: draw background
 update_status ModuleSceneIntro::Update()
 {
+	/*if (rightSensor->Contains(ballBody->GetPosition(0.0f).x, ballBody->GetPosition(0.0f).y))
+	{
+		isOnExtraLevel = true;
+		CreateChains();
+	}*/
+
+
 	if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
 	{
-		b2Vec2 force(0, -250);
+		b2Vec2 force(0, -150);
 		ballBody->ApplyForce(force);
 	}
 
@@ -86,7 +96,7 @@ update_status ModuleSceneIntro::Update()
 		leftFlipper->joint->SetMotorSpeed(80.0f);
 	}
 
-	if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT && rightFlipper->joint->IsMotorEnabled() == false)
+	if (App->input->GetKey(SDL_SCANCODE_D) == KEY_DOWN && rightFlipper->joint->IsMotorEnabled() == false)
 	{
 		rightFlipper->joint->EnableMotor(true);
 		rightFlipper->joint->SetMaxMotorTorque(100.0f);
@@ -158,7 +168,7 @@ void ModuleSceneIntro::CreateChains()
 
 		extraLeft = new PhysBody(NULL);
 		extraLeft = App->physics->CreateChain(0, 0, extraL, 44, b2_staticBody);
-		*/	
+		*/
 	}
 
 	else

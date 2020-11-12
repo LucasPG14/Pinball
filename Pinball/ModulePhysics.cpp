@@ -271,6 +271,22 @@ const double& PhysBody::GetRotation()
 	return (double)RADTODEG * body->GetTransform().q.GetAngle();
 }
 
+bool PhysBody::Contains(int x, int y) const
+{
+	b2Vec2 p(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
+
+	const b2Fixture* fixture = body->GetFixtureList();
+
+	while (fixture != NULL)
+	{
+		if (fixture->GetShape()->TestPoint(body->GetTransform(), p) == true)
+			return true;
+		fixture = fixture->GetNext();
+	}
+
+	return false;
+}
+
 void PhysBody::ApplyForce(b2Vec2 force)
 {
 	b2Vec2 pos = body->GetWorldCenter();

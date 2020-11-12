@@ -39,6 +39,9 @@ private:
 
 	bool isOnExtraLevel = false;
 
+	PhysBody* rightSensor = nullptr;
+
+
 	PhysBody* ballBody = nullptr;
 	Flipper* leftFlipper = nullptr;
 	Flipper* rightFlipper = nullptr;
