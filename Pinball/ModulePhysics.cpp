@@ -151,6 +151,10 @@ bool ModulePhysics::CleanUp()
 
 PhysBody* ModulePhysics::CreateCircle(int x, int y, int rad, b2BodyType bodyType)
 {
+	x /= 1.25f;
+	y /= 1.25f;
+	rad /= 1.25f;
+
 	b2BodyDef body;
 	body.type = bodyType;
 	body.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
@@ -174,6 +178,12 @@ PhysBody* ModulePhysics::CreateCircle(int x, int y, int rad, b2BodyType bodyType
 
 PhysBody* ModulePhysics::CreateBox(int x, int y, int w, int h, float a, b2BodyType bodyType)
 {
+	x /= 1.25f;
+	y /= 1.25f;
+	w /= 1.25f;
+	h /= 1.25f;
+	a /= 1.25f;
+
 	// TODO 1: When pressing 2, create a box on the mouse position
 	b2BodyDef body;
 	body.type = bodyType;
@@ -208,7 +218,7 @@ PhysBody* ModulePhysics::CreateChain(int x, int y, int* chainName, const int n, 
 	b2Vec2* vs = new b2Vec2[n / 2];
 	for (uint i = 0, j = 0; i < n/2 && j < n; ++i, j += 2)
 	{
-		vs[i] = b2Vec2(PIXEL_TO_METERS(chainName[j]), PIXEL_TO_METERS(chainName[j + 1]));
+		vs[i] = b2Vec2(PIXEL_TO_METERS(chainName[j] / 1.25f), PIXEL_TO_METERS(chainName[j + 1] / 1.25f));
 	}
 
 	b2BodyDef bodyDef;
@@ -274,7 +284,7 @@ b2RevoluteJointDef ModulePhysics::CreateRevoluteJoint(b2Body* b1, b2Body* b2, fl
 
 	jointDef.bodyA = b1;
 	jointDef.bodyB = b2;
-	jointDef.localAnchorA.Set(anchorX, anchorY);//the top right corner of the box
+	jointDef.localAnchorA.Set(anchorX / 1.25f, anchorY / 1.25f);//the top right corner of the box
 	jointDef.localAnchorB.Set(0, 0);//center of the circle
 	jointDef.enableLimit = true;
 	jointDef.referenceAngle = initAngle * DEGTORAD;

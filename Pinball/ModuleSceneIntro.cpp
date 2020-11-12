@@ -120,11 +120,11 @@ update_status ModuleSceneIntro::Update()
 	App->renderer->Blit(circle, ballBody->GetPosition(0.0f).x - 15, ballBody->GetPosition(0.0f).y - 15, 0, 1.0f, ballBody->GetRotation());
 
 	// we add JOINTLIMIT to the angle to fix the displacement between the sprite (drawn at 21.5�) and rotation (21.5f�), this makes the sprite look like its rotated (21.5 * 2�))
-	App->renderer->Blit(flippers, leftFlipper->bodyJointed->GetPosition(-12.0f).x, leftFlipper->bodyJointed->GetPosition(-15.0f).y, &leftSection, 0, leftFlipper->flipper->GetRotation() + 180 - JOINTLIMIT, 12, 15);
+	App->renderer->Blit(flippers, leftFlipper->bodyJointed->GetPosition(-10.0f).x, leftFlipper->bodyJointed->GetPosition(-13.0f).y, &leftSection, 0, leftFlipper->flipper->GetRotation() + 180 - JOINTLIMIT, 10, 17);
 
-	App->renderer->Blit(flippers, rightFlipper->flipper->GetPosition(-42.0f).x,  rightFlipper->flipper->GetPosition(-28.0f).y, &rightSection, 0, rightFlipper->flipper->GetRotation() + JOINTLIMIT, 42, 28);
+	App->renderer->Blit(flippers, rightFlipper->flipper->GetPosition(-32.0f).x,  rightFlipper->flipper->GetPosition(-20.0f).y, &rightSection, 0, rightFlipper->flipper->GetRotation() + JOINTLIMIT, 32, 20);
 
-	App->renderer->Blit(flippers, topFlipper->flipper->GetPosition(-40.0f).x, topFlipper->flipper->GetPosition(-28.0f).y, &rightSection, 0, topFlipper->flipper->GetRotation() + JOINTLIMIT, 40, 28);
+	App->renderer->Blit(flippers, topFlipper->flipper->GetPosition(-28.0f).x, topFlipper->flipper->GetPosition(-20.0f).y, &rightSection, 0, topFlipper->flipper->GetRotation() + JOINTLIMIT, 28, 20);
 
 	
 
