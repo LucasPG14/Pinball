@@ -45,13 +45,22 @@ public:
 	SDL_Texture* circle = nullptr;
 	SDL_Texture* box = nullptr;
 	SDL_Texture* rick = nullptr;
-	SDL_Texture* background = nullptr;
+	SDL_Texture* backgr = nullptr;
 	SDL_Texture* flippers = nullptr;
 
-	
+	// Chains bodies for the lower level
+	PhysBody* background;
+	PhysBody* bottomRight;
+	PhysBody* bottomLeft;
+	PhysBody* littleBottomLeft;
+	PhysBody* littleBottomRight;
+	PhysBody* veryLittleLeft;
+	PhysBody* middleLittle;
+	PhysBody* upLeft;
+	PhysBody* middle;
 
-	p2List<PhysBody*> circles;
-	p2List<PhysBody*> boxes;
-	p2List<PhysBody*> ricks;
+	// Chains bodies for the extra level
+	PhysBody* extraLeft;
+	PhysBody* extraRight;
 
 };

@@ -29,20 +29,43 @@ bool ModuleSceneIntro::Start()
 	circle = App->textures->Load("Assets/Assets/ball4.png");
 	box = App->textures->Load("Assets/crate.png");
 	rick = App->textures->Load("Assets/rick_head.png");
-	background = App->textures->Load("Assets/Assets/background2.png");
+	backgr = App->textures->Load("Assets/Assets/background2.png");
 	flippers = App->textures->Load("Assets/Assets/Flippers3.png");
 
 	
 	// Chains Creation
-	App->physics->CreateChain(0, 0, bg, 112, b2_staticBody);
-	App->physics->CreateChain(0, 0, bottomR, 22, b2_staticBody);
-	App->physics->CreateChain(0, 0, bottomL, 20, b2_staticBody);
-	App->physics->CreateChain(0, 0, littleBottomL, 12, b2_staticBody);
-	App->physics->CreateChain(0, 0, littleBottomR, 12, b2_staticBody);
-	App->physics->CreateChain(0, 0, veryLittleL, 8, b2_staticBody);
-	App->physics->CreateChain(0, 0, middleLittle, 14, b2_staticBody);
-	App->physics->CreateChain(0, 0, upL, 42, b2_staticBody);
-	App->physics->CreateChain(0, 0, middle, 38, b2_staticBody);
+	background = new PhysBody(NULL);
+	background = App->physics->CreateChain(0, 0, bg, 112, b2_staticBody);
+
+	bottomRight = new PhysBody(NULL);
+	bottomRight = App->physics->CreateChain(0, 0, bottomR, 22, b2_staticBody);
+
+	bottomLeft = new PhysBody(NULL);
+	bottomLeft = App->physics->CreateChain(0, 0, bottomL, 20, b2_staticBody);
+
+	littleBottomLeft = new PhysBody(NULL);
+	littleBottomLeft = App->physics->CreateChain(0, 0, littleBottomL, 12, b2_staticBody);
+
+	littleBottomRight = new PhysBody(NULL);
+	littleBottomRight = App->physics->CreateChain(0, 0, littleBottomR, 12, b2_staticBody);
+
+	veryLittleLeft = new PhysBody(NULL);
+	veryLittleLeft = App->physics->CreateChain(0, 0, veryLittleL, 8, b2_staticBody);
+
+	middleLittle = new PhysBody(NULL);
+	middleLittle = App->physics->CreateChain(0, 0, middleLit, 14, b2_staticBody);
+
+	upLeft = new PhysBody(NULL);
+	upLeft = App->physics->CreateChain(0, 0, upL, 42, b2_staticBody);
+
+	middle = new PhysBody(NULL);
+	middle = App->physics->CreateChain(0, 0, mid, 38, b2_staticBody);
+
+	extraRight = new PhysBody(NULL);
+	extraRight = App->physics->CreateChain(0, 0, extraR, 50, b2_staticBody);
+
+	extraLeft = new PhysBody(NULL);
+	extraLeft = App->physics->CreateChain(0, 0, extraL, 44, b2_staticBody);
 
 
 	ballBody = App->physics->CreateCircle(472, 846, 12, b2_dynamicBody);
@@ -115,7 +138,7 @@ update_status ModuleSceneIntro::Update()
 	if (App->input->GetKey(SDL_SCANCODE_W) == KEY_UP) topFlipper->joint->EnableMotor(false);
 
 	// Draw Background && UI elements
-	App->renderer->Blit(background, 0, 0, NULL);
+	App->renderer->Blit(backgr, 0, 0, NULL);
 
 	App->renderer->Blit(circle, ballBody->GetPosition(0.0f).x - 15, ballBody->GetPosition(0.0f).y - 15, 0, 1.0f, ballBody->GetRotation());
 
