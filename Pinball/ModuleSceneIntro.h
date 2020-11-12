@@ -43,6 +43,7 @@ private:
 
 	bool ballLaunched;
 
+	p2List<PhysBody*> sensors;
 	PhysBody* rightSensor = nullptr;
 	PhysBody* rightLowSensor = nullptr;
 

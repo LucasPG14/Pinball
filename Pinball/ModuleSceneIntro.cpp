@@ -55,8 +55,9 @@ bool ModuleSceneIntro::Start()
 
 	// Sensors creation
 	rightSensor = App->physics->CreateBox(403, 502, 12, 12, 0, b2_staticBody, true);	
-	rightLowSensor = App->physics->CreateBox(395, 715, 5, 5, 0, b2_staticBody, true);
-
+	sensors.add(rightSensor);
+	rightLowSensor = App->physics->CreateBox(393, 712, 13, 8, 0, b2_staticBody, true);
+	sensors.add(rightLowSensor);
 
 	ballBody = App->physics->CreateCircle(472, 846, 12, b2_dynamicBody);
 
@@ -92,11 +93,17 @@ bool ModuleSceneIntro::CleanUp()
 // Update: draw background
 update_status ModuleSceneIntro::Update()
 {
-	if (rightSensor->Contains(ballBody->GetPosition(0.0f).x, ballBody->GetPosition(0.0f).y) /*&& isOnExtraLevel == false*/)
+	p2List_item<PhysBody*>* s = sensors.getFirst();
+	while (s != NULL)
 	{
-		isOnExtraLevel = true;
-		ChangeChains();
+		if (s->data->Contains(ballBody->GetPosition(0.0f).x, ballBody->GetPosition(0.0f).y) /*&& isOnExtraLevel == false*/)
+		{
+			isOnExtraLevel = true;
+			ChangeChains();
+		}
+		s = s->next;
 	}
+	
 
 	if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN /*&& ballLaunched == false*/)
 	{
@@ -168,16 +175,6 @@ void ModuleSceneIntro::ChangeChains()
 {
 	if (isOnExtraLevel && ballBody->GetBody().GetLinearVelocity().y < 0)
 	{
-		/*delete background; background = nullptr;
-		delete bottomRight; bottomRight = nullptr;
-		delete bottomLeft; bottomLeft = nullptr;
-		delete littleBottomLeft; littleBottomLeft = nullptr;
-		delete littleBottomRight; littleBottomRight = nullptr;
-		delete veryLittleLeft; veryLittleLeft = nullptr;
-		delete middleLittle; middleLittle = nullptr;
-		delete upLeft; upLeft = nullptr;
-		delete middle; middle = nullptr;*/
-		
 		background->GetBody().SetActive(false);
 		bottomRight->GetBody().SetActive(false);
 		bottomLeft->GetBody().SetActive(false);
@@ -190,7 +187,6 @@ void ModuleSceneIntro::ChangeChains()
 
 		extraRight->GetBody().SetActive(true);
 		extraLeft->GetBody().SetActive(true);
-
 	}
 
 	else if(isOnExtraLevel == true && ballBody->GetBody().GetLinearVelocity().y >= 0)
@@ -207,37 +203,5 @@ void ModuleSceneIntro::ChangeChains()
 
 		extraRight->GetBody().SetActive(false);
 		extraLeft->GetBody().SetActive(false);
-
-
-
-
-		/*background = new PhysBody(NULL);
-		background = App->physics->CreateChain(0, 0, bg, 112, b2_staticBody);
-
-		bottomRight = new PhysBody(NULL);
-		bottomRight = App->physics->CreateChain(0, 0, bottomR, 22, b2_staticBody);
-
-		bottomLeft = new PhysBody(NULL);
-		bottomLeft = App->physics->CreateChain(0, 0, bottomL, 20, b2_staticBody);
-
-		littleBottomLeft = new PhysBody(NULL);
-		littleBottomLeft = App->physics->CreateChain(0, 0, littleBottomL, 12, b2_staticBody);
-
-		littleBottomRight = new PhysBody(NULL);
-		littleBottomRight = App->physics->CreateChain(0, 0, littleBottomR, 12, b2_staticBody);
-
-		veryLittleLeft = new PhysBody(NULL);
-		veryLittleLeft = App->physics->CreateChain(0, 0, veryLittleL, 8, b2_staticBody);
-
-		middleLittle = new PhysBody(NULL);
-		middleLittle = App->physics->CreateChain(0, 0, middleLit, 14, b2_staticBody);
-
-		upLeft = new PhysBody(NULL);
-		upLeft = App->physics->CreateChain(0, 0, upL, 42, b2_staticBody);
-
-		middle = new PhysBody(NULL);
-		middle = App->physics->CreateChain(0, 0, mid, 38, b2_staticBody);*/
 	}
-
-
 }
