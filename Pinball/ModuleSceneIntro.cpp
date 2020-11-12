@@ -32,14 +32,30 @@ bool ModuleSceneIntro::Start()
 	backgr = App->textures->Load("Assets/Assets/background2.png");
 	flippers = App->textures->Load("Assets/Assets/Flippers3.png");
 
-	
+	ballLaunched = false;
+
+
 	// Chains Creation
-	CreateChains();
+	//CreateChains();
+
+	background = App->physics->CreateChain(0, 0, bg, 112, b2_staticBody);
+	bottomRight = App->physics->CreateChain(0, 0, bottomR, 22, b2_staticBody);
+	bottomLeft = App->physics->CreateChain(0, 0, bottomL, 20, b2_staticBody);
+	littleBottomLeft = App->physics->CreateChain(0, 0, littleBottomL, 12, b2_staticBody);
+	littleBottomRight = App->physics->CreateChain(0, 0, littleBottomR, 12, b2_staticBody);
+	veryLittleLeft = App->physics->CreateChain(0, 0, veryLittleL, 8, b2_staticBody);
+	middleLittle = App->physics->CreateChain(0, 0, middleLit, 14, b2_staticBody);
+	upLeft = App->physics->CreateChain(0, 0, upL, 42, b2_staticBody);
+	middle = App->physics->CreateChain(0, 0, mid, 38, b2_staticBody);
+	extraRight = App->physics->CreateChain(0, 0, extraR, 50, b2_staticBody);
+	extraLeft = App->physics->CreateChain(0, 0, extraL, 44, b2_staticBody);
+
+	extraRight->GetBody().SetActive(false);
+	extraLeft->GetBody().SetActive(false);
 
 	// Sensors creation
-	
-	rightSensor = App->physics->CreateBox(403, 502, 12, 12, 0, b2_staticBody);
-	rightSensor->GetBody().GetFixtureList()->SetSensor(true);
+	rightSensor = App->physics->CreateBox(403, 502, 12, 12, 0, b2_staticBody, true);	
+	rightLowSensor = App->physics->CreateBox(395, 715, 5, 5, 0, b2_staticBody, true);
 
 
 	ballBody = App->physics->CreateCircle(472, 846, 12, b2_dynamicBody);
@@ -76,15 +92,15 @@ bool ModuleSceneIntro::CleanUp()
 // Update: draw background
 update_status ModuleSceneIntro::Update()
 {
-	/*if (rightSensor->Contains(ballBody->GetPosition(0.0f).x, ballBody->GetPosition(0.0f).y))
+	if (rightSensor->Contains(ballBody->GetPosition(0.0f).x, ballBody->GetPosition(0.0f).y) /*&& isOnExtraLevel == false*/)
 	{
 		isOnExtraLevel = true;
-		CreateChains();
-	}*/
+		ChangeChains();
+	}
 
-
-	if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
+	if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN /*&& ballLaunched == false*/)
 	{
+		//ballLaunched = true;
 		b2Vec2 force(0, -150);
 		ballBody->ApplyForce(force);
 	}
@@ -141,42 +157,61 @@ void ModuleSceneIntro::FillFlipper(Flipper* flipper, SDL_Rect rect, int x, int y
 	flipper->maxA = JOINTLIMIT;
 	flipper->minA = -1 * JOINTLIMIT;
 	flipper->initAngle = initAngle;
-	flipper->flipper = App->physics->CreateBox(rect.x, rect.y, rect.w, rect.h, DEGTORAD * flipper->initAngle, rectType);
+	flipper->flipper = App->physics->CreateBox(rect.x, rect.y, rect.w, rect.h, DEGTORAD * flipper->initAngle, rectType, false);
 	flipper->bodyJointed = App->physics->CreateCircle(x, y, rad, circType);
 	// Sometimes initAngle is multiplied by -1 so it becomes 0.0f because when we change reference Angle, this amount of angle is added to our curret angles (new reference angle = init angle, init angle += refernce angle). In our case, multipling by -1 solves this problem because we use 180� and -180 & 180 are the same
 	flipper->jointDef = App->physics->CreateRevoluteJoint(&flipper->flipper->GetBody(), &flipper->bodyJointed->GetBody(), flipper->maxA, flipper->minA, 0.6f, 0.0f, flipper->initAngle * mult);
 	flipper->joint = (b2RevoluteJoint*)App->physics->GetWorld()->CreateJoint(&flipper->jointDef);
 }
 
-void ModuleSceneIntro::CreateChains()
+void ModuleSceneIntro::ChangeChains()
 {
-	if (isOnExtraLevel)
+	if (isOnExtraLevel && ballBody->GetBody().GetLinearVelocity().y < 0)
 	{
-		/*
-		delete background;
-		delete bottomRight;
-		delete bottomLeft;
-		delete littleBottomLeft;
-		delete littleBottomRight;
-		delete veryLittleLeft;
-		delete middleLittle;
-		delete upLeft;
-		delete middle;
+		/*delete background; background = nullptr;
+		delete bottomRight; bottomRight = nullptr;
+		delete bottomLeft; bottomLeft = nullptr;
+		delete littleBottomLeft; littleBottomLeft = nullptr;
+		delete littleBottomRight; littleBottomRight = nullptr;
+		delete veryLittleLeft; veryLittleLeft = nullptr;
+		delete middleLittle; middleLittle = nullptr;
+		delete upLeft; upLeft = nullptr;
+		delete middle; middle = nullptr;*/
+		
+		background->GetBody().SetActive(false);
+		bottomRight->GetBody().SetActive(false);
+		bottomLeft->GetBody().SetActive(false);
+		littleBottomLeft->GetBody().SetActive(false);
+		littleBottomRight->GetBody().SetActive(false);
+		veryLittleLeft->GetBody().SetActive(false);
+		middleLittle->GetBody().SetActive(false);
+		upLeft->GetBody().SetActive(false);
+		middle->GetBody().SetActive(false);
 
-		extraRight = new PhysBody(NULL);
-		extraRight = App->physics->CreateChain(0, 0, extraR, 50, b2_staticBody);
+		extraRight->GetBody().SetActive(true);
+		extraLeft->GetBody().SetActive(true);
 
-		extraLeft = new PhysBody(NULL);
-		extraLeft = App->physics->CreateChain(0, 0, extraL, 44, b2_staticBody);
-		*/
 	}
 
-	else
+	else if(isOnExtraLevel == true && ballBody->GetBody().GetLinearVelocity().y >= 0)
 	{
-		if(extraLeft != nullptr) delete extraLeft;
-		if (extraRight != nullptr) delete extraRight;
+		background->GetBody().SetActive(true);
+		bottomRight->GetBody().SetActive(true);
+		bottomLeft->GetBody().SetActive(true);
+		littleBottomLeft->GetBody().SetActive(true);
+		littleBottomRight->GetBody().SetActive(true);
+		veryLittleLeft->GetBody().SetActive(true);
+		middleLittle->GetBody().SetActive(true);
+		upLeft->GetBody().SetActive(true);
+		middle->GetBody().SetActive(true);
 
-		background = new PhysBody(NULL);
+		extraRight->GetBody().SetActive(false);
+		extraLeft->GetBody().SetActive(false);
+
+
+
+
+		/*background = new PhysBody(NULL);
 		background = App->physics->CreateChain(0, 0, bg, 112, b2_staticBody);
 
 		bottomRight = new PhysBody(NULL);
@@ -201,7 +236,7 @@ void ModuleSceneIntro::CreateChains()
 		upLeft = App->physics->CreateChain(0, 0, upL, 42, b2_staticBody);
 
 		middle = new PhysBody(NULL);
-		middle = App->physics->CreateChain(0, 0, mid, 38, b2_staticBody);
+		middle = App->physics->CreateChain(0, 0, mid, 38, b2_staticBody);*/
 	}
 
 

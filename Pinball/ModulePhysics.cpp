@@ -108,7 +108,7 @@ update_status ModulePhysics::PostUpdate()
 					for(int32 i = 0; i < shape->m_count; ++i)
 					{
 						v = b->GetWorldPoint(shape->m_vertices[i]);
-						if(i > 0)
+						if(i > 0 && b->IsActive())
 							App->renderer->DrawLine(METERS_TO_PIXELS(prev.x), METERS_TO_PIXELS(prev.y), METERS_TO_PIXELS(v.x), METERS_TO_PIXELS(v.y), 100, 255, 100);
 						prev = v;
 					}
@@ -176,7 +176,7 @@ PhysBody* ModulePhysics::CreateCircle(int x, int y, int rad, b2BodyType bodyType
 
 }
 
-PhysBody* ModulePhysics::CreateBox(int x, int y, int w, int h, float a, b2BodyType bodyType)
+PhysBody* ModulePhysics::CreateBox(int x, int y, int w, int h, float a, b2BodyType bodyType, bool isSensor)
 {
 	x /= 1.25f;
 	y /= 1.25f;
@@ -199,6 +199,7 @@ PhysBody* ModulePhysics::CreateBox(int x, int y, int w, int h, float a, b2BodyTy
 	b2FixtureDef fixture;
 	fixture.shape = &boxShape;
 	fixture.density = 1.0f;
+	if (isSensor) fixture.isSensor = true;
 
 	b->CreateFixture(&fixture);
 

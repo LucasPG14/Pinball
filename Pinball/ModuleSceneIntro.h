@@ -33,13 +33,18 @@ public:
 
 	void FillFlipper(Flipper* flipper, SDL_Rect rect, int x, int y, int rad, b2BodyType rectType, b2BodyType circType, float initAngle, bool invert);
 
-	void CreateChains();
+	void ChangeChains();
 
-private:
+public:
 
 	bool isOnExtraLevel = false;
 
+private:
+
+	bool ballLaunched;
+
 	PhysBody* rightSensor = nullptr;
+	PhysBody* rightLowSensor = nullptr;
 
 
 	PhysBody* ballBody = nullptr;
