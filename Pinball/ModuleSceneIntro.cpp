@@ -38,7 +38,7 @@ bool ModuleSceneIntro::Start()
 	// Chains Creation
 	//CreateChains();
 
-	background = App->physics->CreateChain(0, 0, bg, 112, b2_staticBody);
+	background = App->physics->CreateChain(0, 0, bg, 124, b2_staticBody);
 	bottomRight = App->physics->CreateChain(0, 0, bottomR, 22, b2_staticBody);
 	bottomLeft = App->physics->CreateChain(0, 0, bottomL, 20, b2_staticBody);
 	littleBottomLeft = App->physics->CreateChain(0, 0, littleBottomL, 12, b2_staticBody);
@@ -49,15 +49,25 @@ bool ModuleSceneIntro::Start()
 	middle = App->physics->CreateChain(0, 0, mid, 38, b2_staticBody);
 	extraRight = App->physics->CreateChain(0, 0, extraR, 50, b2_staticBody);
 	extraLeft = App->physics->CreateChain(0, 0, extraL, 44, b2_staticBody);
+	extraUpRight = App->physics->CreateChain(0, 0, extraUp, 48, b2_staticBody);
 
 	extraRight->GetBody().SetActive(false);
 	extraLeft->GetBody().SetActive(false);
+	extraUpRight->GetBody().SetActive(false);
 
 	// Sensors creation
 	rightSensor = App->physics->CreateBox(403, 502, 12, 12, 0, b2_staticBody, true);	
 	sensors.add(rightSensor);
 	rightLowSensor = App->physics->CreateBox(393, 712, 13, 8, 0, b2_staticBody, true);
 	sensors.add(rightLowSensor);
+	leftSensor = App->physics->CreateBox(73, 515, 15, 5, DEGTORAD * -20, b2_staticBody, true);
+	sensors.add(leftSensor);
+	leftLowSensor = App->physics->CreateBox(75, 700, 13, 8, 0, b2_staticBody, true);
+	sensors.add(leftLowSensor);
+	extraUpRightSensor = App->physics->CreateBox(297, 151, 18, 8, 0, b2_staticBody, true);
+	sensors.add(extraUpRightSensor);
+	extraUpLeftSensor = App->physics->CreateBox(100, 172, 12, 8, 0, b2_staticBody, true);
+	sensors.add(extraUpLeftSensor);
 
 	ballBody = App->physics->CreateCircle(472, 846, 12, b2_dynamicBody);
 
@@ -187,6 +197,7 @@ void ModuleSceneIntro::ChangeChains()
 
 		extraRight->GetBody().SetActive(true);
 		extraLeft->GetBody().SetActive(true);
+		extraUpRight->GetBody().SetActive(true);
 	}
 
 	else if(isOnExtraLevel == true && ballBody->GetBody().GetLinearVelocity().y >= 0)
@@ -203,5 +214,6 @@ void ModuleSceneIntro::ChangeChains()
 
 		extraRight->GetBody().SetActive(false);
 		extraLeft->GetBody().SetActive(false);
+		extraUpRight->GetBody().SetActive(false);
 	}
 }

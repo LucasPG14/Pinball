@@ -46,7 +46,13 @@ private:
 	p2List<PhysBody*> sensors;
 	PhysBody* rightSensor = nullptr;
 	PhysBody* rightLowSensor = nullptr;
-
+	PhysBody* leftSensor = nullptr;
+	PhysBody* leftLowSensor = nullptr;
+	PhysBody* upRightSensor = nullptr;
+	PhysBody* upLeftSensor = nullptr;
+	PhysBody* extraUpRightSensor = nullptr;
+	PhysBody* extraUpLeftSensor = nullptr;
+	PhysBody* extraUpMiddleSensor = nullptr;
 
 	PhysBody* ballBody = nullptr;
 	Flipper* leftFlipper = nullptr;
@@ -72,6 +78,7 @@ private:
 	PhysBody* middleLittle;
 	PhysBody* upLeft;
 	PhysBody* middle;
+	PhysBody* extraUpRight;
 
 	// Chains bodies for the extra level
 	PhysBody* extraLeft;
