@@ -13,10 +13,7 @@
 #define PIXEL_TO_METERS(p)  ((float) METER_PER_PIXEL * p)
 
 class SDL_Texture;
-// TODO 6: Create a small class that keeps a pointer to tghe b2Body
-// and has a method to request the position
-// then write the implementation in the .cpp
-// Then make your circle creation function to return a pointer to that class
+
 class PhysBody
 {
 private:
@@ -26,7 +23,7 @@ private:
 public:
 	PhysBody(b2Body* b);
 
-	const b2Vec2& GetPosition( float offset);
+	const b2Vec2& GetPosition(float offset);
 	const double& GetRotation();
 	bool Contains(int x, int y) const;
 
@@ -50,7 +47,6 @@ public:
 	update_status PostUpdate();
 	bool CleanUp();
 
-	// TODO 4: Move body creation to 3 functions to create circles, rectangles and chains
 	PhysBody* CreateCircle(int x, int y, int rad, b2BodyType bodyType);
 	PhysBody* CreateBox(int x, int y, int w, int h, float a, b2BodyType bodyType, bool isSensor);
 	PhysBody* CreateChain(int x, int y, int* chainName, const int numPoints, b2BodyType bodyType);

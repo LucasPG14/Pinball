@@ -171,9 +171,7 @@ PhysBody* ModulePhysics::CreateCircle(int x, int y, int rad, b2BodyType bodyType
 	b->CreateFixture(&fixture);
 	PhysBody* pBody = new PhysBody(b);
 
-
 	return pBody;
-
 }
 
 PhysBody* ModulePhysics::CreateBox(int x, int y, int w, int h, float a, b2BodyType bodyType, bool isSensor)
@@ -184,7 +182,6 @@ PhysBody* ModulePhysics::CreateBox(int x, int y, int w, int h, float a, b2BodyTy
 	h /= 1.25f;
 	a /= 1.25f;
 
-	// TODO 1: When pressing 2, create a box on the mouse position
 	b2BodyDef body;
 	body.type = bodyType;
 	body.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
@@ -203,7 +200,6 @@ PhysBody* ModulePhysics::CreateBox(int x, int y, int w, int h, float a, b2BodyTy
 
 	b->CreateFixture(&fixture);
 
-	// TODO 2: To have the box behave normally, set fixture's density to 1.0f
 	PhysBody* pBody = new PhysBody(b);
 
 	return pBody;
@@ -211,11 +207,6 @@ PhysBody* ModulePhysics::CreateBox(int x, int y, int w, int h, float a, b2BodyTy
 
 PhysBody* ModulePhysics::CreateChain(int x, int y, int* chainName, const int n, b2BodyType bodyType)
 {
-	// TODO 3: Create a chain shape using those vertices
-		// remember to convert them from pixels to meters!
-
-	// Pivot 0, 0
-
 	b2Vec2* vs = new b2Vec2[n / 2];
 	for (uint i = 0, j = 0; i < n/2 && j < n; ++i, j += 2)
 	{
@@ -257,7 +248,7 @@ PhysBody::PhysBody(b2Body *b)
 	body = b;
 }
 
-// Return PhysBody's position in degrees.
+// Return PhysBody's position in pixels.
 const b2Vec2& PhysBody::GetPosition(float offset)
 {
 	b2Vec2 pos = body->GetPosition();
@@ -292,7 +283,6 @@ void PhysBody::ApplyForce(b2Vec2 force)
 {
 	b2Vec2 pos = body->GetWorldCenter();
 	body->ApplyForce(force, body->GetPosition(), true);
-
 }
 
 b2RevoluteJointDef ModulePhysics::CreateRevoluteJoint(b2Body* b1, b2Body* b2, float max, float min, float anchorX, float anchorY, float initAngle)

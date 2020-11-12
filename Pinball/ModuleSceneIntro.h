@@ -35,6 +35,8 @@ public:
 
 	void ChangeChains();
 
+	bool OutOfBounds();
+
 public:
 
 	bool isOnExtraLevel = false;
@@ -42,6 +44,8 @@ public:
 private:
 
 	bool ballLaunched;
+	
+	b2Vec2 ballStartPosition;
 
 	p2List<PhysBody*> sensors;
 	PhysBody* rightSensor = nullptr;
@@ -78,10 +82,11 @@ private:
 	PhysBody* middleLittle;
 	PhysBody* upLeft;
 	PhysBody* middle;
-	PhysBody* extraUpRight;
 
 	// Chains bodies for the extra level
 	PhysBody* extraLeft;
 	PhysBody* extraRight;
+	PhysBody* extraUpRight;
+	PhysBody* extraMiddle;
 
 };

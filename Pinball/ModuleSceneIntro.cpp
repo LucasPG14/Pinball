@@ -38,25 +38,26 @@ bool ModuleSceneIntro::Start()
 	// Chains Creation
 	//CreateChains();
 
-	background = App->physics->CreateChain(0, 0, bg, 124, b2_staticBody);
+	background = App->physics->CreateChain(0, 0, bg, 136, b2_staticBody);
 	bottomRight = App->physics->CreateChain(0, 0, bottomR, 22, b2_staticBody);
 	bottomLeft = App->physics->CreateChain(0, 0, bottomL, 20, b2_staticBody);
 	littleBottomLeft = App->physics->CreateChain(0, 0, littleBottomL, 12, b2_staticBody);
 	littleBottomRight = App->physics->CreateChain(0, 0, littleBottomR, 12, b2_staticBody);
 	veryLittleLeft = App->physics->CreateChain(0, 0, veryLittleL, 8, b2_staticBody);
 	middleLittle = App->physics->CreateChain(0, 0, middleLit, 14, b2_staticBody);
-	upLeft = App->physics->CreateChain(0, 0, upL, 42, b2_staticBody);
-	middle = App->physics->CreateChain(0, 0, mid, 38, b2_staticBody);
+	middle = App->physics->CreateChain(0, 0, extraMid, 152, b2_staticBody);
 	extraRight = App->physics->CreateChain(0, 0, extraR, 50, b2_staticBody);
 	extraLeft = App->physics->CreateChain(0, 0, extraL, 44, b2_staticBody);
 	extraUpRight = App->physics->CreateChain(0, 0, extraUp, 48, b2_staticBody);
+	//extraMiddle = ;
 
 	extraRight->GetBody().SetActive(false);
 	extraLeft->GetBody().SetActive(false);
 	extraUpRight->GetBody().SetActive(false);
+	//extraMiddle->GetBody().SetActive(true);
 
 	// Sensors creation
-	rightSensor = App->physics->CreateBox(403, 502, 12, 12, 0, b2_staticBody, true);	
+	rightSensor = App->physics->CreateBox(403, 502, 12, 12, 0, b2_staticBody, true);
 	sensors.add(rightSensor);
 	rightLowSensor = App->physics->CreateBox(393, 712, 13, 8, 0, b2_staticBody, true);
 	sensors.add(rightLowSensor);
@@ -69,7 +70,9 @@ bool ModuleSceneIntro::Start()
 	extraUpLeftSensor = App->physics->CreateBox(100, 172, 12, 8, 0, b2_staticBody, true);
 	sensors.add(extraUpLeftSensor);
 
-	ballBody = App->physics->CreateCircle(472, 846, 12, b2_dynamicBody);
+	// Ball Start-up
+	ballStartPosition = b2Vec2(485, 865);
+	ballBody = App->physics->CreateCircle(ballStartPosition.x, ballStartPosition.y, 14, b2_dynamicBody);
 
 	leftFlipper = new Flipper;
 	rightFlipper = new Flipper;
@@ -103,22 +106,20 @@ bool ModuleSceneIntro::CleanUp()
 // Update: draw background
 update_status ModuleSceneIntro::Update()
 {
-	p2List_item<PhysBody*>* s = sensors.getFirst();
-	while (s != NULL)
+	if (OutOfBounds())
 	{
-		if (s->data->Contains(ballBody->GetPosition(0.0f).x, ballBody->GetPosition(0.0f).y) /*&& isOnExtraLevel == false*/)
-		{
-			isOnExtraLevel = true;
-			ChangeChains();
-		}
-		s = s->next;
+		int x = PIXEL_TO_METERS(ballStartPosition.x);
+		int y = PIXEL_TO_METERS(ballStartPosition.y);
+		b2Vec2 v(x, y);
+		ballBody->GetBody().SetLinearVelocity(b2Vec2(0, 0));
+		ballBody->GetBody().SetTransform(b2Vec2(x - 1.3f, y - 3), 0);
 	}
-	
 
+	// Input detection
 	if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN /*&& ballLaunched == false*/)
 	{
 		//ballLaunched = true;
-		b2Vec2 force(0, -150);
+		b2Vec2 force(0, -250);
 		ballBody->ApplyForce(force);
 	}
 
@@ -149,10 +150,24 @@ update_status ModuleSceneIntro::Update()
 
 	if (App->input->GetKey(SDL_SCANCODE_W) == KEY_UP) topFlipper->joint->EnableMotor(false);
 
+
+	// Sensor detection and changing between levels
+	p2List_item<PhysBody*>* s = sensors.getFirst();
+	while (s != NULL)
+	{
+		if (s->data->Contains(ballBody->GetPosition(0.0f).x, ballBody->GetPosition(0.0f).y) /*&& isOnExtraLevel == false*/)
+		{
+			isOnExtraLevel = true;
+			ChangeChains();
+		}
+		s = s->next;
+	}
+
+
 	// Draw Background && UI elements
 	App->renderer->Blit(backgr, 0, 0, NULL);
 
-	App->renderer->Blit(circle, ballBody->GetPosition(0.0f).x - 15, ballBody->GetPosition(0.0f).y - 15, 0, 1.0f, ballBody->GetRotation());
+	App->renderer->Blit(circle, ballBody->GetPosition(-10.0f).x , ballBody->GetPosition(-10.0f).y, 0, 1.0f, ballBody->GetRotation());
 
 	// we add JOINTLIMIT to the angle to fix the displacement between the sprite (drawn at 21.5�) and rotation (21.5f�), this makes the sprite look like its rotated (21.5 * 2�))
 	App->renderer->Blit(flippers, leftFlipper->bodyJointed->GetPosition(-10.0f).x, leftFlipper->bodyJointed->GetPosition(-13.0f).y, &leftSection, 0, leftFlipper->flipper->GetRotation() + 180 - JOINTLIMIT, 10, 17);
@@ -192,12 +207,12 @@ void ModuleSceneIntro::ChangeChains()
 		littleBottomRight->GetBody().SetActive(false);
 		veryLittleLeft->GetBody().SetActive(false);
 		middleLittle->GetBody().SetActive(false);
-		upLeft->GetBody().SetActive(false);
 		middle->GetBody().SetActive(false);
 
 		extraRight->GetBody().SetActive(true);
 		extraLeft->GetBody().SetActive(true);
 		extraUpRight->GetBody().SetActive(true);
+		//extraMiddle->GetBody().SetActive(true);
 	}
 
 	else if(isOnExtraLevel == true && ballBody->GetBody().GetLinearVelocity().y >= 0)
@@ -209,11 +224,16 @@ void ModuleSceneIntro::ChangeChains()
 		littleBottomRight->GetBody().SetActive(true);
 		veryLittleLeft->GetBody().SetActive(true);
 		middleLittle->GetBody().SetActive(true);
-		upLeft->GetBody().SetActive(true);
 		middle->GetBody().SetActive(true);
 
 		extraRight->GetBody().SetActive(false);
 		extraLeft->GetBody().SetActive(false);
 		extraUpRight->GetBody().SetActive(false);
+		//extraMiddle->GetBody().SetActive(false);
 	}
+}
+
+bool ModuleSceneIntro::OutOfBounds()
+{
+	return ballBody->GetPosition(0.0f).y > SCREEN_HEIGHT;
 }
