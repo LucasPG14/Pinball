@@ -31,6 +31,11 @@ bld/
 [Ll]og/
 [Ll]ogs/
 
+!Box2D/libx86/Debug/Box2D.lib
+!Box2D/libx86/Debug/Box2D.pdb
+!Box2D/libx86/Release/Box2D.lib
+
+
 # Visual Studio 2015/2017 cache/options directory
 .vs/
 # Uncomment if you have tasks that create the project's static files in wwwroot
@@ -349,8 +354,5 @@ MigrationBackup/
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
 
-!Box2D/libx86/Debug/Box2D.lib
-!Box2D/libx86/Debug/Box2D.pdb
-!Box2D/libx86/Release/Box2D.lib
 
 
