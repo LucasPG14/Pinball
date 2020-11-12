@@ -34,38 +34,7 @@ bool ModuleSceneIntro::Start()
 
 	
 	// Chains Creation
-	background = new PhysBody(NULL);
-	background = App->physics->CreateChain(0, 0, bg, 112, b2_staticBody);
-
-	bottomRight = new PhysBody(NULL);
-	bottomRight = App->physics->CreateChain(0, 0, bottomR, 22, b2_staticBody);
-
-	bottomLeft = new PhysBody(NULL);
-	bottomLeft = App->physics->CreateChain(0, 0, bottomL, 20, b2_staticBody);
-
-	littleBottomLeft = new PhysBody(NULL);
-	littleBottomLeft = App->physics->CreateChain(0, 0, littleBottomL, 12, b2_staticBody);
-
-	littleBottomRight = new PhysBody(NULL);
-	littleBottomRight = App->physics->CreateChain(0, 0, littleBottomR, 12, b2_staticBody);
-
-	veryLittleLeft = new PhysBody(NULL);
-	veryLittleLeft = App->physics->CreateChain(0, 0, veryLittleL, 8, b2_staticBody);
-
-	middleLittle = new PhysBody(NULL);
-	middleLittle = App->physics->CreateChain(0, 0, middleLit, 14, b2_staticBody);
-
-	upLeft = new PhysBody(NULL);
-	upLeft = App->physics->CreateChain(0, 0, upL, 42, b2_staticBody);
-
-	middle = new PhysBody(NULL);
-	middle = App->physics->CreateChain(0, 0, mid, 38, b2_staticBody);
-
-	extraRight = new PhysBody(NULL);
-	extraRight = App->physics->CreateChain(0, 0, extraR, 50, b2_staticBody);
-
-	extraLeft = new PhysBody(NULL);
-	extraLeft = App->physics->CreateChain(0, 0, extraL, 44, b2_staticBody);
+	CreateChains();
 
 
 	ballBody = App->physics->CreateCircle(472, 846, 12, b2_dynamicBody);
@@ -167,4 +136,63 @@ void ModuleSceneIntro::FillFlipper(Flipper* flipper, SDL_Rect rect, int x, int y
 	// Sometimes initAngle is multiplied by -1 so it becomes 0.0f because when we change reference Angle, this amount of angle is added to our curret angles (new reference angle = init angle, init angle += refernce angle). In our case, multipling by -1 solves this problem because we use 180� and -180 & 180 are the same
 	flipper->jointDef = App->physics->CreateRevoluteJoint(&flipper->flipper->GetBody(), &flipper->bodyJointed->GetBody(), flipper->maxA, flipper->minA, 0.6f, 0.0f, flipper->initAngle * mult);
 	flipper->joint = (b2RevoluteJoint*)App->physics->GetWorld()->CreateJoint(&flipper->jointDef);
+}
+
+void ModuleSceneIntro::CreateChains()
+{
+	if (isOnExtraLevel)
+	{
+		/*
+		delete background;
+		delete bottomRight;
+		delete bottomLeft;
+		delete littleBottomLeft;
+		delete littleBottomRight;
+		delete veryLittleLeft;
+		delete middleLittle;
+		delete upLeft;
+		delete middle;
+
+		extraRight = new PhysBody(NULL);
+		extraRight = App->physics->CreateChain(0, 0, extraR, 50, b2_staticBody);
+
+		extraLeft = new PhysBody(NULL);
+		extraLeft = App->physics->CreateChain(0, 0, extraL, 44, b2_staticBody);
+		*/	
+	}
+
+	else
+	{
+		if(extraLeft != nullptr) delete extraLeft;
+		if (extraRight != nullptr) delete extraRight;
+
+		background = new PhysBody(NULL);
+		background = App->physics->CreateChain(0, 0, bg, 112, b2_staticBody);
+
+		bottomRight = new PhysBody(NULL);
+		bottomRight = App->physics->CreateChain(0, 0, bottomR, 22, b2_staticBody);
+
+		bottomLeft = new PhysBody(NULL);
+		bottomLeft = App->physics->CreateChain(0, 0, bottomL, 20, b2_staticBody);
+
+		littleBottomLeft = new PhysBody(NULL);
+		littleBottomLeft = App->physics->CreateChain(0, 0, littleBottomL, 12, b2_staticBody);
+
+		littleBottomRight = new PhysBody(NULL);
+		littleBottomRight = App->physics->CreateChain(0, 0, littleBottomR, 12, b2_staticBody);
+
+		veryLittleLeft = new PhysBody(NULL);
+		veryLittleLeft = App->physics->CreateChain(0, 0, veryLittleL, 8, b2_staticBody);
+
+		middleLittle = new PhysBody(NULL);
+		middleLittle = App->physics->CreateChain(0, 0, middleLit, 14, b2_staticBody);
+
+		upLeft = new PhysBody(NULL);
+		upLeft = App->physics->CreateChain(0, 0, upL, 42, b2_staticBody);
+
+		middle = new PhysBody(NULL);
+		middle = App->physics->CreateChain(0, 0, mid, 38, b2_staticBody);
+	}
+
+
 }
