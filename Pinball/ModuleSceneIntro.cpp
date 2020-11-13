@@ -49,12 +49,12 @@ bool ModuleSceneIntro::Start()
 	extraRight = App->physics->CreateChain(0, 0, extraR, 50, b2_staticBody);
 	extraLeft = App->physics->CreateChain(0, 0, extraL, 44, b2_staticBody);
 	extraUpRight = App->physics->CreateChain(0, 0, extraUp, 48, b2_staticBody);
-	//extraMiddle = ;
+	extraMiddle = App->physics->CreateChain(0, 0, extraLevelMiddle, 50, b2_staticBody);
 
 	extraRight->GetBody().SetActive(false);
 	extraLeft->GetBody().SetActive(false);
 	extraUpRight->GetBody().SetActive(false);
-	//extraMiddle->GetBody().SetActive(true);
+	extraMiddle->GetBody().SetActive(false);
 
 	// Sensors creation
 	rightSensor = App->physics->CreateBox(403, 502, 12, 12, 0, b2_staticBody, true);
@@ -69,6 +69,10 @@ bool ModuleSceneIntro::Start()
 	sensors.add(extraUpRightSensor);
 	extraUpLeftSensor = App->physics->CreateBox(100, 172, 12, 8, 0, b2_staticBody, true);
 	sensors.add(extraUpLeftSensor);
+	extraDownMiddleSensor = App->physics->CreateBox(205, 411, 12, 8, 0, b2_staticBody, true);
+	sensors.add(extraDownMiddleSensor);
+	extraUpMiddleSensor = App->physics->CreateBox(316, 77, 12, 10, 0, b2_staticBody, true);
+	sensors.add(extraUpMiddleSensor);
 
 	// Light sensors creation (groups of 3 are separeted by the same distance between each element)
 	leftRedTriangle1.sensor = App->physics->CreateBox(185, 815, 10, 10, 0, b2_staticBody, true);
@@ -230,6 +234,10 @@ update_status ModuleSceneIntro::Update()
 		if (s->data->Contains(ballBody->GetPosition(0.0f).x, ballBody->GetPosition(0.0f).y) /*&& isOnExtraLevel == false*/)
 		{
 			isOnExtraLevel = true;
+			if (extraDownMiddleSensor->Contains(ballBody->GetPosition(0.0f).x, ballBody->GetPosition(0.0f).y)) 
+				extraLevelMid = true;
+			if (extraUpRightSensor->Contains(ballBody->GetPosition(0.0f).x, ballBody->GetPosition(0.0f).y))
+				extraLevelUp = true;
 			ChangeChains();
 		}
 		s = s->next;
@@ -379,8 +387,8 @@ void ModuleSceneIntro::ChangeChains()
 
 		extraRight->GetBody().SetActive(true);
 		extraLeft->GetBody().SetActive(true);
-		extraUpRight->GetBody().SetActive(true);
-		//extraMiddle->GetBody().SetActive(true);
+		if(extraLevelMid == false) extraUpRight->GetBody().SetActive(true);
+		if(extraLevelUp == false) extraMiddle->GetBody().SetActive(true);
 	}
 
 	else if(isOnExtraLevel && ballBody->GetBody().GetLinearVelocity().y >= 0)
@@ -397,9 +405,11 @@ void ModuleSceneIntro::ChangeChains()
 		extraRight->GetBody().SetActive(false);
 		extraLeft->GetBody().SetActive(false);
 		extraUpRight->GetBody().SetActive(false);
-		//extraMiddle->GetBody().SetActive(false);
+		extraMiddle->GetBody().SetActive(false);
 
 		isOnExtraLevel = false;
+		extraLevelMid = false;
+		extraLevelUp = false;
 	}
 }
 

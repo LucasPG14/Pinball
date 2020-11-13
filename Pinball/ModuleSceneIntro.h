@@ -69,6 +69,8 @@ public:
 private:
 
 	bool ballLaunched = false;
+	bool extraLevelMid = false;
+	bool extraLevelUp = false;
 
 	b2Vec2 ballStartPosition;
 
@@ -82,6 +84,7 @@ private:
 	PhysBody* extraUpRightSensor = nullptr;
 	PhysBody* extraUpLeftSensor = nullptr;
 	PhysBody* extraUpMiddleSensor = nullptr;
+	PhysBody* extraDownMiddleSensor = nullptr;
 
 	p2List<LightSensor*> lightSensors;
 	LightSensor leftRedTriangle1;
