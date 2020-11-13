@@ -47,9 +47,9 @@ public:
 	update_status PostUpdate();
 	bool CleanUp();
 
-	PhysBody* CreateCircle(int x, int y, int rad, b2BodyType bodyType);
-	PhysBody* CreateBox(int x, int y, int w, int h, float a, b2BodyType bodyType, bool isSensor);
-	PhysBody* CreateChain(int x, int y, int* chainName, const int numPoints, b2BodyType bodyType);
+	PhysBody* CreateCircle(int x, int y, int rad, b2BodyType bodyType, uint16 categoryBits, uint16 maskBits);
+	PhysBody* CreateBox(int x, int y, int w, int h, float a, b2BodyType bodyType, bool isSensor, uint16 categoryBits, uint16 maskBits);
+	PhysBody* CreateChain(int x, int y, int* chainName, const int numPoints, b2BodyType bodyType, uint16 categoryBits, uint16 maskBits);
 	
 	b2RevoluteJointDef CreateRevoluteJoint(b2Body* b1, b2Body* b2, float max, float min, float anchorX, float anchorY, float initAngle);
 

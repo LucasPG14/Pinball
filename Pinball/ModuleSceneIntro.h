@@ -31,10 +31,8 @@ public:
 	{
 		leftRedTriangle,
 		rotatedLeftRedTriangle,
-		redStar,
 		leftWhiteTriangle,
 		rightWhiteTriangle,
-		whiteStar,
 		whiteFlipperEntrance,
 		redFlipperEntrance
 	};
@@ -43,6 +41,15 @@ public:
 	Type type;
 	bool light = false;
 	int initTime = 0;
+};
+
+enum Category
+{
+	PLAYER =			0x0001,
+	SENSOR =			0x0004,
+	BOX =				0x0006,
+	CHAIN = 			0x0008,
+	TOPLEFTFLIPPER =	0x0010
 };
 
 class ModuleSceneIntro : public Module
@@ -55,7 +62,7 @@ public:
 	update_status Update();
 	bool CleanUp();
 
-	void FillFlipper(Flipper* flipper, SDL_Rect rect, int x, int y, int rad, b2BodyType rectType, b2BodyType circType, float initAngle, bool invert);
+	void FillFlipper(Flipper* flipper, SDL_Rect rect, int x, int y, int rad, b2BodyType rectType, b2BodyType circType, float initAngle, bool invert, uint16 categoryBits, uint16 maskBits);
 
 	void ChangeChains();
 
@@ -71,8 +78,11 @@ private:
 	bool ballLaunched = false;
 	bool extraLevelMid = false;
 	bool extraLevelUp = false;
+	bool deleteInitSensor = false;
 
 	b2Vec2 ballStartPosition;
+
+	b2Filter playerFilter;
 
 	p2List<PhysBody*> sensors;
 	PhysBody* rightSensor = nullptr;
@@ -85,6 +95,7 @@ private:
 	PhysBody* extraUpLeftSensor = nullptr;
 	PhysBody* extraUpMiddleSensor = nullptr;
 	PhysBody* extraDownMiddleSensor = nullptr;
+	PhysBody* initSensor = nullptr;
 
 	p2List<LightSensor*> lightSensors;
 	LightSensor leftRedTriangle1;
@@ -99,15 +110,6 @@ private:
 	LightSensor rightWhiteTriangle1;
 	LightSensor rightWhiteTriangle2;
 	LightSensor rightWhiteTriangle3;
-	LightSensor redStar1;
-	LightSensor redStar2;
-	LightSensor redStar3;
-	LightSensor leftWhiteStar1;
-	LightSensor leftWhiteStar2;
-	LightSensor leftWhiteStar3;
-	LightSensor rightWhiteStar1;
-	LightSensor rightWhiteStar2;
-	LightSensor rightWhiteStar3;
 	LightSensor leftFlipperEntrance1;
 	LightSensor leftFlipperEntrance2;
 	LightSensor rightFlipperEntrance;
@@ -115,7 +117,8 @@ private:
 	PhysBody* ballBody = nullptr;
 	Flipper* leftFlipper = nullptr;
 	Flipper* rightFlipper = nullptr;
-	Flipper* topFlipper = nullptr;
+	Flipper* rightTopFlipper = nullptr;
+	Flipper* leftTopFlipper = nullptr;
 
 	SDL_Rect leftSection = {0, 0, 81, 43};
 	SDL_Rect rightSection = {84, 0, 81, 43};
@@ -137,6 +140,7 @@ private:
 	PhysBody* middleLittle;
 	PhysBody* upLeft;
 	PhysBody* middle;
+	PhysBody* initial;
 
 	// Chains bodies for the extra level
 	PhysBody* extraLeft;

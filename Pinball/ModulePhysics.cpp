@@ -17,7 +17,7 @@
 ModulePhysics::ModulePhysics(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
 	world = NULL;
-	debug = false;
+	debug = true;
 }
 
 // Destructor
@@ -149,7 +149,7 @@ bool ModulePhysics::CleanUp()
 	return true;
 }
 
-PhysBody* ModulePhysics::CreateCircle(int x, int y, int rad, b2BodyType bodyType)
+PhysBody* ModulePhysics::CreateCircle(int x, int y, int rad, b2BodyType bodyType, uint16 categoryBits, uint16 maskBits)
 {
 	x /= 1.25f;
 	y /= 1.25f;
@@ -167,6 +167,8 @@ PhysBody* ModulePhysics::CreateCircle(int x, int y, int rad, b2BodyType bodyType
 	b2FixtureDef fixture;
 	fixture.shape = &shape;
 	fixture.density = 1.0f;
+	fixture.filter.categoryBits = categoryBits;
+	fixture.filter.maskBits = maskBits;
 
 	b->CreateFixture(&fixture);
 	PhysBody* pBody = new PhysBody(b);
@@ -174,7 +176,7 @@ PhysBody* ModulePhysics::CreateCircle(int x, int y, int rad, b2BodyType bodyType
 	return pBody;
 }
 
-PhysBody* ModulePhysics::CreateBox(int x, int y, int w, int h, float a, b2BodyType bodyType, bool isSensor)
+PhysBody* ModulePhysics::CreateBox(int x, int y, int w, int h, float a, b2BodyType bodyType, bool isSensor, uint16 categoryBits, uint16 maskBits)
 {
 	x /= 1.25f;
 	y /= 1.25f;
@@ -197,6 +199,8 @@ PhysBody* ModulePhysics::CreateBox(int x, int y, int w, int h, float a, b2BodyTy
 	fixture.shape = &boxShape;
 	fixture.density = 1.0f;
 	if (isSensor) fixture.isSensor = true;
+	fixture.filter.categoryBits = categoryBits;
+	fixture.filter.maskBits = maskBits;
 
 	b->CreateFixture(&fixture);
 
@@ -205,7 +209,7 @@ PhysBody* ModulePhysics::CreateBox(int x, int y, int w, int h, float a, b2BodyTy
 	return pBody;
 }
 
-PhysBody* ModulePhysics::CreateChain(int x, int y, int* chainName, const int n, b2BodyType bodyType)
+PhysBody* ModulePhysics::CreateChain(int x, int y, int* chainName, const int n, b2BodyType bodyType, uint16 categoryBits, uint16 maskBits)
 {
 	b2Vec2* vs = new b2Vec2[n / 2];
 	for (uint i = 0, j = 0; i < n/2 && j < n; ++i, j += 2)
@@ -224,6 +228,8 @@ PhysBody* ModulePhysics::CreateChain(int x, int y, int* chainName, const int n, 
 	b2FixtureDef fixture;
 	fixture.shape = &chainShape;
 	fixture.density = 1.0f;
+	fixture.filter.categoryBits = categoryBits;
+	fixture.filter.maskBits = maskBits;
 
 	b->CreateFixture(&fixture);
 
@@ -291,7 +297,7 @@ b2RevoluteJointDef ModulePhysics::CreateRevoluteJoint(b2Body* b1, b2Body* b2, fl
 
 	jointDef.bodyA = b1;
 	jointDef.bodyB = b2;
-	jointDef.localAnchorA.Set(anchorX / 1.25f, anchorY / 1.25f);//the top right corner of the box
+	jointDef.localAnchorA.Set(anchorX / 1.25f, anchorY / 1.25f);//the corner of the box
 	jointDef.localAnchorB.Set(0, 0);//center of the circle
 	jointDef.enableLimit = true;
 	jointDef.referenceAngle = initAngle * DEGTORAD;
