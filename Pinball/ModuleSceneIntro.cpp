@@ -8,8 +8,6 @@
 #include "chains.h"
 #include "ModuleFonts.h"
 
-#define JOINTLIMIT 21.5f
-
 ModuleSceneIntro::ModuleSceneIntro(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
 	circle = box = rick = NULL;
@@ -31,6 +29,8 @@ bool ModuleSceneIntro::Start()
 	rick = App->textures->Load("Assets/rick_head.png");
 	backgr = App->textures->Load("Assets/Assets/background2.png");
 	flippers = App->textures->Load("Assets/Assets/Flippers3.png");
+	roads = App->textures->Load("Assets/Assets/roads.png");
+	lights = App->textures->Load("Assets/Assets/LIGHTS.png");
 
 	ballLaunched = false;
 
@@ -69,6 +69,77 @@ bool ModuleSceneIntro::Start()
 	sensors.add(extraUpRightSensor);
 	extraUpLeftSensor = App->physics->CreateBox(100, 172, 12, 8, 0, b2_staticBody, true);
 	sensors.add(extraUpLeftSensor);
+
+	// Light sensors creation (groups of 3 are separeted by the same distance between each element)
+	leftRedTriangle1.sensor = App->physics->CreateBox(185, 815, 10, 10, 0, b2_staticBody, true);
+	leftRedTriangle1.type = leftRedTriangle1.leftRedTriangle;
+	lightSensors.add(&leftRedTriangle1);
+
+	leftRedTriangle2.sensor = App->physics->CreateBox(175, 783, 10, 10, 0, b2_staticBody, true);
+	leftRedTriangle2.type = leftRedTriangle2.leftRedTriangle;
+	lightSensors.add(&leftRedTriangle2);
+
+	leftRedTriangle3.sensor = App->physics->CreateBox(165, 750, 10, 10, 0, b2_staticBody, true);
+	leftRedTriangle3.type = leftRedTriangle3.leftRedTriangle;
+	lightSensors.add(&leftRedTriangle3);
+
+	middleRedTriangle1.sensor = App->physics->CreateBox(248, 690, 10, 10, 0, b2_staticBody, true);
+	middleRedTriangle1.type = middleRedTriangle1.rotatedLeftRedTriangle;
+	lightSensors.add(&middleRedTriangle1);
+
+	middleRedTriangle2.sensor = App->physics->CreateBox(242, 651, 10, 10, 0, b2_staticBody, true);
+	middleRedTriangle2.type = middleRedTriangle2.rotatedLeftRedTriangle;
+	lightSensors.add(&middleRedTriangle2);
+
+	middleRedTriangle3.sensor = App->physics->CreateBox(236, 612, 10, 10, 0, b2_staticBody, true);
+	middleRedTriangle3.type = middleRedTriangle3.rotatedLeftRedTriangle;
+	lightSensors.add(&middleRedTriangle3);
+
+	leftWhiteTriangle1.sensor = App->physics->CreateBox(182, 685, 10, 10, 0, b2_staticBody, true);
+	leftWhiteTriangle1.type = leftWhiteTriangle1.leftWhiteTriangle;
+	lightSensors.add(&leftWhiteTriangle1);
+
+	leftWhiteTriangle2.sensor = App->physics->CreateBox(170, 651, 10, 10, 0, b2_staticBody, true);
+	leftWhiteTriangle2.type = leftWhiteTriangle2.leftWhiteTriangle;
+	lightSensors.add(&leftWhiteTriangle2);
+
+	leftWhiteTriangle3.sensor = App->physics->CreateBox(158, 617, 10, 10, 0, b2_staticBody, true);
+	leftWhiteTriangle3.type = leftWhiteTriangle3.leftWhiteTriangle;
+	lightSensors.add(&leftWhiteTriangle3);
+
+	rightWhiteTriangle1.sensor = App->physics->CreateBox(296, 815, 10, 10, 0, b2_staticBody, true);
+	rightWhiteTriangle1.type = rightWhiteTriangle1.rightWhiteTriangle;
+	lightSensors.add(&rightWhiteTriangle1);
+
+	rightWhiteTriangle2.sensor = App->physics->CreateBox(308, 782, 10, 10, 0, b2_staticBody, true);
+	rightWhiteTriangle2.type = rightWhiteTriangle2.rightWhiteTriangle;
+	lightSensors.add(&rightWhiteTriangle2);
+
+	rightWhiteTriangle3.sensor = App->physics->CreateBox(320, 749, 10, 10, 0, b2_staticBody, true);
+	rightWhiteTriangle3.type = rightWhiteTriangle3.rightWhiteTriangle;
+	lightSensors.add(&rightWhiteTriangle3);
+
+	//redStar1.sensor = App->physics->CreateBox(185, 815, 9, 9, 0, b2_staticBody, true);
+	//redStar2.sensor = App->physics->CreateBox(185, 815, 9, 9, 0, b2_staticBody, true);
+	//redStar3.sensor = App->physics->CreateBox(185, 815, 9, 9, 0, b2_staticBody, true);
+	//leftWhiteStar1.sensor = App->physics->CreateBox(185, 815, 9, 9, 0, b2_staticBody, true);
+	//leftWhiteStar2.sensor = App->physics->CreateBox(185, 815, 9, 9, 0, b2_staticBody, true);
+	//leftWhiteStar3.sensor = App->physics->CreateBox(185, 815, 9, 9, 0, b2_staticBody, true);
+	//rightWhiteStar1.sensor = App->physics->CreateBox(185, 815, 9, 9, 0, b2_staticBody, true);
+	//rightWhiteStar2.sensor = App->physics->CreateBox(185, 815, 9, 9, 0, b2_staticBody, true);
+	//rightWhiteStar3.sensor = App->physics->CreateBox(185, 815, 9, 9, 0, b2_staticBody, true);
+
+	leftFlipperEntrance1.sensor = App->physics->CreateBox(76, 748, 10, 10, 0, b2_staticBody, true);
+	leftFlipperEntrance1.type = leftFlipperEntrance1.whiteFlipperEntrance;
+	lightSensors.add(&leftFlipperEntrance1);
+
+	rightFlipperEntrance.sensor = App->physics->CreateBox(391, 752, 10, 10, 0, b2_staticBody, true);
+	rightFlipperEntrance.type = rightFlipperEntrance.whiteFlipperEntrance;
+	lightSensors.add(&rightFlipperEntrance);
+
+	leftFlipperEntrance2.sensor = App->physics->CreateBox(116, 748, 10, 10, 0, b2_staticBody, true);
+	leftFlipperEntrance2.type = leftFlipperEntrance2.redFlipperEntrance;
+	lightSensors.add(&leftFlipperEntrance2);
 
 	// Ball Start-up
 	ballStartPosition = b2Vec2(485, 865);
@@ -113,6 +184,7 @@ update_status ModuleSceneIntro::Update()
 		b2Vec2 v(x, y);
 		ballBody->GetBody().SetLinearVelocity(b2Vec2(0, 0));
 		ballBody->GetBody().SetTransform(b2Vec2(x - 1.3f, y - 3), 0);
+		//ballLaunched = false;
 	}
 
 	// Input detection
@@ -130,23 +202,23 @@ update_status ModuleSceneIntro::Update()
 		leftFlipper->joint->SetMotorSpeed(80.0f);
 	}
 
-	if (App->input->GetKey(SDL_SCANCODE_D) == KEY_DOWN && rightFlipper->joint->IsMotorEnabled() == false)
+	if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT && rightFlipper->joint->IsMotorEnabled() == false)
 	{
 		rightFlipper->joint->EnableMotor(true);
 		rightFlipper->joint->SetMaxMotorTorque(100.0f);
 		rightFlipper->joint->SetMotorSpeed(-80.0f);
 	}
 
-	if (App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT && topFlipper->joint->IsMotorEnabled() == false)
+	if (App->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN && topFlipper->joint->IsMotorEnabled() == false)
 	{
 		topFlipper->joint->EnableMotor(true);
 		topFlipper->joint->SetMaxMotorTorque(100.0f);
 		topFlipper->joint->SetMotorSpeed(-80.0f);
 	}
 
-	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_UP) leftFlipper->joint->EnableMotor(false);
+	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_UP) leftFlipper->joint->EnableMotor(false); 
 
-	if (App->input->GetKey(SDL_SCANCODE_D) == KEY_UP) rightFlipper->joint->EnableMotor(false);
+	if (App->input->GetKey(SDL_SCANCODE_D) == KEY_UP) rightFlipper->joint->EnableMotor(false); 
 
 	if (App->input->GetKey(SDL_SCANCODE_W) == KEY_UP) topFlipper->joint->EnableMotor(false);
 
@@ -163,11 +235,107 @@ update_status ModuleSceneIntro::Update()
 		s = s->next;
 	}
 
-
 	// Draw Background && UI elements
 	App->renderer->Blit(backgr, 0, 0, NULL);
 
+	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT)
+	{
+		SDL_Rect rect = { 486, 0, 31, 21 };
+		App->renderer->Blit(lights, 208 / 1.25f, 862 / 1.25f, &rect);
+	}
+
+	// Sensor detection and blitting lighted textures
+	p2List_item<LightSensor*>* t = lightSensors.getFirst();
+	while (t != NULL)
+	{
+		if (t->data->sensor->Contains(ballBody->GetPosition(0.0f).x, ballBody->GetPosition(0.0f).y) && t->data->light == false /*&& isOnExtraLevel == false*/)
+		{
+			if (t->data->type == LightSensor::Type::whiteFlipperEntrance || t->data->type == LightSensor::Type::redFlipperEntrance)
+			{
+				t->data->light = true;
+				t->data->initTime = SDL_GetTicks();
+			}
+
+			else if (ballBody->GetBody().GetLinearVelocity().y < 0)
+			{
+				t->data->light = true;
+				t->data->initTime = SDL_GetTicks();
+			}
+		}
+
+		else if (t->data->light == true)
+		{
+			int currentTime = SDL_GetTicks();
+			if (currentTime - t->data->initTime < TIMELIMIT)
+			{
+				SDL_Rect rect;
+				switch (t->data->type)
+				{
+				case (LightSensor::Type::leftRedTriangle):
+					rect = { 209, 0, 10, 21 };
+					App->renderer->Blit(lights, t->data->sensor->GetPosition(-6.0f).x, t->data->sensor->GetPosition(-21.0f).y, &rect);
+					break;
+				case (LightSensor::Type::rotatedLeftRedTriangle):
+					rect = { 237, 0, 11, 21 };
+					App->renderer->Blit(lights, t->data->sensor->GetPosition(-7.0f).x, t->data->sensor->GetPosition(-23.0f).y, &rect);
+					break;
+				case (LightSensor::Type::leftWhiteTriangle):
+					rect = { 196, 0, 10, 21 };
+					App->renderer->Blit(lights, t->data->sensor->GetPosition(-7.0f).x, t->data->sensor->GetPosition(-23.0f).y, &rect);
+					break;
+				case (LightSensor::Type::rightWhiteTriangle):
+					rect = { 223, 0, 10, 21 };
+					App->renderer->Blit(lights, t->data->sensor->GetPosition(-17.0f).x, t->data->sensor->GetPosition(-23.0f).y, &rect);
+					break;
+				case (LightSensor::Type::redStar):
+					break;
+				case (LightSensor::Type::whiteStar):
+					break;
+				case (LightSensor::Type::whiteFlipperEntrance):
+					rect = { 579, 0, 9, 15 };
+					App->renderer->Blit(lights, t->data->sensor->GetPosition(-8.0f).x, t->data->sensor->GetPosition(-23.0f).y, &rect);
+					break;
+				case (LightSensor::Type::redFlipperEntrance):
+					rect = { 566, 0, 9, 15 };
+ 					App->renderer->Blit(lights, t->data->sensor->GetPosition(-9.0f).x, t->data->sensor->GetPosition(-23.0f).y, &rect);
+					break;
+				default:
+					break;
+				}
+			}
+
+			else
+			{
+				t->data->light = false;
+				t->data->initTime = 0;
+			}
+		}
+		t = t->next;
+	}
+
+	//DEBUG TOOL
+	if (App->input->GetKey(SDL_SCANCODE_1) == KEY_REPEAT)
+	{
+		p2List_item<LightSensor*>* t = lightSensors.getFirst();
+		SDL_Rect rect = { 566, 0, 9, 15 };
+		while (t != NULL)
+		{
+			App->renderer->Blit(lights, t->data->sensor->GetPosition(-9.0f).x, t->data->sensor->GetPosition(-23.0f).y, &rect);
+			t = t->next;
+		}
+	}
+
 	App->renderer->Blit(circle, ballBody->GetPosition(-10.0f).x , ballBody->GetPosition(-10.0f).y, 0, 1.0f, ballBody->GetRotation());
+
+	if (isOnExtraLevel == false)
+	{
+		SDL_Rect rect = { 0, 0, 87, 346 };
+		App->renderer->Blit(roads, 150 / 1.25f, 55 / 1.25f, &rect); // middle
+		rect = { 88, 0, 99, 142 };
+		App->renderer->Blit(roads, 54 / 1.25f, 444 / 1.25f, &rect); // left
+		rect = { 188, 0, 60, 123 };
+		App->renderer->Blit(roads, 348 / 1.25f, 477 / 1.25f, &rect); // right
+	}
 
 	// we add JOINTLIMIT to the angle to fix the displacement between the sprite (drawn at 21.5�) and rotation (21.5f�), this makes the sprite look like its rotated (21.5 * 2�))
 	App->renderer->Blit(flippers, leftFlipper->bodyJointed->GetPosition(-10.0f).x, leftFlipper->bodyJointed->GetPosition(-13.0f).y, &leftSection, 0, leftFlipper->flipper->GetRotation() + 180 - JOINTLIMIT, 10, 17);
@@ -215,7 +383,7 @@ void ModuleSceneIntro::ChangeChains()
 		//extraMiddle->GetBody().SetActive(true);
 	}
 
-	else if(isOnExtraLevel == true && ballBody->GetBody().GetLinearVelocity().y >= 0)
+	else if(isOnExtraLevel && ballBody->GetBody().GetLinearVelocity().y >= 0)
 	{
 		background->GetBody().SetActive(true);
 		bottomRight->GetBody().SetActive(true);
@@ -230,6 +398,8 @@ void ModuleSceneIntro::ChangeChains()
 		extraLeft->GetBody().SetActive(false);
 		extraUpRight->GetBody().SetActive(false);
 		//extraMiddle->GetBody().SetActive(false);
+
+		isOnExtraLevel = false;
 	}
 }
 

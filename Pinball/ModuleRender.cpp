@@ -2,6 +2,7 @@
 #include "Application.h"
 #include "ModuleWindow.h"
 #include "ModuleRender.h"
+#include "ModuleSceneIntro.h"
 #include <math.h>
 
 ModuleRender::ModuleRender(Application* app, bool start_enabled) : Module(app, start_enabled)
@@ -112,6 +113,12 @@ bool ModuleRender::Blit(SDL_Texture* texture, int x, int y, SDL_Rect* section, f
 
 	rect.w *= SCREEN_SIZE;
 	rect.h *= SCREEN_SIZE;
+
+	if (texture == App->scene_intro->lights)
+	{
+		rect.w *= 3;
+		rect.h *= 3;
+	}
 
 	SDL_Point* p = NULL;
 	SDL_Point pivot;

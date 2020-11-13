@@ -4,6 +4,9 @@
 #include "Globals.h"
 #include "Box2D/Box2D/Box2D.h"
 
+#define JOINTLIMIT 21.5f
+#define TIMELIMIT 1000
+
 class PhysBody;
 class b2Body;
 
@@ -19,6 +22,27 @@ public:
 	float minA;
 	float maxA;
 	float initAngle;
+};
+
+class LightSensor
+{
+public:
+	enum Type
+	{
+		leftRedTriangle,
+		rotatedLeftRedTriangle,
+		redStar,
+		leftWhiteTriangle,
+		rightWhiteTriangle,
+		whiteStar,
+		whiteFlipperEntrance,
+		redFlipperEntrance
+	};
+
+	PhysBody* sensor = nullptr;
+	Type type;
+	bool light = false;
+	int initTime = 0;
 };
 
 class ModuleSceneIntro : public Module
@@ -37,14 +61,15 @@ public:
 
 	bool OutOfBounds();
 
+	SDL_Texture* lights = nullptr;
 public:
 
 	bool isOnExtraLevel = false;
 
 private:
 
-	bool ballLaunched;
-	
+	bool ballLaunched = false;
+
 	b2Vec2 ballStartPosition;
 
 	p2List<PhysBody*> sensors;
@@ -57,6 +82,32 @@ private:
 	PhysBody* extraUpRightSensor = nullptr;
 	PhysBody* extraUpLeftSensor = nullptr;
 	PhysBody* extraUpMiddleSensor = nullptr;
+
+	p2List<LightSensor*> lightSensors;
+	LightSensor leftRedTriangle1;
+	LightSensor leftRedTriangle2;
+	LightSensor leftRedTriangle3;
+	LightSensor middleRedTriangle1;
+	LightSensor middleRedTriangle2;
+	LightSensor middleRedTriangle3;
+	LightSensor leftWhiteTriangle1;
+	LightSensor leftWhiteTriangle2;
+	LightSensor leftWhiteTriangle3;
+	LightSensor rightWhiteTriangle1;
+	LightSensor rightWhiteTriangle2;
+	LightSensor rightWhiteTriangle3;
+	LightSensor redStar1;
+	LightSensor redStar2;
+	LightSensor redStar3;
+	LightSensor leftWhiteStar1;
+	LightSensor leftWhiteStar2;
+	LightSensor leftWhiteStar3;
+	LightSensor rightWhiteStar1;
+	LightSensor rightWhiteStar2;
+	LightSensor rightWhiteStar3;
+	LightSensor leftFlipperEntrance1;
+	LightSensor leftFlipperEntrance2;
+	LightSensor rightFlipperEntrance;
 
 	PhysBody* ballBody = nullptr;
 	Flipper* leftFlipper = nullptr;
@@ -71,6 +122,7 @@ private:
 	SDL_Texture* rick = nullptr;
 	SDL_Texture* backgr = nullptr;
 	SDL_Texture* flippers = nullptr;
+	SDL_Texture* roads = nullptr;
 
 	// Chains bodies for the lower level
 	PhysBody* background;
