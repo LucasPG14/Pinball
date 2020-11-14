@@ -15,6 +15,6 @@ Consists of a 2D Pinball, using Box2D as the main Physics Engine.
 - Enter flippers through side rails (red entrance) = 100 points
 
 ## Developers
-- [Denis](https://github.com/Denisdrk6) - [ROLE]
+- [Denis](https://github.com/Denisdrk6) - Coder & VFX
 - [Lucas Pérez](https://github.com/LucasPG14) - Coder
 - [David González](https://github.com/MagiX7) - Coder & QA.
