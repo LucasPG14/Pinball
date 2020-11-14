@@ -373,7 +373,7 @@ void ModuleSceneIntro::CreateStartSensors()
 	sensors.add(leftSensor);
 	leftLowSensor = App->physics->CreateBox(75, 700, 13, 8, 0, b2_staticBody, true, SENSOR, PLAYER);
 	sensors.add(leftLowSensor);
-	extraUpRightSensor = App->physics->CreateBox(297, 151, 18, 8, 0, b2_staticBody, true, SENSOR, PLAYER);
+	extraUpRightSensor = App->physics->CreateBox(297, 151, 18, 12, 0, b2_staticBody, true, SENSOR, PLAYER);
 	sensors.add(extraUpRightSensor);
 	extraUpLeftSensor = App->physics->CreateBox(110, 155, 12, 10, 0, b2_staticBody, true, SENSOR, PLAYER);
 	sensors.add(extraUpLeftSensor);
@@ -432,22 +432,12 @@ void ModuleSceneIntro::ChangeChains()
 
 void ModuleSceneIntro::Points()
 {
-	if (rightLowSensor->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y))
-	{
-		App->player->score += 50;
-	}
-	
-	else if (leftLowSensor->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y))
+	if (extraUpRightSensor->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y) && App->player->GetBall()->GetBody().GetLinearVelocity().y < 0)
 	{
 		App->player->score += 50;
 	}
 
-	else if (extraUpRightSensor->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y))
-	{
-		App->player->score += 50;
-	}
-
-	else if (extraDownMiddleSensor->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y))
+	else if (extraDownMiddleSensor->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y) && App->player->GetBall()->GetBody().GetLinearVelocity().y < 0)
 	{
 		App->player->score += 50;
 	}
