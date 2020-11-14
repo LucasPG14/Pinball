@@ -5,7 +5,7 @@ Consists of a 2D Pinball, using Box2D as the main Physics Engine.
 ## Controls
 - Use A or D to move the flippers. Above and below move simultaneously 
 - Space to kick the ball at the beggining
-- + and - keys to control volume
+- '+' and '-' keys to control volume
 
 ## Debug Keys
 - F1 to see the chains, boxes and circles that handle the collisions
