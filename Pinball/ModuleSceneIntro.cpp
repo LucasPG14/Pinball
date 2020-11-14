@@ -116,6 +116,7 @@ bool ModuleSceneIntro::CleanUp()
 	LOG("Unloading Intro scene");
 
 	App->textures->Unload(backgr);
+	App->textures->Unload(lights);
 	App->textures->Unload(roads);
 	
 	return true;
@@ -303,6 +304,7 @@ update_status ModuleSceneIntro::Update()
 		t = t->next;
 	}
 
+	Points();
 
 	//DEBUG TOOL
 	if (App->input->GetKey(SDL_SCANCODE_1) == KEY_REPEAT)
