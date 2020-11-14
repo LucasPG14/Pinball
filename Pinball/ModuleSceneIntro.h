@@ -61,7 +61,7 @@ private:
 	bool extraLevelUp = false;
 	bool deleteInitSensor = false;
 
-	
+	bool added = false;
 
 	b2Filter playerFilter;
 
@@ -95,9 +95,6 @@ private:
 	LightSensor leftFlipperEntrance2;
 	LightSensor rightFlipperEntrance;
 
-
-
-	SDL_Texture* circle = nullptr;
 	SDL_Texture* backgr = nullptr;
 	SDL_Texture* roads = nullptr;
 

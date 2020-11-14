@@ -8,7 +8,11 @@ Consists of a 2D Pinball, using Box2D as the main Physics Engine.
 
 ## Debug Keys
 - F1 to see the chains, boxes and circles that handle the collisions.
-- 1 to see the light effect's position.
+
+## Score
+- Group of 3 triangles lighted = 20 points
+- Enter flippers through side rails (white entrance) = 50 points
+- Enter flippers through side rails (red entrance) = 100 points
 
 ## Developers
 - [Denis](https://github.com/Denisdrk6) - [ROLE]

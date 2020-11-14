@@ -15,7 +15,6 @@
 
 ModuleSceneIntro::ModuleSceneIntro(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
-	circle = NULL;
 }
 
 ModuleSceneIntro::~ModuleSceneIntro()
@@ -32,6 +31,7 @@ bool ModuleSceneIntro::Start()
 	
 	backgr = App->textures->Load("Assets/Textures/Assets/background2.png");
 	lights = App->textures->Load("Assets/Textures/Assets/LIGHTS.png");
+	roads = App->textures->Load("Assets/Textures/Assets/roads.png");
 
 	App->audio->PlayMusic("Assets/Sounds/Music/music.ogg", 0.0f);
 
@@ -199,7 +199,8 @@ update_status ModuleSceneIntro::Update()
 	}
 
 
-	// Sensor detection and blitting lighted textures
+	// Sensor detection, blitting lighted textures, and adding score
+	int lrtCounter = 0, rlrtCounter = 0, lwtCounter = 0, rwtCounter = 0, wfeCounter = 0, rfeCounter = 0;
 	p2List_item<LightSensor*>* t = lightSensors.getFirst();
 	while (t != NULL)
 	{
@@ -209,11 +210,13 @@ update_status ModuleSceneIntro::Update()
 			{
 				t->data->light = true;
 				t->data->initTime = SDL_GetTicks();
+				if (t->data->type == LightSensor::Type::whiteFlipperEntrance) App->player->score += 50;
+				else App->player->score += 100;
 			}
 
 			else if (App->player->GetBall()->GetBody().GetLinearVelocity().y < 0)
 			{
-				t->data->light = true;
+				if(added == false) t->data->light = true;
 				t->data->initTime = SDL_GetTicks();
 			}
 		}
@@ -229,31 +232,67 @@ update_status ModuleSceneIntro::Update()
 				case (LightSensor::Type::leftRedTriangle):
 					rect = { 209, 0, 10, 21 };
 					App->renderer->Blit(lights, t->data->sensor->GetPosition(-6.0f).x, t->data->sensor->GetPosition(-21.0f).y, &rect);
+					lrtCounter++;
+					if (lrtCounter == 3 && added == false)
+					{
+						App->player->score += 20;
+						added = true;
+					}
 					break;
 
 				case (LightSensor::Type::rotatedLeftRedTriangle):
 					rect = { 237, 0, 11, 21 };
 					App->renderer->Blit(lights, t->data->sensor->GetPosition(-7.0f).x, t->data->sensor->GetPosition(-23.0f).y, &rect);
+					rlrtCounter++;
+					if (rlrtCounter == 3 && added == false)
+					{
+						App->player->score += 20;
+						added = true;
+					}
 					break;
 
 				case (LightSensor::Type::leftWhiteTriangle):
 					rect = { 196, 0, 10, 21 };
 					App->renderer->Blit(lights, t->data->sensor->GetPosition(-7.0f).x, t->data->sensor->GetPosition(-23.0f).y, &rect);
+					lwtCounter++;
+					if (lwtCounter == 3 && added == false)
+					{
+						App->player->score += 20;
+						added = true;
+					}
 					break;
 
 				case (LightSensor::Type::rightWhiteTriangle):
 					rect = { 223, 0, 10, 21 };
 					App->renderer->Blit(lights, t->data->sensor->GetPosition(-17.0f).x, t->data->sensor->GetPosition(-23.0f).y, &rect);
+					rwtCounter++;
+					if (rwtCounter == 3 && added == false)
+					{
+						App->player->score += 20;
+						added = true;
+					}
 					break;
 
 				case (LightSensor::Type::whiteFlipperEntrance):
 					rect = { 579, 0, 9, 15 };
 					App->renderer->Blit(lights, t->data->sensor->GetPosition(-8.0f).x, t->data->sensor->GetPosition(-46.0f).y, &rect);
+					wfeCounter++;
+					if (wfeCounter == 3 && added == false)
+					{
+						App->player->score += 20;
+						added = true;
+					}
 					break;
 
 				case (LightSensor::Type::redFlipperEntrance):
 					rect = { 566, 0, 9, 15 };
- 					App->renderer->Blit(lights, t->data->sensor->GetPosition(-9.0f).x, t->data->sensor->GetPosition(-46.0f).y, &rect);
+					App->renderer->Blit(lights, t->data->sensor->GetPosition(-9.0f).x, t->data->sensor->GetPosition(-46.0f).y, &rect);
+					rfeCounter++;
+					if (rfeCounter == 3 && added == false)
+					{
+						App->player->score += 20;
+						added = true;
+					}
 					break;
 
 				default:
@@ -265,6 +304,7 @@ update_status ModuleSceneIntro::Update()
 			{
 				t->data->light = false;
 				t->data->initTime = 0;
+				if (added == true && lrtCounter < 3 && rlrtCounter < 3 && lwtCounter < 3 && rwtCounter < 3 && wfeCounter < 3 && rfeCounter < 3) added = false;
 			}
 		}
 		t = t->next;
@@ -283,11 +323,12 @@ update_status ModuleSceneIntro::Update()
 		}
 	}
 
+	App->renderer->Blit(App->player->flippers, App->player->leftTopFlipper->bodyJointed->GetPosition(-10.0f).x, App->player->leftTopFlipper->bodyJointed->GetPosition(-13.0f).y, &App->player->leftSection, 0, App->player->leftTopFlipper->flipper->GetRotation() + 180 - JOINTLIMIT, 10, 13);
 
 	SDL_Rect rect = { 0, 0, 87, 346 };
 	App->renderer->Blit(roads, 150 / 1.25f, 55 / 1.25f, &rect); // middle
 
-	App->renderer->Blit(circle, App->player->GetBall()->GetPosition(-10.0f).x , App->player->GetBall()->GetPosition(-10.0f).y, 0, 1.0f, App->player->GetBall()->GetRotation());
+	App->renderer->Blit(App->player->circle, App->player->GetBall()->GetPosition(-10.0f).x , App->player->GetBall()->GetPosition(-10.0f).y, 0, 1.0f, App->player->GetBall()->GetRotation());
 
 	if (isOnExtraLevel == false || extraLevelUp == true)
 	{

@@ -97,20 +97,6 @@ update_status ModulePlayer::Update()
 		rightTopFlipper->joint->SetMotorSpeed(-80.0f);
 	}
 
-	/*if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_DOWN && rightTopFlipper->joint->IsMotorEnabled() == false)
-	{
-		rightTopFlipper->joint->EnableMotor(true);
-		rightTopFlipper->joint->SetMaxMotorTorque(100.0f);
-		rightTopFlipper->joint->SetMotorSpeed(-80.0f);
-	}*/
-
-	/*if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT && leftFlipper->joint->IsMotorEnabled() == false)
-	{
-		leftTopFlipper->joint->EnableMotor(true);
-		leftTopFlipper->joint->SetMaxMotorTorque(100.0f);
-		leftTopFlipper->joint->SetMotorSpeed(80.0f);
-	}*/
-
 	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_UP)
 	{
 		leftFlipper->joint->EnableMotor(false);
@@ -130,14 +116,10 @@ update_status ModulePlayer::Update()
 	App->fonts->BlitText(0, 0, uiText, "SCORE ");
 	App->fonts->BlitText(324, 0, uiText, scoreText);
 
-	// Ball blit
-	App->renderer->Blit(circle, ballBody->GetPosition(-10).x, ballBody->GetPosition(-10).y);
-
 	// Flippers blit
 	// We add JOINTLIMIT to the angle to fix the displacement between the sprite (drawn at 21.5�) and rotation (21.5f�), this makes the sprite look like its rotated (21.5 * 2�))
 	App->renderer->Blit(flippers, leftFlipper->bodyJointed->GetPosition(-10.0f).x, leftFlipper->bodyJointed->GetPosition(-13.0f).y, &leftSection, 0, leftFlipper->flipper->GetRotation() + 180 - JOINTLIMIT, 10, 13);
 	App->renderer->Blit(flippers, rightFlipper->flipper->GetPosition(-32.0f).x, rightFlipper->flipper->GetPosition(-20.0f).y, &rightSection, 0, rightFlipper->flipper->GetRotation() + JOINTLIMIT, 32, 20);
-	App->renderer->Blit(flippers, leftTopFlipper->bodyJointed->GetPosition(-10.0f).x, leftTopFlipper->bodyJointed->GetPosition(-13.0f).y, &leftSection, 0, leftTopFlipper->flipper->GetRotation() + 180 - JOINTLIMIT, 10, 13);
 	App->renderer->Blit(flippers, rightTopFlipper->flipper->GetPosition(-28.0f).x, rightTopFlipper->flipper->GetPosition(-20.0f).y, &rightSection, 0, rightTopFlipper->flipper->GetRotation() + JOINTLIMIT, 28, 20);
 
 

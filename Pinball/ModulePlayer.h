@@ -55,18 +55,21 @@ public:
 
 	PhysBody* GetBall();
 
+	int score = 0;
+
+	// Ball related
+	b2Vec2 ballStartPosition;
+	SDL_Texture* circle;
+
+	Flipper* leftTopFlipper = nullptr;
+	SDL_Texture* flippers = nullptr;
+	SDL_Rect leftSection = { 0, 0, 81, 43 };
+
 private:
 
 	// Font related
 	int uiText;
 	char scoreText[10] = { "\0" };
-	int score = 0;
-
-
-	// Ball related
-	b2Vec2 ballStartPosition;
-	SDL_Texture* circle;
-	
 
 	// Flippers related
 	PhysBody* ballBody = nullptr;
@@ -74,11 +77,7 @@ private:
 	Flipper* leftFlipper = nullptr;
 	Flipper* rightFlipper = nullptr;
 	Flipper* rightTopFlipper = nullptr;
-	
-	Flipper* leftTopFlipper = nullptr;
-	SDL_Texture* flippers = nullptr;
 
-	SDL_Rect leftSection = { 0, 0, 81, 43 };
 	SDL_Rect rightSection = { 84, 0, 81, 43 };
 
 
