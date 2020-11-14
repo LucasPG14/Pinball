@@ -47,8 +47,9 @@ public:
 
 	void ChangeChains();
 
-	SDL_Texture* lights = nullptr;
+	void Points();
 
+	SDL_Texture* lights = nullptr;
 
 public:
 
@@ -115,5 +116,4 @@ private:
 	PhysBody* extraRight;
 	PhysBody* extraUpRight;
 	PhysBody* extraMiddle;
-
 };

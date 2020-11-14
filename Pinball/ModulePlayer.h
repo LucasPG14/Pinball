@@ -79,6 +79,4 @@ private:
 	Flipper* rightTopFlipper = nullptr;
 
 	SDL_Rect rightSection = { 84, 0, 81, 43 };
-
-
 };

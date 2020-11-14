@@ -16,5 +16,5 @@ Consists of a 2D Pinball, using Box2D as the main Physics Engine.
 
 ## Developers
 - [Denis](https://github.com/Denisdrk6) - [ROLE]
-- [Lucas Pérez](https://github.com/LucasPG14) - [ROLE]
+- [Lucas Pérez](https://github.com/LucasPG14) - Coder
 - [David González](https://github.com/MagiX7) - Coder & QA.

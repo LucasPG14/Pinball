@@ -48,7 +48,7 @@ bool ModulePlayer::Start()
 
 	//Font
 	char lookupTable[] = { "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ " };
-	uiText = App->fonts->Load("Assets/Textures/Assets/mfont2.png", lookupTable, 1);
+	uiText = App->fonts->Load("Assets/Textures/Assets/mfont3.png", lookupTable, 1);
 
 
 	return true;
@@ -62,6 +62,7 @@ update_status ModulePlayer::Update()
 	{
 		int x = PIXEL_TO_METERS(ballStartPosition.x);
 		int y = PIXEL_TO_METERS(ballStartPosition.y);
+		score = 0;
 		b2Vec2 v(x, y);
 		ballBody->GetBody().SetLinearVelocity(b2Vec2(0, 0));
 		ballBody->GetBody().SetTransform(b2Vec2(x - 1.3f, y - 3), 0);
@@ -109,12 +110,11 @@ update_status ModulePlayer::Update()
 		rightTopFlipper->joint->EnableMotor(false);
 	}
 
-
 	// Convert from int to string, so we can blit the text
 	sprintf_s(scoreText, 10, "%i", score);
 
-	App->fonts->BlitText(0, 0, uiText, "SCORE ");
-	App->fonts->BlitText(324, 0, uiText, scoreText);
+	App->fonts->BlitText(0, 942 / 1.25f, uiText, "SCORE ");
+	App->fonts->BlitText(324, 942 / 1.25f, uiText, scoreText);
 
 	// Flippers blit
 	// We add JOINTLIMIT to the angle to fix the displacement between the sprite (drawn at 21.5�) and rotation (21.5f�), this makes the sprite look like its rotated (21.5 * 2�))
@@ -138,6 +138,7 @@ bool ModulePlayer::CleanUp()
 
 	App->textures->Unload(flippers);
 	App->textures->Unload(circle);
+	App->fonts->UnLoad(uiText);
 
 	delete leftFlipper;
 	delete rightFlipper;

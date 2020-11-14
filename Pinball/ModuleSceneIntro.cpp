@@ -10,12 +10,12 @@
 #include "ModuleFonts.h"
 #include "ModuleAudio.h"
 
-
 #include "chains.h"
 
 ModuleSceneIntro::ModuleSceneIntro(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
 }
+
 
 ModuleSceneIntro::~ModuleSceneIntro()
 {}
@@ -23,7 +23,7 @@ ModuleSceneIntro::~ModuleSceneIntro()
 // Load assets
 bool ModuleSceneIntro::Start()
 {
-	LOG("Loading Intro assets");
+	LOG("Loading intro assets");
 	bool ret = true;
 
 	App->renderer->camera.x = App->renderer->camera.y = 0;
@@ -107,7 +107,6 @@ bool ModuleSceneIntro::Start()
 	rightFlipperEntrance.type = rightFlipperEntrance.whiteFlipperEntrance;
 	lightSensors.add(&rightFlipperEntrance);
 
-
 	return ret;
 }
 
@@ -141,13 +140,9 @@ update_status ModuleSceneIntro::Update()
 	if (App->input->GetKey(SDL_SCANCODE_KP_MINUS) == KEY_DOWN)
 		App->audio->VolumeControl(-4);
 
-
-
 	//if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_UP) rightTopFlipper->joint->EnableMotor(false);
 
 	//if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_UP) leftTopFlipper->joint->EnableMotor(false);
-
-
 
 	// Sensor detection and changing between levels
 	p2List_item<PhysBody*>* s = sensors.getFirst();
@@ -179,14 +174,12 @@ update_status ModuleSceneIntro::Update()
 		s = s->next;
 	}
 
-
 	if (deleteInitSensor)
 	{
 		sensors.del(sensors.findNode(initSensor));
 		initSensor = NULL;
 		deleteInitSensor = false;
 	}
-
 
 	// Draw Background && UI elements
 	App->renderer->Blit(backgr, 0, 0, NULL);
@@ -391,7 +384,6 @@ void ModuleSceneIntro::CreateStartSensors()
 }
 
 
-
 void ModuleSceneIntro::ChangeChains()
 {
 	if (isOnExtraLevel && App->player->GetBall()->GetBody().GetLinearVelocity().y < 0)
@@ -436,3 +428,25 @@ void ModuleSceneIntro::ChangeChains()
 	}
 }
 
+void ModuleSceneIntro::Points()
+{
+	if (rightLowSensor->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y))
+	{
+		App->player->score += 50;
+	}
+	
+	else if (leftLowSensor->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y))
+	{
+		App->player->score += 50;
+	}
+
+	else if (extraUpRightSensor->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y))
+	{
+		App->player->score += 50;
+	}
+
+	else if (extraDownMiddleSensor->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y))
+	{
+		App->player->score += 50;
+	}
+}
