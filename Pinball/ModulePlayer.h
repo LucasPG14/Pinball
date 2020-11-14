@@ -76,6 +76,7 @@ private:
 	int uiText;
 	char scoreText[10] = { "\0" };
 
+	// Stops ball from being launched multiple times pressing space
 	bool ballLaunched = false;
 
 	// Flippers related

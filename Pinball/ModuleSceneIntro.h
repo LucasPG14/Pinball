@@ -21,7 +21,10 @@ public:
 		leftWhiteTriangle,
 		rightWhiteTriangle,
 		whiteFlipperEntrance,
-		redFlipperEntrance
+		redFlipperEntrance,
+		s,
+		k,
+		v
 	};
 
 	PhysBody* sensor = nullptr;
@@ -57,7 +60,9 @@ private:
 
 	// Fx related
 	int pointsFx = -1;
-
+	int extraTime = 0;
+	int topLimitTimer = 0;
+	int midLimitTimer = 0;
 
 	bool extraLevelMid = false;
 	bool extraLevelUp = false;
@@ -66,6 +71,14 @@ private:
 	bool added = false;
 	bool topAdded = false;
 	bool bottomAdded = false;
+	bool extraAdded = false;
+
+	bool toBlitS = false;
+	bool toBlitK = false;
+	bool toBlitV = false;
+
+	bool leftPlayed = false;
+	bool rightPlayed = false;
 
 	b2Filter playerFilter;
 
@@ -81,6 +94,7 @@ private:
 	PhysBody* extraUpMiddleSensor = nullptr;
 	PhysBody* extraDownMiddleSensor = nullptr;
 	PhysBody* initSensor = nullptr;
+	PhysBody* middleLimitSensor = nullptr;
 
 	p2List<LightSensor*> lightSensors;
 	LightSensor leftRedTriangle1;
@@ -98,6 +112,9 @@ private:
 	LightSensor leftFlipperEntrance1;
 	LightSensor leftFlipperEntrance2;
 	LightSensor rightFlipperEntrance;
+	LightSensor sensorS;
+	LightSensor sensorK;
+	LightSensor sensorV;
 
 	SDL_Texture* backgr = nullptr;
 	SDL_Texture* roads = nullptr;
@@ -113,6 +130,10 @@ private:
 	PhysBody* upLeft;
 	PhysBody* middle;
 	PhysBody* initial;
+	PhysBody* tinyL;
+	PhysBody* tinyR;
+	PhysBody* limitT;
+	PhysBody* limitM;
 
 	// Chains bodies for the extra level
 	PhysBody* extraLeft;

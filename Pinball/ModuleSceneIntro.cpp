@@ -105,6 +105,18 @@ bool ModuleSceneIntro::Start()
 	rightFlipperEntrance.type = rightFlipperEntrance.whiteFlipperEntrance;
 	lightSensors.add(&rightFlipperEntrance);
 
+	sensorS.sensor = App->physics->CreateBox(350, 160, 10, 9, 0, b2_staticBody, true, SENSOR, PLAYER);
+	sensorS.type = sensorS.s;
+	lightSensors.add(&sensorS);
+
+	sensorK.sensor = App->physics->CreateBox(395, 160, 10, 9, 0, b2_staticBody, true, SENSOR, PLAYER);
+	sensorK.type = sensorK.k;
+	lightSensors.add(&sensorK);
+
+	sensorV.sensor = App->physics->CreateBox(440, 160, 10, 9, 0, b2_staticBody, true, SENSOR, PLAYER);
+	sensorV.type = sensorV.v;
+	lightSensors.add(&sensorV);
+
 	return ret;
 }
 
@@ -123,12 +135,15 @@ bool ModuleSceneIntro::CleanUp()
 // Update: draw background
 update_status ModuleSceneIntro::Update()
 {
+	// Reset stuff
 	if (App->player->OutOfBounds())
 	{
 		initial->GetBody().SetActive(false);
 		initSensor = App->physics->CreateBox(450, 85, 12, 30, 0, b2_staticBody, true, SENSOR, PLAYER);
 		sensors.add(initSensor);
-		//ballLaunched = false;
+		toBlitS = false;
+		toBlitK = false;
+		toBlitV = false;
 	}
 
 	// Input detection
@@ -152,6 +167,12 @@ update_status ModuleSceneIntro::Update()
 				deleteInitSensor = true;
 				s = s->next;
 				continue;
+			}
+
+			if (limitM->GetBody().IsActive() && middleLimitSensor->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y))
+			{
+				limitM->GetBody().SetActive(false);
+				midLimitTimer = SDL_GetTicks();
 			}
 
 			isOnExtraLevel = true;
@@ -202,6 +223,40 @@ update_status ModuleSceneIntro::Update()
 				else App->player->score += 100;
 			}
 
+			// Prepare to blit s/k/v sensors
+			else if ((t->data->type == LightSensor::Type::s || t->data->type == LightSensor::Type::k || t->data->type == LightSensor::Type::v) && App->player->GetBall()->GetBody().GetLinearVelocity().y > 0)
+			{
+				switch (t->data->type)
+				{
+				case (LightSensor::Type::s):
+
+					if (toBlitS == false) toBlitS = true;
+					limitT->GetBody().SetActive(false);
+					topLimitTimer = SDL_GetTicks();
+
+					break;
+
+				case (LightSensor::Type::k):
+
+					if (toBlitK == false) toBlitK = true;
+					limitT->GetBody().SetActive(false);
+					topLimitTimer = SDL_GetTicks();
+
+					break;
+
+				case (LightSensor::Type::v):
+
+					if (toBlitV == false) toBlitV = true;
+					limitT->GetBody().SetActive(false);
+					topLimitTimer = SDL_GetTicks();
+
+					break;
+
+				default:
+					break;
+				}
+			}
+
 			else if (App->player->GetBall()->GetBody().GetLinearVelocity().y < 0)
 			{
 				if(added == false) t->data->light = true;
@@ -209,7 +264,7 @@ update_status ModuleSceneIntro::Update()
 			}
 		}
 
-		else if (t->data->light == true)
+		if (t->data->light == true)
 		{
 			int currentTime = SDL_GetTicks();
 			if (currentTime - t->data->initTime < TIMELIMIT)
@@ -295,10 +350,83 @@ update_status ModuleSceneIntro::Update()
 				if (added == true && lrtCounter < 3 && rlrtCounter < 3 && lwtCounter < 3 && rwtCounter < 3 && wfeCounter < 3 && rfeCounter < 3) added = false;
 			}
 		}
+
+		// Blit s/k/v sensors
+		if (toBlitS == true && t->data->type == LightSensor::Type::s)
+		{
+			SDL_Rect rect = { 0, 0, 7, 15 };
+			App->renderer->Blit(lights, t->data->sensor->GetPosition(-9.0f).x, t->data->sensor->GetPosition(-48.0f).y, &rect);
+		}
+
+		if (toBlitK == true && t->data->type == LightSensor::Type::k)
+		{
+			SDL_Rect rect = { 11, 0, 7, 15 };
+			App->renderer->Blit(lights, t->data->sensor->GetPosition(-11.0f).x, t->data->sensor->GetPosition(-48.0f).y, &rect);
+		}
+
+		if (toBlitV == true && t->data->type == LightSensor::Type::v)
+		{
+			SDL_Rect rect = { 22, 0, 7, 15 };
+			App->renderer->Blit(lights, t->data->sensor->GetPosition(-13.0f).x, t->data->sensor->GetPosition(-48.0f).y, &rect);
+		}
+
+		// Extra points if s, k, v are all activated
+		if (toBlitS == true && toBlitK == true && toBlitV == true && extraAdded == false)
+		{
+			App->player->score += 500;
+			extraTime = SDL_GetTicks();
+			extraAdded = true;
+		}
+
+		// Deactivate s, k, v sensors
+		if (extraAdded == true)
+		{
+			int currentTime = SDL_GetTicks();
+			if (currentTime - extraTime >= 2* TIMELIMIT)
+			{
+				toBlitS = false;
+				toBlitK = false;
+				toBlitV = false;
+				extraAdded = false;
+			}
+		}
+
+		if (limitT->GetBody().IsActive() == false)
+		{
+			int currentTime = SDL_GetTicks();
+			if (currentTime - topLimitTimer > 350)
+			{
+				limitT->GetBody().SetActive(true);
+				topLimitTimer = 0;
+			}
+		}
+
+		if (limitM->GetBody().IsActive() == false)
+		{
+			int currentTime = SDL_GetTicks();
+			if (currentTime - midLimitTimer > 350)
+			{
+				limitM->GetBody().SetActive(true);
+				midLimitTimer = 0;
+			}
+		}
+
 		t = t->next;
 	}
 
 	Points();
+
+	/*if (App->input->GetKey(SDL_SCANCODE_1) == KEY_REPEAT)
+	{
+		p2List_item<LightSensor*>* t = lightSensors.getFirst();
+		SDL_Rect rect;
+		rect = { 22, 0, 7, 15 };
+		while (t != NULL)
+		{
+			App->renderer->Blit(lights, t->data->sensor->GetPosition(-13.0f).x, t->data->sensor->GetPosition(-48.0f).y, &rect);
+			t = t->next;
+		}
+	}*/
 
 	App->renderer->Blit(App->player->flippers, App->player->leftTopFlipper->bodyJointed->GetPosition(-10.0f).x, App->player->leftTopFlipper->bodyJointed->GetPosition(-13.0f).y, &App->player->leftSection, 0, App->player->leftTopFlipper->flipper->GetRotation() + 180 - JOINTLIMIT, 10, 13);
 
@@ -335,6 +463,10 @@ void ModuleSceneIntro::CreateStartChains()
 	extraUpRight = App->physics->CreateChain(0, 0, extraUp, 48, b2_staticBody, Category::CHAIN, Category::PLAYER | Category::BOX);
 	extraMiddle = App->physics->CreateChain(0, 0, extraLevelMiddle, 50, b2_staticBody, Category::CHAIN, Category::PLAYER | Category::BOX);
 	initial = App->physics->CreateChain(0, 0, initLimit, 10, b2_staticBody, Category::CHAIN, Category::PLAYER | Category::BOX);
+	tinyL = App->physics->CreateChain(0, 0, tinyLeft, 10, b2_staticBody, Category::CHAIN, Category::PLAYER | Category::BOX);
+	tinyR = App->physics->CreateChain(0, 0, tinyRight, 10, b2_staticBody, Category::CHAIN, Category::PLAYER | Category::BOX);
+	limitT = App->physics->CreateChain(0, 0, topLimit, 8, b2_staticBody, Category::CHAIN, Category::PLAYER | Category::BOX);
+	limitM = App->physics->CreateChain(0, 0, midLimit, 14, b2_staticBody, Category::CHAIN, Category::PLAYER | Category::BOX);
 
 	extraRight->GetBody().SetActive(false);
 	extraLeft->GetBody().SetActive(false);
@@ -364,6 +496,8 @@ void ModuleSceneIntro::CreateStartSensors()
 	sensors.add(extraUpMiddleSensor);
 	initSensor = App->physics->CreateBox(450, 85, 12, 30, 0, b2_staticBody, true, SENSOR, PLAYER);
 	sensors.add(initSensor);
+	middleLimitSensor = App->physics->CreateBox(310, 450, 35, 10, 0, b2_staticBody, true, SENSOR, PLAYER);
+	sensors.add(middleLimitSensor);
 }
 
 
@@ -411,15 +545,21 @@ void ModuleSceneIntro::ChangeChains()
 
 void ModuleSceneIntro::Points()
 {
-	/*if (rightLowSensor->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y))
+	if (rightSensor->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y) && App->player->GetBall()->GetBody().GetLinearVelocity().y < 0 && rightPlayed == false)
 	{
 		App->audio->PlayFx(pointsFx);
+		rightPlayed = true;
 	}
-	else if (leftLowSensor->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y))
+
+	else if (rightSensor->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y) == false) rightPlayed = false;
+
+	if (leftSensor->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y) && App->player->GetBall()->GetBody().GetLinearVelocity().y < 0 && leftPlayed == false)
 	{
 		App->audio->PlayFx(pointsFx);
-	}*/
+		leftPlayed = true;
+	}
 
+	else if (leftSensor->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y) == false) leftPlayed = false;
 
 	if (extraUpRightSensor->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y) && App->player->GetBall()->GetBody().GetLinearVelocity().y < 0 && topAdded == false)
 	{
@@ -437,5 +577,5 @@ void ModuleSceneIntro::Points()
 		App->audio->PlayFx(pointsFx);
 	}
 
-	else if (extraDownMiddleSensor->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y == false)) bottomAdded = false;
+	else if (extraDownMiddleSensor->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y) == false) bottomAdded = false;
 }
