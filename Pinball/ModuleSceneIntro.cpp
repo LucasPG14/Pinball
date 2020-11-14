@@ -34,6 +34,8 @@ bool ModuleSceneIntro::Start()
 	roads = App->textures->Load("Assets/Textures/Assets/roads.png");
 
 	App->audio->PlayMusic("Assets/Sounds/Music/music.ogg", 0.0f);
+	pointsFx = App->audio->LoadFx("Assets/Sounds/Fx/points.wav");
+
 
 	// Chains Creation
 	CreateStartChains();
@@ -141,7 +143,7 @@ update_status ModuleSceneIntro::Update()
 	p2List_item<PhysBody*>* s = sensors.getFirst();
 	while (s != NULL)
 	{
-		if (s->data->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y) /*&& isOnExtraLevel == false*/)
+		if (s->data->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y))
 		{
 			if (!initial->GetBody().IsActive() && initSensor->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y))
 			{
@@ -321,13 +323,12 @@ update_status ModuleSceneIntro::Update()
 
 void ModuleSceneIntro::CreateStartChains()
 {
-	background = App->physics->CreateChain(0, 0, bg, 136, b2_staticBody, Category::CHAIN, Category::PLAYER | Category::BOX);
+	background = App->physics->CreateChain(0, 0, bg, 140, b2_staticBody, Category::CHAIN, Category::PLAYER | Category::BOX);
 	bottomRight = App->physics->CreateChain(0, 0, bottomR, 22, b2_staticBody, Category::CHAIN, Category::PLAYER | Category::BOX);
 	bottomLeft = App->physics->CreateChain(0, 0, bottomL, 20, b2_staticBody, Category::CHAIN, Category::PLAYER | Category::BOX);
-	littleBottomLeft = App->physics->CreateChain(0, 0, littleBottomL, 12, b2_staticBody, Category::CHAIN, Category::PLAYER | Category::BOX);
+	littleBottomLeft = App->physics->CreateChain(0, 0, littleBottomL, 10, b2_staticBody, Category::CHAIN, Category::PLAYER | Category::BOX);
 	littleBottomRight = App->physics->CreateChain(0, 0, littleBottomR, 12, b2_staticBody, Category::CHAIN, Category::PLAYER | Category::BOX);
 	veryLittleLeft = App->physics->CreateChain(0, 0, veryLittleL, 8, b2_staticBody, Category::CHAIN, Category::PLAYER | Category::BOX);
-	middleLittle = App->physics->CreateChain(0, 0, middleLit, 14, b2_staticBody, Category::CHAIN, Category::PLAYER | Category::BOX);
 	middle = App->physics->CreateChain(0, 0, extraMid, 152, b2_staticBody, Category::CHAIN, Category::PLAYER | Category::BOX);
 	extraRight = App->physics->CreateChain(0, 0, extraR, 50, b2_staticBody, Category::CHAIN, Category::PLAYER | Category::BOX);
 	extraLeft = App->physics->CreateChain(0, 0, extraL, 44, b2_staticBody, Category::CHAIN, Category::PLAYER | Category::BOX);
@@ -376,7 +377,6 @@ void ModuleSceneIntro::ChangeChains()
 		littleBottomLeft->GetBody().SetActive(false);
 		littleBottomRight->GetBody().SetActive(false);
 		veryLittleLeft->GetBody().SetActive(false);
-		middleLittle->GetBody().SetActive(false);
 		middle->GetBody().SetActive(false);
 
 		extraRight->GetBody().SetActive(true);
@@ -393,7 +393,6 @@ void ModuleSceneIntro::ChangeChains()
 		littleBottomLeft->GetBody().SetActive(true);
 		littleBottomRight->GetBody().SetActive(true);
 		veryLittleLeft->GetBody().SetActive(true);
-		middleLittle->GetBody().SetActive(true);
 		middle->GetBody().SetActive(true);
 
 		extraRight->GetBody().SetActive(false);
@@ -412,10 +411,21 @@ void ModuleSceneIntro::ChangeChains()
 
 void ModuleSceneIntro::Points()
 {
+	/*if (rightLowSensor->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y))
+	{
+		App->audio->PlayFx(pointsFx);
+	}
+	else if (leftLowSensor->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y))
+	{
+		App->audio->PlayFx(pointsFx);
+	}*/
+
+
 	if (extraUpRightSensor->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y) && App->player->GetBall()->GetBody().GetLinearVelocity().y < 0 && topAdded == false)
 	{
 		App->player->score += 50;
 		topAdded = true;
+		App->audio->PlayFx(pointsFx);
 	}
 
 	else if (extraUpRightSensor->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y) == false) topAdded = false;
@@ -424,6 +434,7 @@ void ModuleSceneIntro::Points()
 	{
 		App->player->score += 50;
 		bottomAdded = true;
+		App->audio->PlayFx(pointsFx);
 	}
 
 	else if (extraDownMiddleSensor->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y == false)) bottomAdded = false;

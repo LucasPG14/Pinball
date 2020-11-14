@@ -119,6 +119,7 @@ bool ModuleAudio::PlayMusic(const char* path, float fade_time)
 				LOG("Cannot play in music %s. Mix_GetError(): %s", path, Mix_GetError());
 				ret = false;
 			}
+			Mix_VolumeMusic(musicVolume);
 		}
 	}
 

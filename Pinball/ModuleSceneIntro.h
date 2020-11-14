@@ -55,6 +55,10 @@ public:
 
 private:
 
+	// Fx related
+	int pointsFx = -1;
+
+
 	bool extraLevelMid = false;
 	bool extraLevelUp = false;
 	bool deleteInitSensor = false;

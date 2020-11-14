@@ -29,7 +29,7 @@ public:
 
 private:
 
-	int musicVolume = 100;
+	int musicVolume = 40;
 
 	Mix_Music*			music;
 	p2List<Mix_Chunk*>	fx;

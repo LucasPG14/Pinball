@@ -67,6 +67,11 @@ public:
 
 private:
 
+	//Fx related
+	int kickerFx = -1;
+	int gameOverFx = -1;
+	int flipperFx = -1;
+
 	// Font related
 	int uiText;
 	char scoreText[10] = { "\0" };
