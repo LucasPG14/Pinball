@@ -6,8 +6,10 @@
 #include "ModuleInput.h"
 #include "ModuleTextures.h"
 #include "ModulePhysics.h"
+#include "ModulePlayer.h"
 #include "ModuleFonts.h"
 #include "ModuleAudio.h"
+
 
 #include "chains.h"
 
@@ -27,10 +29,8 @@ bool ModuleSceneIntro::Start()
 
 	App->renderer->camera.x = App->renderer->camera.y = 0;
 
-	circle = App->textures->Load("Assets/Textures/Assets/ball4.png");
+	
 	backgr = App->textures->Load("Assets/Textures/Assets/background2.png");
-	flippers = App->textures->Load("Assets/Textures/Assets/Flippers3.png");
-	roads = App->textures->Load("Assets/Textures/Assets/roads.png");
 	lights = App->textures->Load("Assets/Textures/Assets/LIGHTS.png");
 
 	App->audio->PlayMusic("Assets/Sounds/Music/music.ogg", 0.0f);
@@ -108,28 +108,6 @@ bool ModuleSceneIntro::Start()
 	lightSensors.add(&rightFlipperEntrance);
 
 
-	// Ball Start-up
-	ballStartPosition = b2Vec2(485, 865);
-	ballBody = App->physics->CreateCircle(ballStartPosition.x, ballStartPosition.y, 14, b2_dynamicBody, PLAYER, TOPLEFTFLIPPER | SENSOR | BOX | CHAIN);
-
-
-	leftFlipper = new Flipper;
-	rightFlipper = new Flipper;
-	rightTopFlipper = new Flipper;
-	leftTopFlipper = new Flipper;
-
-	SDL_Rect rect = { 180, 915, 40, 15 };
-	FillFlipper(leftFlipper, rect, 155, 900, 10, b2_dynamicBody, b2_staticBody, -180.0f, true, BOX, PLAYER | CHAIN);
-
-	rect = { 325, 915, 40, 15 };
-	FillFlipper(rightFlipper, rect, 351, 900, 10, b2_dynamicBody, b2_staticBody, 0.0f, false, BOX, PLAYER | CHAIN);
-
-	rect = { 395, 390, 33, 15 };
-	FillFlipper(rightTopFlipper, rect, 391, 375, 10, b2_dynamicBody, b2_staticBody, 0.0f, false, BOX, PLAYER | CHAIN);
-
-	rect = { 225, 390, 40, 15 };
-	FillFlipper(leftTopFlipper, rect, 210, 375, 10, b2_dynamicBody, b2_staticBody, -180.0f, true, TOPLEFTFLIPPER, PLAYER);
-
 	return ret;
 }
 
@@ -138,35 +116,17 @@ bool ModuleSceneIntro::CleanUp()
 {
 	LOG("Unloading Intro scene");
 
-	App->physics->GetWorld()->DestroyJoint(leftFlipper->joint);
-	App->physics->GetWorld()->DestroyJoint(rightFlipper->joint);
-	App->physics->GetWorld()->DestroyJoint(rightTopFlipper->joint);
-	App->physics->GetWorld()->DestroyJoint(leftTopFlipper->joint);
-
-	App->textures->Unload(circle);
 	App->textures->Unload(backgr);
-	App->textures->Unload(flippers);
 	App->textures->Unload(roads);
 	
-	delete leftFlipper;
-	delete rightFlipper;
-	delete rightTopFlipper;
-	delete leftTopFlipper;
-
-
 	return true;
 }
 
 // Update: draw background
 update_status ModuleSceneIntro::Update()
 {
-	if (OutOfBounds())
+	if (App->player->OutOfBounds())
 	{
-		int x = PIXEL_TO_METERS(ballStartPosition.x);
-		int y = PIXEL_TO_METERS(ballStartPosition.y);
-		b2Vec2 v(x, y);
-		ballBody->GetBody().SetLinearVelocity(b2Vec2(0, 0));
-		ballBody->GetBody().SetTransform(b2Vec2(x - 1.3f, y - 3), 0);
 		initial->GetBody().SetActive(false);
 		initSensor = App->physics->CreateBox(450, 85, 12, 30, 0, b2_staticBody, true, SENSOR, PLAYER);
 		sensors.add(initSensor);
@@ -174,61 +134,7 @@ update_status ModuleSceneIntro::Update()
 	}
 
 	// Input detection
-	if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN /*&& ballLaunched == false*/)
-	{
-		//ballLaunched = true;
-		b2Vec2 force(0, -250);
-		ballBody->ApplyForce(force);
-	}
-
-	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT && leftFlipper->joint->IsMotorEnabled() == false)
-	{
-		leftFlipper->joint->EnableMotor(true);
-		leftFlipper->joint->SetMaxMotorTorque(100.0f);
-		leftFlipper->joint->SetMotorSpeed(80.0f);
-
-		leftTopFlipper->joint->EnableMotor(true);
-		leftTopFlipper->joint->SetMaxMotorTorque(100.0f);
-		leftTopFlipper->joint->SetMotorSpeed(80.0f);
-	}
-
-	if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT && rightFlipper->joint->IsMotorEnabled() == false)
-	{
-		rightFlipper->joint->EnableMotor(true);
-		rightFlipper->joint->SetMaxMotorTorque(100.0f);
-		rightFlipper->joint->SetMotorSpeed(-80.0f);
-
-		rightTopFlipper->joint->EnableMotor(true);
-		rightTopFlipper->joint->SetMaxMotorTorque(100.0f);
-		rightTopFlipper->joint->SetMotorSpeed(-80.0f);
-	}
-
-	/*if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_DOWN && rightTopFlipper->joint->IsMotorEnabled() == false)
-	{
-		rightTopFlipper->joint->EnableMotor(true);
-		rightTopFlipper->joint->SetMaxMotorTorque(100.0f);
-		rightTopFlipper->joint->SetMotorSpeed(-80.0f);
-	}*/
-
-	/*if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT && leftFlipper->joint->IsMotorEnabled() == false)
-	{
-		leftTopFlipper->joint->EnableMotor(true);
-		leftTopFlipper->joint->SetMaxMotorTorque(100.0f);
-		leftTopFlipper->joint->SetMotorSpeed(80.0f);
-	}*/
 	
-	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_UP)
-	{
-		leftFlipper->joint->EnableMotor(false);
-		leftTopFlipper->joint->EnableMotor(false);
-	}
-
-	if (App->input->GetKey(SDL_SCANCODE_D) == KEY_UP)
-	{
-		rightFlipper->joint->EnableMotor(false);
-		rightTopFlipper->joint->EnableMotor(false);
-	}
-
 	if (App->input->GetKey(SDL_SCANCODE_KP_PLUS) == KEY_DOWN)
 		App->audio->VolumeControl(4);
 
@@ -247,9 +153,9 @@ update_status ModuleSceneIntro::Update()
 	p2List_item<PhysBody*>* s = sensors.getFirst();
 	while (s != NULL)
 	{
-		if (s->data->Contains(ballBody->GetPosition(0.0f).x, ballBody->GetPosition(0.0f).y) /*&& isOnExtraLevel == false*/)
+		if (s->data->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y) /*&& isOnExtraLevel == false*/)
 		{
-			if (!initial->GetBody().IsActive() && initSensor->Contains(ballBody->GetPosition(0.0f).x, ballBody->GetPosition(0.0f).y))
+			if (!initial->GetBody().IsActive() && initSensor->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y))
 			{
 				initial->GetBody().SetActive(true);
 				App->physics->GetWorld()->DestroyBody(&initSensor->GetBody());
@@ -259,14 +165,14 @@ update_status ModuleSceneIntro::Update()
 			}
 
 			isOnExtraLevel = true;
-			if (extraDownMiddleSensor->Contains(ballBody->GetPosition(0.0f).x, ballBody->GetPosition(0.0f).y))
+			if (extraDownMiddleSensor->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y))
 			{
 				extraLevelMid = true;
 				playerFilter.categoryBits = PLAYER;
 				playerFilter.maskBits = SENSOR | BOX | CHAIN;
-				ballBody->GetBody().GetFixtureList()->SetFilterData(playerFilter);
+				App->player->GetBall()->GetBody().GetFixtureList()->SetFilterData(playerFilter);
 			}
-			if (extraUpRightSensor->Contains(ballBody->GetPosition(0.0f).x, ballBody->GetPosition(0.0f).y))
+			if (extraUpRightSensor->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y))
 				extraLevelUp = true;
 			ChangeChains();
 		}
@@ -297,7 +203,7 @@ update_status ModuleSceneIntro::Update()
 	p2List_item<LightSensor*>* t = lightSensors.getFirst();
 	while (t != NULL)
 	{
-		if (t->data->sensor->Contains(ballBody->GetPosition(0.0f).x, ballBody->GetPosition(0.0f).y) && t->data->light == false /*&& isOnExtraLevel == false*/)
+		if (t->data->sensor->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y) && t->data->light == false /*&& isOnExtraLevel == false*/)
 		{
 			if (t->data->type == LightSensor::Type::whiteFlipperEntrance || t->data->type == LightSensor::Type::redFlipperEntrance)
 			{
@@ -305,7 +211,7 @@ update_status ModuleSceneIntro::Update()
 				t->data->initTime = SDL_GetTicks();
 			}
 
-			else if (ballBody->GetBody().GetLinearVelocity().y < 0)
+			else if (App->player->GetBall()->GetBody().GetLinearVelocity().y < 0)
 			{
 				t->data->light = true;
 				t->data->initTime = SDL_GetTicks();
@@ -378,13 +284,10 @@ update_status ModuleSceneIntro::Update()
 	}
 
 
-	App->renderer->Blit(flippers, leftTopFlipper->bodyJointed->GetPosition(-10.0f).x, leftTopFlipper->bodyJointed->GetPosition(-13.0f).y, &leftSection, 0, leftTopFlipper->flipper->GetRotation() + 180 - JOINTLIMIT, 10, 13);
-
-
 	SDL_Rect rect = { 0, 0, 87, 346 };
 	App->renderer->Blit(roads, 150 / 1.25f, 55 / 1.25f, &rect); // middle
 
-	App->renderer->Blit(circle, ballBody->GetPosition(-10.0f).x , ballBody->GetPosition(-10.0f).y, 0, 1.0f, ballBody->GetRotation());
+	App->renderer->Blit(circle, App->player->GetBall()->GetPosition(-10.0f).x , App->player->GetBall()->GetPosition(-10.0f).y, 0, 1.0f, App->player->GetBall()->GetRotation());
 
 	if (isOnExtraLevel == false || extraLevelUp == true)
 	{
@@ -396,35 +299,8 @@ update_status ModuleSceneIntro::Update()
 		App->renderer->Blit(roads, 348 / 1.25f, 477 / 1.25f, &rect); // right
 	}
 
-
-	// we add JOINTLIMIT to the angle to fix the displacement between the sprite (drawn at 21.5�) and rotation (21.5f�), this makes the sprite look like its rotated (21.5 * 2�))
-	App->renderer->Blit(flippers, leftFlipper->bodyJointed->GetPosition(-10.0f).x, leftFlipper->bodyJointed->GetPosition(-13.0f).y, &leftSection, 0, leftFlipper->flipper->GetRotation() + 180 - JOINTLIMIT, 10, 13);
-
-	App->renderer->Blit(flippers, rightFlipper->flipper->GetPosition(-32.0f).x,  rightFlipper->flipper->GetPosition(-20.0f).y, &rightSection, 0, rightFlipper->flipper->GetRotation() + JOINTLIMIT, 32, 20);
-
-	App->renderer->Blit(flippers, rightTopFlipper->flipper->GetPosition(-28.0f).x, rightTopFlipper->flipper->GetPosition(-20.0f).y, &rightSection, 0, rightTopFlipper->flipper->GetRotation() + JOINTLIMIT, 28, 20);
-
-
 	return UPDATE_CONTINUE;
 }
-
-
-
-void ModuleSceneIntro::FillFlipper(Flipper* flipper, SDL_Rect rect, int x, int y, int rad, b2BodyType rectType, b2BodyType circType, float initAngle, bool invert, uint16 categoryBits, uint16 maskBits)
-{
-	int mult = 1;
-	if (invert == true) mult = -1;
-
-	flipper->maxA = JOINTLIMIT;
-	flipper->minA = -1 * JOINTLIMIT;
-	flipper->initAngle = initAngle;
-	flipper->flipper = App->physics->CreateBox(rect.x, rect.y, rect.w, rect.h, DEGTORAD * flipper->initAngle, rectType, false, categoryBits, maskBits);
-	flipper->bodyJointed = App->physics->CreateCircle(x, y, rad, circType, categoryBits, maskBits);
-	// Sometimes initAngle is multiplied by -1 so it becomes 0.0f because when we change reference Angle, this amount of angle is added to our curret angles (new reference angle = init angle, init angle += refernce angle). In our case, multipling by -1 solves this problem because we use 180� and -180 & 180 are the same
-	flipper->jointDef = App->physics->CreateRevoluteJoint(&flipper->flipper->GetBody(), &flipper->bodyJointed->GetBody(), flipper->maxA, flipper->minA, 0.6f, 0.0f, flipper->initAngle * mult);
-	flipper->joint = (b2RevoluteJoint*)App->physics->GetWorld()->CreateJoint(&flipper->jointDef);
-}
-
 
 
 void ModuleSceneIntro::CreateStartChains()
@@ -477,7 +353,7 @@ void ModuleSceneIntro::CreateStartSensors()
 
 void ModuleSceneIntro::ChangeChains()
 {
-	if (isOnExtraLevel && ballBody->GetBody().GetLinearVelocity().y < 0)
+	if (isOnExtraLevel && App->player->GetBall()->GetBody().GetLinearVelocity().y < 0)
 	{
 		background->GetBody().SetActive(false);
 		bottomRight->GetBody().SetActive(false);
@@ -494,7 +370,7 @@ void ModuleSceneIntro::ChangeChains()
 		if(extraLevelUp == false) extraMiddle->GetBody().SetActive(true);
 	}
 
-	else if(isOnExtraLevel && ballBody->GetBody().GetLinearVelocity().y >= 0)
+	else if(isOnExtraLevel && App->player->GetBall()->GetBody().GetLinearVelocity().y >= 0)
 	{
 		background->GetBody().SetActive(true);
 		bottomRight->GetBody().SetActive(true);
@@ -514,13 +390,8 @@ void ModuleSceneIntro::ChangeChains()
 		extraLevelMid = false;
 		playerFilter.categoryBits = PLAYER;
 		playerFilter.maskBits = TOPLEFTFLIPPER | SENSOR | BOX | CHAIN;
-		ballBody->GetBody().GetFixtureList()->SetFilterData(playerFilter);
+		App->player->GetBall()->GetBody().GetFixtureList()->SetFilterData(playerFilter);
 		extraLevelUp = false;
 	}
 }
 
-
-bool ModuleSceneIntro::OutOfBounds()
-{
-	return ballBody->GetPosition(0.0f).y > SCREEN_HEIGHT;
-}

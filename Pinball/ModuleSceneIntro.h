@@ -8,26 +8,8 @@
 #include "SDL_mixer/include/SDL_mixer.h"
 #include "SDL_image/include/SDL_image.h"
 
-#define JOINTLIMIT 21.5f
-#define TIMELIMIT 1000
-
 class PhysBody;
 class b2Body;
-
-class Flipper
-{
-public:
-	PhysBody* flipper;
-	PhysBody* bodyJointed;
-
-	b2RevoluteJointDef jointDef;
-	b2RevoluteJoint* joint;
-
-	float minA;
-	float maxA;
-	float initAngle;
-};
-
 
 class LightSensor
 {
@@ -49,16 +31,6 @@ public:
 };
 
 
-enum Category
-{
-	PLAYER =			0x0001,
-	SENSOR =			0x0004,
-	BOX =				0x0006,
-	CHAIN = 			0x0008,
-	TOPLEFTFLIPPER =	0x0010
-};
-
-
 class ModuleSceneIntro : public Module
 {
 public:
@@ -69,15 +41,11 @@ public:
 	update_status Update();
 	bool CleanUp();
 
-	void FillFlipper(Flipper* flipper, SDL_Rect rect, int x, int y, int rad, b2BodyType rectType, b2BodyType circType, float initAngle, bool invert, uint16 categoryBits, uint16 maskBits);
-
 	void CreateStartChains();
 
 	void CreateStartSensors();
 
 	void ChangeChains();
-
-	bool OutOfBounds();
 
 	SDL_Texture* lights = nullptr;
 
@@ -93,7 +61,7 @@ private:
 	bool extraLevelUp = false;
 	bool deleteInitSensor = false;
 
-	b2Vec2 ballStartPosition;
+	
 
 	b2Filter playerFilter;
 
@@ -127,18 +95,10 @@ private:
 	LightSensor leftFlipperEntrance2;
 	LightSensor rightFlipperEntrance;
 
-	PhysBody* ballBody = nullptr;
-	Flipper* leftFlipper = nullptr;
-	Flipper* rightFlipper = nullptr;
-	Flipper* rightTopFlipper = nullptr;
-	Flipper* leftTopFlipper = nullptr;
 
-	SDL_Rect leftSection = {0, 0, 81, 43};
-	SDL_Rect rightSection = {84, 0, 81, 43};
 
 	SDL_Texture* circle = nullptr;
 	SDL_Texture* backgr = nullptr;
-	SDL_Texture* flippers = nullptr;
 	SDL_Texture* roads = nullptr;
 
 	// Chains bodies for the lower level

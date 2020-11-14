@@ -3,6 +3,42 @@
 #include "Globals.h"
 #include "p2Point.h"
 
+#include "Box2D/Box2D/Box2D.h"
+#include "SDL/include/SDL_rect.h"
+#include "SDL_image/include/SDL_image.h"
+
+
+#define JOINTLIMIT 21.5f
+#define TIMELIMIT 1000
+
+class PhysBody;
+class SDL_Texture;
+
+enum Category
+{
+	PLAYER = 0x0001,
+	SENSOR = 0x0004,
+	BOX = 0x0006,
+	CHAIN = 0x0008,
+	TOPLEFTFLIPPER = 0x0010
+};
+
+
+class Flipper
+{
+public:
+	PhysBody* flipper;
+	PhysBody* bodyJointed;
+
+	b2RevoluteJointDef jointDef;
+	b2RevoluteJoint* joint;
+
+	float minA;
+	float maxA;
+	float initAngle;
+};
+
+
 class ModulePlayer : public Module
 {
 public:
@@ -13,11 +49,37 @@ public:
 	update_status Update();
 	bool CleanUp();
 
-public:
+	void FillFlipper(Flipper* flipper, SDL_Rect rect, int x, int y, int rad, b2BodyType rectType, b2BodyType circType, float initAngle, bool invert, uint16 categoryBits, uint16 maskBits);
 
+	bool OutOfBounds();
+
+	PhysBody* GetBall();
+
+private:
+
+	// Font related
 	int uiText;
-
 	char scoreText[10] = { "\0" };
 	int score = 0;
+
+
+	// Ball related
+	b2Vec2 ballStartPosition;
+	SDL_Texture* circle;
+	
+
+	// Flippers related
+	PhysBody* ballBody = nullptr;
+	
+	Flipper* leftFlipper = nullptr;
+	Flipper* rightFlipper = nullptr;
+	Flipper* rightTopFlipper = nullptr;
+	
+	Flipper* leftTopFlipper = nullptr;
+	SDL_Texture* flippers = nullptr;
+
+	SDL_Rect leftSection = { 0, 0, 81, 43 };
+	SDL_Rect rightSection = { 84, 0, 81, 43 };
+
 
 };
