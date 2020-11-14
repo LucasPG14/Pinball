@@ -17,4 +17,7 @@ public:
 
 	int uiText;
 
+	char scoreText[10] = { "\0" };
+	int score = 0;
+
 };

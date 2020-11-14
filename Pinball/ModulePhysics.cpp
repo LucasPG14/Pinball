@@ -166,7 +166,7 @@ PhysBody* ModulePhysics::CreateCircle(int x, int y, int rad, b2BodyType bodyType
 
 	b2FixtureDef fixture;
 	fixture.shape = &shape;
-	fixture.density = 1.0f;
+	fixture.density = 1.5f;
 	fixture.filter.categoryBits = categoryBits;
 	fixture.filter.maskBits = maskBits;
 

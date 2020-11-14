@@ -7,11 +7,13 @@
 #pragma comment( lib, "SDL_mixer/libx86/SDL2_mixer.lib" )
 
 ModuleAudio::ModuleAudio(Application* app, bool start_enabled) : Module(app, start_enabled), music(NULL)
-{}
+{
+}
 
 // Destructor
 ModuleAudio::~ModuleAudio()
-{}
+{
+}
 
 // Called before render is available
 bool ModuleAudio::Init()
@@ -164,4 +166,39 @@ bool ModuleAudio::PlayFx(unsigned int id, int repeat)
 	}
 
 	return ret;
+}
+
+
+void ModuleAudio::VolumeControl(int index)
+{
+	if (index < 0)
+	{
+		if (musicVolume <= 0)
+		{
+			musicVolume = 0;
+			LOG("Min music volume reached");
+		}
+		else
+		{
+			musicVolume += index;
+			Mix_VolumeMusic(musicVolume);
+			LOG("Music volume: %i", musicVolume);
+		}
+
+	}
+
+	if (index > 0)
+	{
+		if (musicVolume >= 125)
+		{
+			musicVolume = 128;
+			LOG("Max music volume reached");
+		}
+		else
+		{
+			musicVolume += index;
+			Mix_VolumeMusic(musicVolume);
+			LOG("Music volume: %i", musicVolume);
+		}
+	}
 }

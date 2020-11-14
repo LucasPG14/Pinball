@@ -18,7 +18,7 @@ bool ModulePlayer::Start()
 	//Font
 
 	char lookupTable[] = { "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ " };
-	uiText = App->fonts->Load("Assets/Assets/mfont.png", lookupTable, 1);
+	uiText = App->fonts->Load("Assets/Textures/Assets/mfont2.png", lookupTable, 1);
 
 
 
@@ -36,7 +36,11 @@ bool ModulePlayer::CleanUp()
 // Update: draw background
 update_status ModulePlayer::Update()
 {
-	App->fonts->BlitText(0, 0, uiText, "SCORE: ");
+	// Convert from int to string, so we can blit the text
+	sprintf_s(scoreText, 10, "%i", score);
+
+	App->fonts->BlitText(0, 0, uiText, "SCORE ");
+	App->fonts->BlitText(324, 0, uiText, scoreText);
 
 
 	return UPDATE_CONTINUE;

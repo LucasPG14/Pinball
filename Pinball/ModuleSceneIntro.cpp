@@ -1,16 +1,19 @@
+#include "ModuleSceneIntro.h"
+
 #include "Globals.h"
 #include "Application.h"
 #include "ModuleRender.h"
-#include "ModuleSceneIntro.h"
 #include "ModuleInput.h"
 #include "ModuleTextures.h"
 #include "ModulePhysics.h"
-#include "chains.h"
 #include "ModuleFonts.h"
+#include "ModuleAudio.h"
+
+#include "chains.h"
 
 ModuleSceneIntro::ModuleSceneIntro(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
-	circle = box = rick = NULL;
+	circle = NULL;
 }
 
 ModuleSceneIntro::~ModuleSceneIntro()
@@ -24,59 +27,24 @@ bool ModuleSceneIntro::Start()
 
 	App->renderer->camera.x = App->renderer->camera.y = 0;
 
-	circle = App->textures->Load("Assets/Assets/ball4.png");
-	box = App->textures->Load("Assets/crate.png");
-	rick = App->textures->Load("Assets/rick_head.png");
-	backgr = App->textures->Load("Assets/Assets/background2.png");
-	flippers = App->textures->Load("Assets/Assets/Flippers3.png");
-	roads = App->textures->Load("Assets/Assets/roads.png");
-	lights = App->textures->Load("Assets/Assets/LIGHTS.png");
+	circle = App->textures->Load("Assets/Textures/Assets/ball4.png");
+	backgr = App->textures->Load("Assets/Textures/Assets/background2.png");
+	flippers = App->textures->Load("Assets/Textures/Assets/Flippers3.png");
+	roads = App->textures->Load("Assets/Textures/Assets/roads.png");
+	lights = App->textures->Load("Assets/Textures/Assets/LIGHTS.png");
+
+	App->audio->PlayMusic("Assets/Sounds/Music/music.ogg", 0.0f);
+
 
 	ballLaunched = false;
 
 
 	// Chains Creation
-	//CreateChains();
-
-	background = App->physics->CreateChain(0, 0, bg, 136, b2_staticBody, Category::CHAIN, Category::PLAYER | Category::BOX);
-	bottomRight = App->physics->CreateChain(0, 0, bottomR, 22, b2_staticBody, Category::CHAIN, Category::PLAYER | Category::BOX);
-	bottomLeft = App->physics->CreateChain(0, 0, bottomL, 20, b2_staticBody, Category::CHAIN, Category::PLAYER | Category::BOX);
-	littleBottomLeft = App->physics->CreateChain(0, 0, littleBottomL, 12, b2_staticBody, Category::CHAIN, Category::PLAYER | Category::BOX);
-	littleBottomRight = App->physics->CreateChain(0, 0, littleBottomR, 12, b2_staticBody, Category::CHAIN, Category::PLAYER | Category::BOX);
-	veryLittleLeft = App->physics->CreateChain(0, 0, veryLittleL, 8, b2_staticBody, Category::CHAIN, Category::PLAYER | Category::BOX);
-	middleLittle = App->physics->CreateChain(0, 0, middleLit, 14, b2_staticBody, Category::CHAIN, Category::PLAYER | Category::BOX);
-	middle = App->physics->CreateChain(0, 0, extraMid, 152, b2_staticBody, Category::CHAIN, Category::PLAYER | Category::BOX);
-	extraRight = App->physics->CreateChain(0, 0, extraR, 50, b2_staticBody, Category::CHAIN, Category::PLAYER | Category::BOX);
-	extraLeft = App->physics->CreateChain(0, 0, extraL, 44, b2_staticBody, Category::CHAIN, Category::PLAYER | Category::BOX);
-	extraUpRight = App->physics->CreateChain(0, 0, extraUp, 48, b2_staticBody, Category::CHAIN, Category::PLAYER | Category::BOX);
-	extraMiddle = App->physics->CreateChain(0, 0, extraLevelMiddle, 50, b2_staticBody, Category::CHAIN, Category::PLAYER | Category::BOX);
-	initial = App->physics->CreateChain(0, 0, initLimit, 10, b2_staticBody, Category::CHAIN, Category::PLAYER | Category::BOX);
-
-	extraRight->GetBody().SetActive(false);
-	extraLeft->GetBody().SetActive(false);
-	extraUpRight->GetBody().SetActive(false);
-	extraMiddle->GetBody().SetActive(false);
-	initial->GetBody().SetActive(false);
+	CreateStartChains();
 
 	// Sensors creation
-	rightSensor = App->physics->CreateBox(403, 502, 12, 12, 0, b2_staticBody, true, SENSOR, PLAYER);
-	sensors.add(rightSensor);
-	rightLowSensor = App->physics->CreateBox(393, 712, 13, 8, 0, b2_staticBody, true, SENSOR, PLAYER);
-	sensors.add(rightLowSensor);
-	leftSensor = App->physics->CreateBox(73, 515, 15, 5, DEGTORAD * -20, b2_staticBody, true, SENSOR, PLAYER);
-	sensors.add(leftSensor);
-	leftLowSensor = App->physics->CreateBox(75, 700, 13, 8, 0, b2_staticBody, true, SENSOR, PLAYER);
-	sensors.add(leftLowSensor);
-	extraUpRightSensor = App->physics->CreateBox(297, 151, 18, 8, 0, b2_staticBody, true, SENSOR, PLAYER);
-	sensors.add(extraUpRightSensor);
-	extraUpLeftSensor = App->physics->CreateBox(100, 172, 12, 8, 0, b2_staticBody, true, SENSOR, PLAYER);
-	sensors.add(extraUpLeftSensor);
-	extraDownMiddleSensor = App->physics->CreateBox(205, 411, 12, 8, 0, b2_staticBody, true, SENSOR, PLAYER);
-	sensors.add(extraDownMiddleSensor);
-	extraUpMiddleSensor = App->physics->CreateBox(316, 77, 12, 10, 0, b2_staticBody, true, SENSOR, PLAYER);
-	sensors.add(extraUpMiddleSensor);
-	initSensor = App->physics->CreateBox(450, 85, 12, 30, 0, b2_staticBody, true, SENSOR, PLAYER);
-	sensors.add(initSensor);
+	CreateStartSensors();
+
 
 	// Light sensors creation (groups of 3 are separeted by the same distance between each element)
 	leftRedTriangle1.sensor = App->physics->CreateBox(185, 815, 10, 10, 0, b2_staticBody, true, SENSOR, PLAYER);
@@ -139,9 +107,11 @@ bool ModuleSceneIntro::Start()
 	rightFlipperEntrance.type = rightFlipperEntrance.whiteFlipperEntrance;
 	lightSensors.add(&rightFlipperEntrance);
 
+
 	// Ball Start-up
 	ballStartPosition = b2Vec2(485, 865);
 	ballBody = App->physics->CreateCircle(ballStartPosition.x, ballStartPosition.y, 14, b2_dynamicBody, PLAYER, TOPLEFTFLIPPER | SENSOR | BOX | CHAIN);
+
 
 	leftFlipper = new Flipper;
 	rightFlipper = new Flipper;
@@ -167,14 +137,22 @@ bool ModuleSceneIntro::Start()
 bool ModuleSceneIntro::CleanUp()
 {
 	LOG("Unloading Intro scene");
+
 	App->physics->GetWorld()->DestroyJoint(leftFlipper->joint);
 	App->physics->GetWorld()->DestroyJoint(rightFlipper->joint);
 	App->physics->GetWorld()->DestroyJoint(rightTopFlipper->joint);
 	App->physics->GetWorld()->DestroyJoint(leftTopFlipper->joint);
+
+	App->textures->Unload(circle);
+	App->textures->Unload(backgr);
+	App->textures->Unload(flippers);
+	App->textures->Unload(roads);
+	
 	delete leftFlipper;
 	delete rightFlipper;
 	delete rightTopFlipper;
 	delete leftTopFlipper;
+
 
 	return true;
 }
@@ -251,9 +229,18 @@ update_status ModuleSceneIntro::Update()
 		rightTopFlipper->joint->EnableMotor(false);
 	}
 
+	if (App->input->GetKey(SDL_SCANCODE_KP_PLUS) == KEY_DOWN)
+		App->audio->VolumeControl(4);
+
+	if (App->input->GetKey(SDL_SCANCODE_KP_MINUS) == KEY_DOWN)
+		App->audio->VolumeControl(-4);
+
+
+
 	//if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_UP) rightTopFlipper->joint->EnableMotor(false);
 
 	//if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_UP) leftTopFlipper->joint->EnableMotor(false);
+
 
 
 	// Sensor detection and changing between levels
@@ -286,6 +273,7 @@ update_status ModuleSceneIntro::Update()
 		s = s->next;
 	}
 
+
 	if (deleteInitSensor)
 	{
 		sensors.del(sensors.findNode(initSensor));
@@ -293,14 +281,17 @@ update_status ModuleSceneIntro::Update()
 		deleteInitSensor = false;
 	}
 
+
 	// Draw Background && UI elements
 	App->renderer->Blit(backgr, 0, 0, NULL);
+
 
 	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT)
 	{
 		SDL_Rect rect = { 486, 0, 31, 21 };
 		App->renderer->Blit(lights, 208 / 1.25f, 862 / 1.25f, &rect);
 	}
+
 
 	// Sensor detection and blitting lighted textures
 	p2List_item<LightSensor*>* t = lightSensors.getFirst();
@@ -333,26 +324,32 @@ update_status ModuleSceneIntro::Update()
 					rect = { 209, 0, 10, 21 };
 					App->renderer->Blit(lights, t->data->sensor->GetPosition(-6.0f).x, t->data->sensor->GetPosition(-21.0f).y, &rect);
 					break;
+
 				case (LightSensor::Type::rotatedLeftRedTriangle):
 					rect = { 237, 0, 11, 21 };
 					App->renderer->Blit(lights, t->data->sensor->GetPosition(-7.0f).x, t->data->sensor->GetPosition(-23.0f).y, &rect);
 					break;
+
 				case (LightSensor::Type::leftWhiteTriangle):
 					rect = { 196, 0, 10, 21 };
 					App->renderer->Blit(lights, t->data->sensor->GetPosition(-7.0f).x, t->data->sensor->GetPosition(-23.0f).y, &rect);
 					break;
+
 				case (LightSensor::Type::rightWhiteTriangle):
 					rect = { 223, 0, 10, 21 };
 					App->renderer->Blit(lights, t->data->sensor->GetPosition(-17.0f).x, t->data->sensor->GetPosition(-23.0f).y, &rect);
 					break;
+
 				case (LightSensor::Type::whiteFlipperEntrance):
 					rect = { 579, 0, 9, 15 };
 					App->renderer->Blit(lights, t->data->sensor->GetPosition(-8.0f).x, t->data->sensor->GetPosition(-46.0f).y, &rect);
 					break;
+
 				case (LightSensor::Type::redFlipperEntrance):
 					rect = { 566, 0, 9, 15 };
  					App->renderer->Blit(lights, t->data->sensor->GetPosition(-9.0f).x, t->data->sensor->GetPosition(-46.0f).y, &rect);
 					break;
+
 				default:
 					break;
 				}
@@ -367,6 +364,7 @@ update_status ModuleSceneIntro::Update()
 		t = t->next;
 	}
 
+
 	//DEBUG TOOL
 	if (App->input->GetKey(SDL_SCANCODE_1) == KEY_REPEAT)
 	{
@@ -379,7 +377,9 @@ update_status ModuleSceneIntro::Update()
 		}
 	}
 
+
 	App->renderer->Blit(flippers, leftTopFlipper->bodyJointed->GetPosition(-10.0f).x, leftTopFlipper->bodyJointed->GetPosition(-13.0f).y, &leftSection, 0, leftTopFlipper->flipper->GetRotation() + 180 - JOINTLIMIT, 10, 13);
+
 
 	SDL_Rect rect = { 0, 0, 87, 346 };
 	App->renderer->Blit(roads, 150 / 1.25f, 55 / 1.25f, &rect); // middle
@@ -396,6 +396,7 @@ update_status ModuleSceneIntro::Update()
 		App->renderer->Blit(roads, 348 / 1.25f, 477 / 1.25f, &rect); // right
 	}
 
+
 	// we add JOINTLIMIT to the angle to fix the displacement between the sprite (drawn at 21.5�) and rotation (21.5f�), this makes the sprite look like its rotated (21.5 * 2�))
 	App->renderer->Blit(flippers, leftFlipper->bodyJointed->GetPosition(-10.0f).x, leftFlipper->bodyJointed->GetPosition(-13.0f).y, &leftSection, 0, leftFlipper->flipper->GetRotation() + 180 - JOINTLIMIT, 10, 13);
 
@@ -403,10 +404,11 @@ update_status ModuleSceneIntro::Update()
 
 	App->renderer->Blit(flippers, rightTopFlipper->flipper->GetPosition(-28.0f).x, rightTopFlipper->flipper->GetPosition(-20.0f).y, &rightSection, 0, rightTopFlipper->flipper->GetRotation() + JOINTLIMIT, 28, 20);
 
-	
 
 	return UPDATE_CONTINUE;
 }
+
+
 
 void ModuleSceneIntro::FillFlipper(Flipper* flipper, SDL_Rect rect, int x, int y, int rad, b2BodyType rectType, b2BodyType circType, float initAngle, bool invert, uint16 categoryBits, uint16 maskBits)
 {
@@ -422,6 +424,56 @@ void ModuleSceneIntro::FillFlipper(Flipper* flipper, SDL_Rect rect, int x, int y
 	flipper->jointDef = App->physics->CreateRevoluteJoint(&flipper->flipper->GetBody(), &flipper->bodyJointed->GetBody(), flipper->maxA, flipper->minA, 0.6f, 0.0f, flipper->initAngle * mult);
 	flipper->joint = (b2RevoluteJoint*)App->physics->GetWorld()->CreateJoint(&flipper->jointDef);
 }
+
+
+
+void ModuleSceneIntro::CreateStartChains()
+{
+	background = App->physics->CreateChain(0, 0, bg, 136, b2_staticBody, Category::CHAIN, Category::PLAYER | Category::BOX);
+	bottomRight = App->physics->CreateChain(0, 0, bottomR, 22, b2_staticBody, Category::CHAIN, Category::PLAYER | Category::BOX);
+	bottomLeft = App->physics->CreateChain(0, 0, bottomL, 20, b2_staticBody, Category::CHAIN, Category::PLAYER | Category::BOX);
+	littleBottomLeft = App->physics->CreateChain(0, 0, littleBottomL, 12, b2_staticBody, Category::CHAIN, Category::PLAYER | Category::BOX);
+	littleBottomRight = App->physics->CreateChain(0, 0, littleBottomR, 12, b2_staticBody, Category::CHAIN, Category::PLAYER | Category::BOX);
+	veryLittleLeft = App->physics->CreateChain(0, 0, veryLittleL, 8, b2_staticBody, Category::CHAIN, Category::PLAYER | Category::BOX);
+	middleLittle = App->physics->CreateChain(0, 0, middleLit, 14, b2_staticBody, Category::CHAIN, Category::PLAYER | Category::BOX);
+	middle = App->physics->CreateChain(0, 0, extraMid, 152, b2_staticBody, Category::CHAIN, Category::PLAYER | Category::BOX);
+	extraRight = App->physics->CreateChain(0, 0, extraR, 50, b2_staticBody, Category::CHAIN, Category::PLAYER | Category::BOX);
+	extraLeft = App->physics->CreateChain(0, 0, extraL, 44, b2_staticBody, Category::CHAIN, Category::PLAYER | Category::BOX);
+	extraUpRight = App->physics->CreateChain(0, 0, extraUp, 48, b2_staticBody, Category::CHAIN, Category::PLAYER | Category::BOX);
+	extraMiddle = App->physics->CreateChain(0, 0, extraLevelMiddle, 50, b2_staticBody, Category::CHAIN, Category::PLAYER | Category::BOX);
+	initial = App->physics->CreateChain(0, 0, initLimit, 10, b2_staticBody, Category::CHAIN, Category::PLAYER | Category::BOX);
+
+	extraRight->GetBody().SetActive(false);
+	extraLeft->GetBody().SetActive(false);
+	extraUpRight->GetBody().SetActive(false);
+	extraMiddle->GetBody().SetActive(false);
+	initial->GetBody().SetActive(false);
+}
+
+
+void ModuleSceneIntro::CreateStartSensors()
+{
+	rightSensor = App->physics->CreateBox(403, 502, 12, 12, 0, b2_staticBody, true, SENSOR, PLAYER);
+	sensors.add(rightSensor);
+	rightLowSensor = App->physics->CreateBox(393, 712, 13, 8, 0, b2_staticBody, true, SENSOR, PLAYER);
+	sensors.add(rightLowSensor);
+	leftSensor = App->physics->CreateBox(73, 515, 15, 5, DEGTORAD * -20, b2_staticBody, true, SENSOR, PLAYER);
+	sensors.add(leftSensor);
+	leftLowSensor = App->physics->CreateBox(75, 700, 13, 8, 0, b2_staticBody, true, SENSOR, PLAYER);
+	sensors.add(leftLowSensor);
+	extraUpRightSensor = App->physics->CreateBox(297, 151, 18, 8, 0, b2_staticBody, true, SENSOR, PLAYER);
+	sensors.add(extraUpRightSensor);
+	extraUpLeftSensor = App->physics->CreateBox(110, 155, 12, 10, 0, b2_staticBody, true, SENSOR, PLAYER);
+	sensors.add(extraUpLeftSensor);
+	extraDownMiddleSensor = App->physics->CreateBox(205, 411, 12, 8, 0, b2_staticBody, true, SENSOR, PLAYER);
+	sensors.add(extraDownMiddleSensor);
+	extraUpMiddleSensor = App->physics->CreateBox(316, 77, 12, 10, 0, b2_staticBody, true, SENSOR, PLAYER);
+	sensors.add(extraUpMiddleSensor);
+	initSensor = App->physics->CreateBox(450, 85, 12, 30, 0, b2_staticBody, true, SENSOR, PLAYER);
+	sensors.add(initSensor);
+}
+
+
 
 void ModuleSceneIntro::ChangeChains()
 {
@@ -466,6 +518,7 @@ void ModuleSceneIntro::ChangeChains()
 		extraLevelUp = false;
 	}
 }
+
 
 bool ModuleSceneIntro::OutOfBounds()
 {

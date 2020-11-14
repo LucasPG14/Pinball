@@ -4,6 +4,10 @@
 #include "Globals.h"
 #include "Box2D/Box2D/Box2D.h"
 
+#include"SDL/include/SDL_rect.h"
+#include "SDL_mixer/include/SDL_mixer.h"
+#include "SDL_image/include/SDL_image.h"
+
 #define JOINTLIMIT 21.5f
 #define TIMELIMIT 1000
 
@@ -24,6 +28,7 @@ public:
 	float initAngle;
 };
 
+
 class LightSensor
 {
 public:
@@ -43,6 +48,7 @@ public:
 	int initTime = 0;
 };
 
+
 enum Category
 {
 	PLAYER =			0x0001,
@@ -51,6 +57,7 @@ enum Category
 	CHAIN = 			0x0008,
 	TOPLEFTFLIPPER =	0x0010
 };
+
 
 class ModuleSceneIntro : public Module
 {
@@ -64,11 +71,17 @@ public:
 
 	void FillFlipper(Flipper* flipper, SDL_Rect rect, int x, int y, int rad, b2BodyType rectType, b2BodyType circType, float initAngle, bool invert, uint16 categoryBits, uint16 maskBits);
 
+	void CreateStartChains();
+
+	void CreateStartSensors();
+
 	void ChangeChains();
 
 	bool OutOfBounds();
 
 	SDL_Texture* lights = nullptr;
+
+
 public:
 
 	bool isOnExtraLevel = false;
@@ -124,8 +137,6 @@ private:
 	SDL_Rect rightSection = {84, 0, 81, 43};
 
 	SDL_Texture* circle = nullptr;
-	SDL_Texture* box = nullptr;
-	SDL_Texture* rick = nullptr;
 	SDL_Texture* backgr = nullptr;
 	SDL_Texture* flippers = nullptr;
 	SDL_Texture* roads = nullptr;
