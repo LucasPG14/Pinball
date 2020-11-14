@@ -3,7 +3,7 @@ This is a project for the Physics II subject, at CITM (UPC, Terrassa).
 Consists of a 2D Pinball, using Box2D as the main Physics Engine.
 
 ## Controls
-- Use A, D or W to move the flippers.
+- Use A or D to move the flippers. Above and below move simultaneously 
 - Space to kick the ball at the biggining.
 
 ## Debug Keys
