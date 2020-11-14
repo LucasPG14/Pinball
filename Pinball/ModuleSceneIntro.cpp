@@ -127,17 +127,17 @@ bool ModuleSceneIntro::Start()
 	rightWhiteTriangle3.type = rightWhiteTriangle3.rightWhiteTriangle;
 	lightSensors.add(&rightWhiteTriangle3);
 
-	leftFlipperEntrance1.sensor = App->physics->CreateBox(76, 748, 10, 10, 0, b2_staticBody, true, SENSOR, PLAYER);
+	leftFlipperEntrance1.sensor = App->physics->CreateBox(76, 778, 10, 10, 0, b2_staticBody, true, SENSOR, PLAYER);
 	leftFlipperEntrance1.type = leftFlipperEntrance1.whiteFlipperEntrance;
 	lightSensors.add(&leftFlipperEntrance1);
 
-	rightFlipperEntrance.sensor = App->physics->CreateBox(391, 752, 10, 10, 0, b2_staticBody, true, SENSOR, PLAYER);
-	rightFlipperEntrance.type = rightFlipperEntrance.whiteFlipperEntrance;
-	lightSensors.add(&rightFlipperEntrance);
-
-	leftFlipperEntrance2.sensor = App->physics->CreateBox(116, 748, 10, 10, 0, b2_staticBody, true, SENSOR, PLAYER);
+	leftFlipperEntrance2.sensor = App->physics->CreateBox(116, 778, 10, 10, 0, b2_staticBody, true, SENSOR, PLAYER);
 	leftFlipperEntrance2.type = leftFlipperEntrance2.redFlipperEntrance;
 	lightSensors.add(&leftFlipperEntrance2);
+
+	rightFlipperEntrance.sensor = App->physics->CreateBox(391, 782, 10, 10, 0, b2_staticBody, true, SENSOR, PLAYER);
+	rightFlipperEntrance.type = rightFlipperEntrance.whiteFlipperEntrance;
+	lightSensors.add(&rightFlipperEntrance);
 
 	// Ball Start-up
 	ballStartPosition = b2Vec2(485, 865);
@@ -347,11 +347,11 @@ update_status ModuleSceneIntro::Update()
 					break;
 				case (LightSensor::Type::whiteFlipperEntrance):
 					rect = { 579, 0, 9, 15 };
-					App->renderer->Blit(lights, t->data->sensor->GetPosition(-8.0f).x, t->data->sensor->GetPosition(-23.0f).y, &rect);
+					App->renderer->Blit(lights, t->data->sensor->GetPosition(-8.0f).x, t->data->sensor->GetPosition(-46.0f).y, &rect);
 					break;
 				case (LightSensor::Type::redFlipperEntrance):
 					rect = { 566, 0, 9, 15 };
- 					App->renderer->Blit(lights, t->data->sensor->GetPosition(-9.0f).x, t->data->sensor->GetPosition(-23.0f).y, &rect);
+ 					App->renderer->Blit(lights, t->data->sensor->GetPosition(-9.0f).x, t->data->sensor->GetPosition(-46.0f).y, &rect);
 					break;
 				default:
 					break;
