@@ -35,10 +35,6 @@ bool ModuleSceneIntro::Start()
 
 	App->audio->PlayMusic("Assets/Sounds/Music/music.ogg", 0.0f);
 
-
-	ballLaunched = false;
-
-
 	// Chains Creation
 	CreateStartChains();
 
@@ -141,10 +137,6 @@ update_status ModuleSceneIntro::Update()
 	if (App->input->GetKey(SDL_SCANCODE_KP_MINUS) == KEY_DOWN)
 		App->audio->VolumeControl(-4);
 
-	//if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_UP) rightTopFlipper->joint->EnableMotor(false);
-
-	//if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_UP) leftTopFlipper->joint->EnableMotor(false);
-
 	// Sensor detection and changing between levels
 	p2List_item<PhysBody*>* s = sensors.getFirst();
 	while (s != NULL)
@@ -186,7 +178,7 @@ update_status ModuleSceneIntro::Update()
 	App->renderer->Blit(backgr, 0, 0, NULL);
 
 
-	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT)
+	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
 	{
 		SDL_Rect rect = { 486, 0, 31, 21 };
 		App->renderer->Blit(lights, 208 / 1.25f, 862 / 1.25f, &rect);
@@ -198,7 +190,7 @@ update_status ModuleSceneIntro::Update()
 	p2List_item<LightSensor*>* t = lightSensors.getFirst();
 	while (t != NULL)
 	{
-		if (t->data->sensor->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y) && t->data->light == false /*&& isOnExtraLevel == false*/)
+		if (t->data->sensor->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y) && t->data->light == false)
 		{
 			if (t->data->type == LightSensor::Type::whiteFlipperEntrance || t->data->type == LightSensor::Type::redFlipperEntrance)
 			{
@@ -306,18 +298,6 @@ update_status ModuleSceneIntro::Update()
 
 	Points();
 
-	//DEBUG TOOL
-	if (App->input->GetKey(SDL_SCANCODE_1) == KEY_REPEAT)
-	{
-		p2List_item<LightSensor*>* t = lightSensors.getFirst();
-		SDL_Rect rect;
-		while (t != NULL)
-		{
-			App->renderer->Blit(lights, t->data->sensor->GetPosition(-9.0f).x, t->data->sensor->GetPosition(-23.0f).y, &rect);
-			t = t->next;
-		}
-	}
-
 	App->renderer->Blit(App->player->flippers, App->player->leftTopFlipper->bodyJointed->GetPosition(-10.0f).x, App->player->leftTopFlipper->bodyJointed->GetPosition(-13.0f).y, &App->player->leftSection, 0, App->player->leftTopFlipper->flipper->GetRotation() + 180 - JOINTLIMIT, 10, 13);
 
 	SDL_Rect rect = { 0, 0, 87, 346 };
@@ -377,7 +357,7 @@ void ModuleSceneIntro::CreateStartSensors()
 	sensors.add(extraUpRightSensor);
 	extraUpLeftSensor = App->physics->CreateBox(110, 155, 12, 10, 0, b2_staticBody, true, SENSOR, PLAYER);
 	sensors.add(extraUpLeftSensor);
-	extraDownMiddleSensor = App->physics->CreateBox(205, 411, 12, 8, 0, b2_staticBody, true, SENSOR, PLAYER);
+	extraDownMiddleSensor = App->physics->CreateBox(205, 411, 12, 12, 0, b2_staticBody, true, SENSOR, PLAYER);
 	sensors.add(extraDownMiddleSensor);
 	extraUpMiddleSensor = App->physics->CreateBox(316, 77, 12, 10, 0, b2_staticBody, true, SENSOR, PLAYER);
 	sensors.add(extraUpMiddleSensor);
@@ -432,13 +412,19 @@ void ModuleSceneIntro::ChangeChains()
 
 void ModuleSceneIntro::Points()
 {
-	if (extraUpRightSensor->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y) && App->player->GetBall()->GetBody().GetLinearVelocity().y < 0)
+	if (extraUpRightSensor->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y) && App->player->GetBall()->GetBody().GetLinearVelocity().y < 0 && topAdded == false)
 	{
 		App->player->score += 50;
+		topAdded = true;
 	}
 
-	else if (extraDownMiddleSensor->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y) && App->player->GetBall()->GetBody().GetLinearVelocity().y < 0)
+	else if (extraUpRightSensor->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y) == false) topAdded = false;
+
+	if (extraDownMiddleSensor->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y) && App->player->GetBall()->GetBody().GetLinearVelocity().y < 0 && bottomAdded == false)
 	{
 		App->player->score += 50;
+		bottomAdded = true;
 	}
+
+	else if (extraDownMiddleSensor->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y == false)) bottomAdded = false;
 }

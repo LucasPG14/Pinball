@@ -66,33 +66,39 @@ update_status ModulePlayer::Update()
 		b2Vec2 v(x, y);
 		ballBody->GetBody().SetLinearVelocity(b2Vec2(0, 0));
 		ballBody->GetBody().SetTransform(b2Vec2(x - 1.3f, y - 3), 0);
-		//ballLaunched = false;
+		ballLaunched = false;
 	}
 
-	if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN /*&& ballLaunched == false*/)
+	if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN && ballLaunched == false)
 	{
-		//ballLaunched = true;
+		ballLaunched = true;
 		b2Vec2 force(0, -250);
 		ballBody->ApplyForce(force);
 	}
 
-	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT && leftFlipper->joint->IsMotorEnabled() == false)
+	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_DOWN && leftFlipper->joint->IsMotorEnabled() == false)
 	{
 		leftFlipper->joint->EnableMotor(true);
 		leftFlipper->joint->SetMaxMotorTorque(100.0f);
 		leftFlipper->joint->SetMotorSpeed(80.0f);
+	}
 
+	if (App->input->GetKey(SDL_SCANCODE_D) == KEY_DOWN && rightFlipper->joint->IsMotorEnabled() == false)
+	{
+		rightFlipper->joint->EnableMotor(true);
+		rightFlipper->joint->SetMaxMotorTorque(100.0f);
+		rightFlipper->joint->SetMotorSpeed(-80.0f);
+	}
+
+	if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_DOWN && leftFlipper->joint->IsMotorEnabled() == false)
+	{
 		leftTopFlipper->joint->EnableMotor(true);
 		leftTopFlipper->joint->SetMaxMotorTorque(100.0f);
 		leftTopFlipper->joint->SetMotorSpeed(80.0f);
 	}
 
-	if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT && rightFlipper->joint->IsMotorEnabled() == false)
+	if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_DOWN && leftFlipper->joint->IsMotorEnabled() == false)
 	{
-		rightFlipper->joint->EnableMotor(true);
-		rightFlipper->joint->SetMaxMotorTorque(100.0f);
-		rightFlipper->joint->SetMotorSpeed(-80.0f);
-
 		rightTopFlipper->joint->EnableMotor(true);
 		rightTopFlipper->joint->SetMaxMotorTorque(100.0f);
 		rightTopFlipper->joint->SetMotorSpeed(-80.0f);
@@ -101,12 +107,20 @@ update_status ModulePlayer::Update()
 	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_UP)
 	{
 		leftFlipper->joint->EnableMotor(false);
-		leftTopFlipper->joint->EnableMotor(false);
 	}
 
 	if (App->input->GetKey(SDL_SCANCODE_D) == KEY_UP)
 	{
 		rightFlipper->joint->EnableMotor(false);
+	}
+
+	if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_UP)
+	{
+		leftTopFlipper->joint->EnableMotor(false);
+	}
+
+	if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_UP)
+	{
 		rightTopFlipper->joint->EnableMotor(false);
 	}
 
@@ -114,7 +128,7 @@ update_status ModulePlayer::Update()
 	sprintf_s(scoreText, 10, "%i", score);
 
 	App->fonts->BlitText(0, 942 / 1.25f, uiText, "SCORE ");
-	App->fonts->BlitText(324, 942 / 1.25f, uiText, scoreText);
+	App->fonts->BlitText(265, 942 / 1.25f, uiText, scoreText);
 
 	// Flippers blit
 	// We add JOINTLIMIT to the angle to fix the displacement between the sprite (drawn at 21.5�) and rotation (21.5f�), this makes the sprite look like its rotated (21.5 * 2�))

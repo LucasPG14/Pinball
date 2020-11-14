@@ -71,6 +71,8 @@ private:
 	int uiText;
 	char scoreText[10] = { "\0" };
 
+	bool ballLaunched = false;
+
 	// Flippers related
 	PhysBody* ballBody = nullptr;
 	

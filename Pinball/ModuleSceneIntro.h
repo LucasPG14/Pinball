@@ -51,18 +51,17 @@ public:
 
 	SDL_Texture* lights = nullptr;
 
-public:
-
 	bool isOnExtraLevel = false;
 
 private:
 
-	bool ballLaunched = false;
 	bool extraLevelMid = false;
 	bool extraLevelUp = false;
 	bool deleteInitSensor = false;
 
 	bool added = false;
+	bool topAdded = false;
+	bool bottomAdded = false;
 
 	b2Filter playerFilter;
 
