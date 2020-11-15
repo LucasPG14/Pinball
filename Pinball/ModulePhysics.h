@@ -27,6 +27,8 @@ public:
 	const double& GetRotation();
 	bool Contains(int x, int y) const;
 
+	void SetBody(b2Body* b);
+
 	inline b2Body& GetBody()
 	{
 		return *body;
@@ -36,7 +38,7 @@ public:
 
 
 
-class ModulePhysics : public Module 
+class ModulePhysics : public Module, public b2ContactListener
 {
 public:
 	ModulePhysics(Application* app, bool start_enabled = true);
@@ -60,5 +62,10 @@ private:
 	SDL_Texture* bg;
 	bool debug;
 	b2World* world;
+
+	b2MouseJoint* mouseJoint;
+	bool jointFlag;
+	PhysBody* ground;
+	PhysBody* jointBody;
 
 };
