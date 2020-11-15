@@ -69,6 +69,8 @@ update_status ModulePlayer::Update()
 	{
 		if (OutOfBounds())
 		{
+			--lifes;
+
 			int x = PIXEL_TO_METERS(ballStartPosition.x);
 			int y = PIXEL_TO_METERS(ballStartPosition.y);
 			score = 0;
@@ -81,8 +83,6 @@ update_status ModulePlayer::Update()
 
 			ballLaunched = false;
 			App->audio->PlayFx(gameOverFx);
-
-			--lifes;
 		}
 
 		if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN && ballLaunched == false)
@@ -94,65 +94,65 @@ update_status ModulePlayer::Update()
 			App->audio->PlayFx(kickerFx, 0);
 		}
 
-	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_DOWN && leftFlipper->joint->IsMotorEnabled() == false)
-	{
-		leftFlipper->joint->EnableMotor(true);
-		leftFlipper->joint->SetMaxMotorTorque(100.0f);
-		leftFlipper->joint->SetMotorSpeed(80.0f);
-		App->audio->PlayFx(flipperFx);
-	}
+		if (App->input->GetKey(SDL_SCANCODE_A) == KEY_DOWN && leftFlipper->joint->IsMotorEnabled() == false)
+		{
+			leftFlipper->joint->EnableMotor(true);
+			leftFlipper->joint->SetMaxMotorTorque(100.0f);
+			leftFlipper->joint->SetMotorSpeed(80.0f);
+			App->audio->PlayFx(flipperUpFx);
+		}
 
-	if (App->input->GetKey(SDL_SCANCODE_D) == KEY_DOWN && rightFlipper->joint->IsMotorEnabled() == false)
-	{
-		rightFlipper->joint->EnableMotor(true);
-		rightFlipper->joint->SetMaxMotorTorque(100.0f);
-		rightFlipper->joint->SetMotorSpeed(-80.0f);
-		App->audio->PlayFx(flipperFx);
-	}
+		if (App->input->GetKey(SDL_SCANCODE_D) == KEY_DOWN && rightFlipper->joint->IsMotorEnabled() == false)
+		{
+			rightFlipper->joint->EnableMotor(true);
+			rightFlipper->joint->SetMaxMotorTorque(100.0f);
+			rightFlipper->joint->SetMotorSpeed(-80.0f);
+			App->audio->PlayFx(flipperUpFx);
+		}
 
-	if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_DOWN && leftFlipper->joint->IsMotorEnabled() == false)
-	{
-		leftTopFlipper->joint->EnableMotor(true);
-		leftTopFlipper->joint->SetMaxMotorTorque(100.0f);
-		leftTopFlipper->joint->SetMotorSpeed(80.0f);
-		App->audio->PlayFx(flipperFx);
-	}
+		if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_DOWN && leftFlipper->joint->IsMotorEnabled() == false)
+		{
+			leftTopFlipper->joint->EnableMotor(true);
+			leftTopFlipper->joint->SetMaxMotorTorque(100.0f);
+			leftTopFlipper->joint->SetMotorSpeed(80.0f);
+			App->audio->PlayFx(flipperUpFx);
+		}
 
-	if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_DOWN && leftFlipper->joint->IsMotorEnabled() == false)
-	{
-		rightTopFlipper->joint->EnableMotor(true);
-		rightTopFlipper->joint->SetMaxMotorTorque(100.0f);
-		rightTopFlipper->joint->SetMotorSpeed(-80.0f);
-		App->audio->PlayFx(flipperFx);
-	}
+		if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_DOWN && leftFlipper->joint->IsMotorEnabled() == false)
+		{
+			rightTopFlipper->joint->EnableMotor(true);
+			rightTopFlipper->joint->SetMaxMotorTorque(100.0f);
+			rightTopFlipper->joint->SetMotorSpeed(-80.0f);
+			App->audio->PlayFx(flipperUpFx);
+		}
 
-	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_UP)
-	{
-		leftFlipper->joint->EnableMotor(false);
-	}
+		if (App->input->GetKey(SDL_SCANCODE_A) == KEY_UP)
+		{
+			leftFlipper->joint->EnableMotor(false);
+			App->audio->PlayFx(flipperDownFx);
+		}
 
-	if (App->input->GetKey(SDL_SCANCODE_D) == KEY_UP)
-	{
-		rightFlipper->joint->EnableMotor(false);
-	}
+		if (App->input->GetKey(SDL_SCANCODE_D) == KEY_UP)
+		{
+			rightFlipper->joint->EnableMotor(false);
+			App->audio->PlayFx(flipperDownFx);
+		}
 
-	if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_UP)
-	{
-		leftTopFlipper->joint->EnableMotor(false);
-	}
+		if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_UP)
+		{
+			leftTopFlipper->joint->EnableMotor(false);
+			App->audio->PlayFx(flipperDownFx);
+		}
 
-	if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_UP)
-	{
-		rightTopFlipper->joint->EnableMotor(false);
-	}
+		if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_UP)
+		{
+			rightTopFlipper->joint->EnableMotor(false);
+			App->audio->PlayFx(flipperDownFx);
+		}
 
-		/*if (lifes == 0)
-			App->fade->Fade((Module*)App->scene_intro, (Module*)App->deadScene);
-	*/
-	// Draw section =============================================
+		// Draw section =============================================
 
-
-	// Convert from int to string, so we can blit the text
+		// Convert from int to string, so we can blit the text
 		sprintf_s(scoreText, 10, "%i", score);
 
 		App->fonts->BlitText(0, 942 / 1.25f, uiText, "SCORE ");
