@@ -2,13 +2,16 @@
 
 #include "Application.h"
 #include "ModuleRender.h"
-#include "ModuleWindow.h"
+
 #include "ModuleAudio.h"
 
 #include "SDL/include/SDL_render.h"
 
 ModuleFadeToBlack::ModuleFadeToBlack(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
+	int w = (int)SCREEN_WIDTH * (int)SCREEN_SIZE;
+	int h = (int)SCREEN_HEIGHT * (int)SCREEN_SIZE;
+	screenRect = { 0, 0, w, h };
 }
 
 ModuleFadeToBlack::~ModuleFadeToBlack()
@@ -20,10 +23,6 @@ bool ModuleFadeToBlack::Start()
 {
 	LOG("Preparing Fade Screen");
 
-	int w = (int)SCREEN_WIDTH * (int)SCREEN_SIZE;
-	int h = (int)SCREEN_HEIGHT * (int)SCREEN_SIZE;
-	screenRect = { 0, 0, w, h };
-
 	// Enable blending mode for transparency
 	SDL_SetRenderDrawBlendMode(App->renderer->renderer, SDL_BLENDMODE_BLEND);
 
@@ -33,9 +32,9 @@ bool ModuleFadeToBlack::Start()
 update_status ModuleFadeToBlack::Update()
 {
 	// Exit this function if we are not performing a fade
-	if (currentStep == FadeStep::NONE) return update_status::UPDATE_CONTINUE;
+	if (currentStep == Fade_Step::NONE) return update_status::UPDATE_CONTINUE;
 
-	if (currentStep == FadeStep::TO_BLACK)
+	if (currentStep == Fade_Step::TO_BLACK)
 	{
 		++frameCount;
 		if (frameCount >= maxFadeFrames)
@@ -44,7 +43,7 @@ update_status ModuleFadeToBlack::Update()
 			moduleToDisable->Disable();
 			moduleToEnable->Enable();
 
-			currentStep = FadeStep::FROM_BLACK;
+			currentStep = Fade_Step::FROM_BLACK;
 		}
 	}
 	else
@@ -52,7 +51,7 @@ update_status ModuleFadeToBlack::Update()
 		--frameCount;
 		if (frameCount <= 0)
 		{
-			currentStep = FadeStep::NONE;
+			currentStep = Fade_Step::NONE;
 		}
 	}
 
@@ -62,7 +61,7 @@ update_status ModuleFadeToBlack::Update()
 update_status ModuleFadeToBlack::PostUpdate()
 {
 	// Exit this function if we are not performing a fade
-	if (currentStep == FadeStep::NONE) return update_status::UPDATE_CONTINUE;
+	if (currentStep == Fade_Step::NONE) return update_status::UPDATE_CONTINUE;
 
 	float fadeRatio = (float)frameCount / (float)maxFadeFrames;
 
@@ -78,9 +77,9 @@ bool ModuleFadeToBlack::Fade(Module* moduleToDisable, Module* moduleToEnable, fl
 	bool ret = false;
 
 	// If we are already in a fade process, ignore this call
-	if (currentStep == FadeStep::NONE)
+	if (currentStep == Fade_Step::NONE)
 	{
-		currentStep = FadeStep::TO_BLACK;
+		currentStep = Fade_Step::TO_BLACK;
 		frameCount = 0;
 		maxFadeFrames = frames;
 
