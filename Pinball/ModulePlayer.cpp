@@ -23,8 +23,8 @@ bool ModulePlayer::Start()
 
 	lifes = 3;
 	
-	circle = App->textures->Load("Assets/Textures/Assets/ball4.png");
-	flippers = App->textures->Load("Assets/Textures/Assets/Flippers3.png");
+	circle = App->textures->Load("Assets/Textures/ball2.png");
+	flippers = App->textures->Load("Assets/Textures/Flippers3.png");
 	kickerFx = App->audio->LoadFx("Assets/Sounds/Fx/kicker.wav");
 	gameOverFx = App->audio->LoadFx("Assets/Sounds/Fx/game_over.wav");
 	flipperUpFx = App->audio->LoadFx("Assets/Sounds/Fx/flipper_up.wav");
@@ -54,7 +54,7 @@ bool ModulePlayer::Start()
 
 	//Font
 	char lookupTable[] = { "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ " };
-	uiText = App->fonts->Load("Assets/Textures/Assets/font.png", lookupTable, 1);
+	uiText = App->fonts->Load("Assets/Textures/font.png", lookupTable, 1);
 
 
 	return true;
@@ -86,7 +86,7 @@ update_status ModulePlayer::Update()
 	if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN && ballLaunched == false)
 	{
 		ballLaunched = true;
-		b2Vec2 force(0, -190.3f);
+		b2Vec2 force(0, -190.5f);
 		ballBody->ApplyForce(force);
 
 		App->audio->PlayFx(kickerFx, 0);

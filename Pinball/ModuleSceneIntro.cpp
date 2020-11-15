@@ -29,9 +29,9 @@ bool ModuleSceneIntro::Start()
 	App->renderer->camera.x = App->renderer->camera.y = 0;
 
 	
-	backgr = App->textures->Load("Assets/Textures/Assets/background2.png");
-	lights = App->textures->Load("Assets/Textures/Assets/LIGHTS.png");
-	roads = App->textures->Load("Assets/Textures/Assets/roads.png");
+	backgr = App->textures->Load("Assets/Textures/background2.png");
+	lights = App->textures->Load("Assets/Textures/LIGHTS.png");
+	roads = App->textures->Load("Assets/Textures/roads.png");
 
 	App->audio->PlayMusic("Assets/Sounds/Music/music.ogg", 0.0f);
 	pointsFx = App->audio->LoadFx("Assets/Sounds/Fx/points.wav");
@@ -447,7 +447,7 @@ update_status ModuleSceneIntro::Update()
 	SDL_Rect rect = { 0, 0, 87, 346 };
 	App->renderer->Blit(roads, 150 / 1.25f, 55 / 1.25f, &rect); // middle
 
-	App->renderer->Blit(App->player->circle, App->player->GetBall()->GetPosition(-10.0f).x , App->player->GetBall()->GetPosition(-10.0f).y, 0, 1.0f, App->player->GetBall()->GetRotation());
+	App->renderer->Blit(App->player->circle, App->player->GetBall()->GetPosition(-13.0f).x , App->player->GetBall()->GetPosition(-12.0f).y, 0, 1.0f, App->player->GetBall()->GetRotation());
 
 	if (isOnExtraLevel == false || extraLevelUp == true)
 	{
