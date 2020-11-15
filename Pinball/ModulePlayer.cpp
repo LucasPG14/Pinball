@@ -31,6 +31,7 @@ bool ModulePlayer::Start()
 	flipperDownFx = App->audio->LoadFx("Assets/Sounds/Fx/flipper_down.wav");
 
 	// Ball Start-up
+	ballBody = new PhysBody(NULL);
 	ballStartPosition = b2Vec2(486, 865);
 	ballBody = App->physics->CreateCircle(ballStartPosition.x, ballStartPosition.y, 14, b2_dynamicBody, PLAYER, TOPLEFTFLIPPER | SENSOR | BOX | CHAIN);
 
@@ -64,102 +65,106 @@ bool ModulePlayer::Start()
 // Update: draw background
 update_status ModulePlayer::Update()
 {
-	if (OutOfBounds())
+	if (ballBody != nullptr)
 	{
-		--lifes;
-		
-		int x = PIXEL_TO_METERS(ballStartPosition.x);
-		int y = PIXEL_TO_METERS(ballStartPosition.y);
-		score = 0;
-		b2Vec2 v(x, y);
-		ballBody->GetBody().SetLinearVelocity(b2Vec2(0, 0));
+		if (OutOfBounds())
+		{
+			--lifes;
 
-		ballBody->GetBody().SetFixedRotation(true);
-		ballBody->GetBody().SetTransform(b2Vec2(x - 1.2f, y - 3), 0);
-		ballBody->GetBody().SetFixedRotation(false);
+			int x = PIXEL_TO_METERS(ballStartPosition.x);
+			int y = PIXEL_TO_METERS(ballStartPosition.y);
+			score = 0;
+			b2Vec2 v(x, y);
+			ballBody->GetBody().SetLinearVelocity(b2Vec2(0, 0));
 
-		ballLaunched = false;
-		App->audio->PlayFx(gameOverFx);
-		
+			ballBody->GetBody().SetFixedRotation(true);
+			ballBody->GetBody().SetTransform(b2Vec2(x - 1.2f, y - 3), 0);
+			ballBody->GetBody().SetFixedRotation(false);
+
+			ballLaunched = false;
+			App->audio->PlayFx(gameOverFx);
+		}
+
+		if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN && ballLaunched == false)
+		{
+			ballLaunched = true;
+			b2Vec2 force(0, -190.3f);
+			ballBody->ApplyForce(force);
+
+			App->audio->PlayFx(kickerFx, 0);
+		}
+
+		if (App->input->GetKey(SDL_SCANCODE_A) == KEY_DOWN && leftFlipper->joint->IsMotorEnabled() == false)
+		{
+			leftFlipper->joint->EnableMotor(true);
+			leftFlipper->joint->SetMaxMotorTorque(100.0f);
+			leftFlipper->joint->SetMotorSpeed(80.0f);
+			App->audio->PlayFx(flipperUpFx);
+		}
+
+		if (App->input->GetKey(SDL_SCANCODE_D) == KEY_DOWN && rightFlipper->joint->IsMotorEnabled() == false)
+		{
+			rightFlipper->joint->EnableMotor(true);
+			rightFlipper->joint->SetMaxMotorTorque(100.0f);
+			rightFlipper->joint->SetMotorSpeed(-80.0f);
+			App->audio->PlayFx(flipperUpFx);
+		}
+
+		if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_DOWN && leftFlipper->joint->IsMotorEnabled() == false)
+		{
+			leftTopFlipper->joint->EnableMotor(true);
+			leftTopFlipper->joint->SetMaxMotorTorque(100.0f);
+			leftTopFlipper->joint->SetMotorSpeed(80.0f);
+			App->audio->PlayFx(flipperUpFx);
+		}
+
+		if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_DOWN && leftFlipper->joint->IsMotorEnabled() == false)
+		{
+			rightTopFlipper->joint->EnableMotor(true);
+			rightTopFlipper->joint->SetMaxMotorTorque(100.0f);
+			rightTopFlipper->joint->SetMotorSpeed(-80.0f);
+			App->audio->PlayFx(flipperUpFx);
+		}
+
+		if (App->input->GetKey(SDL_SCANCODE_A) == KEY_UP)
+		{
+			leftFlipper->joint->EnableMotor(false);
+			App->audio->PlayFx(flipperDownFx);
+		}
+
+		if (App->input->GetKey(SDL_SCANCODE_D) == KEY_UP)
+		{
+			rightFlipper->joint->EnableMotor(false);
+			App->audio->PlayFx(flipperDownFx);
+		}
+
+		if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_UP)
+		{
+			leftTopFlipper->joint->EnableMotor(false);
+			App->audio->PlayFx(flipperDownFx);
+		}
+
+		if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_UP)
+		{
+			rightTopFlipper->joint->EnableMotor(false);
+			App->audio->PlayFx(flipperDownFx);
+		}
+
+		// Draw section =============================================
+
+		// Convert from int to string, so we can blit the text
+		sprintf_s(scoreText, 10, "%i", score);
+
+		App->fonts->BlitText(0, 942 / 1.25f, uiText, "SCORE ");
+		App->fonts->BlitText(265, 942 / 1.25f, uiText, scoreText);
+
+		// Flippers blit
+		// We add JOINTLIMIT to the angle to fix the displacement between the sprite (drawn at 21.5�) and rotation (21.5f�), this makes the sprite look like its rotated (21.5 * 2�))
+		App->renderer->Blit(flippers, leftFlipper->bodyJointed->GetPosition(-10.0f).x, leftFlipper->bodyJointed->GetPosition(-13.0f).y, &leftSection, 0, leftFlipper->flipper->GetRotation() + 180 - JOINTLIMIT, 10, 13);
+		App->renderer->Blit(flippers, rightFlipper->flipper->GetPosition(-32.0f).x, rightFlipper->flipper->GetPosition(-20.0f).y, &rightSection, 0, rightFlipper->flipper->GetRotation() + JOINTLIMIT, 32, 20);
+		App->renderer->Blit(flippers, rightTopFlipper->flipper->GetPosition(-28.0f).x, rightTopFlipper->flipper->GetPosition(-20.0f).y, &rightSection, 0, rightTopFlipper->flipper->GetRotation() + JOINTLIMIT, 28, 20);
+
 	}
-
-	if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN && ballLaunched == false)
-	{
-		ballLaunched = true;
-		b2Vec2 force(0, -190.3f);
-		ballBody->ApplyForce(force);
-
-		App->audio->PlayFx(kickerFx, 0);
-	}
-
-	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_DOWN && leftFlipper->joint->IsMotorEnabled() == false)
-	{
-		leftFlipper->joint->EnableMotor(true);
-		leftFlipper->joint->SetMaxMotorTorque(100.0f);
-		leftFlipper->joint->SetMotorSpeed(80.0f);
-		App->audio->PlayFx(flipperUpFx);
-	}
-
-	if (App->input->GetKey(SDL_SCANCODE_D) == KEY_DOWN && rightFlipper->joint->IsMotorEnabled() == false)
-	{
-		rightFlipper->joint->EnableMotor(true);
-		rightFlipper->joint->SetMaxMotorTorque(100.0f);
-		rightFlipper->joint->SetMotorSpeed(-80.0f);
-		App->audio->PlayFx(flipperUpFx);
-	}
-
-	if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_DOWN && leftFlipper->joint->IsMotorEnabled() == false)
-	{
-		leftTopFlipper->joint->EnableMotor(true);
-		leftTopFlipper->joint->SetMaxMotorTorque(100.0f);
-		leftTopFlipper->joint->SetMotorSpeed(80.0f);
-		App->audio->PlayFx(flipperUpFx);
-	}
-
-	if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_DOWN && leftFlipper->joint->IsMotorEnabled() == false)
-	{
-		rightTopFlipper->joint->EnableMotor(true);
-		rightTopFlipper->joint->SetMaxMotorTorque(100.0f);
-		rightTopFlipper->joint->SetMotorSpeed(-80.0f);
-		App->audio->PlayFx(flipperUpFx);
-	}
-
-	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_UP)
-	{
-		leftFlipper->joint->EnableMotor(false);
-		App->audio->PlayFx(flipperDownFx);
-	}
-
-	if (App->input->GetKey(SDL_SCANCODE_D) == KEY_UP)
-	{
-		rightFlipper->joint->EnableMotor(false);
-		App->audio->PlayFx(flipperDownFx);
-	}
-
-	if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_UP)
-	{
-		leftTopFlipper->joint->EnableMotor(false);
-		App->audio->PlayFx(flipperDownFx);
-	}
-
-	if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_UP)
-	{
-		rightTopFlipper->joint->EnableMotor(false);
-		App->audio->PlayFx(flipperDownFx);
-	}
-
-	// Convert from int to string, so we can blit the text
-	sprintf_s(scoreText, 10, "%i", score);
-
-	App->fonts->BlitText(0, 942 / 1.25f, uiText, "SCORE ");
-	App->fonts->BlitText(265, 942 / 1.25f, uiText, scoreText);
-
-	// Flippers blit
-	// We add JOINTLIMIT to the angle to fix the displacement between the sprite (drawn at 21.5�) and rotation (21.5f�), this makes the sprite look like its rotated (21.5 * 2�))
-	App->renderer->Blit(flippers, leftFlipper->bodyJointed->GetPosition(-10.0f).x, leftFlipper->bodyJointed->GetPosition(-13.0f).y, &leftSection, 0, leftFlipper->flipper->GetRotation() + 180 - JOINTLIMIT, 10, 13);
-	App->renderer->Blit(flippers, rightFlipper->flipper->GetPosition(-32.0f).x, rightFlipper->flipper->GetPosition(-20.0f).y, &rightSection, 0, rightFlipper->flipper->GetRotation() + JOINTLIMIT, 32, 20);
-	App->renderer->Blit(flippers, rightTopFlipper->flipper->GetPosition(-28.0f).x, rightTopFlipper->flipper->GetPosition(-20.0f).y, &rightSection, 0, rightTopFlipper->flipper->GetRotation() + JOINTLIMIT, 28, 20);
-
 
 	return UPDATE_CONTINUE;
 }
@@ -169,19 +174,24 @@ bool ModulePlayer::CleanUp()
 {
 	LOG("Unloading player");
 
-	App->physics->GetWorld()->DestroyJoint(leftFlipper->joint);
-	App->physics->GetWorld()->DestroyJoint(rightFlipper->joint);
-	App->physics->GetWorld()->DestroyJoint(rightTopFlipper->joint);
-	App->physics->GetWorld()->DestroyJoint(leftTopFlipper->joint);
+	if (leftFlipper != nullptr)
+	{
+		App->physics->GetWorld()->DestroyJoint(leftFlipper->joint);
+		App->physics->GetWorld()->DestroyJoint(rightFlipper->joint);
+		App->physics->GetWorld()->DestroyJoint(rightTopFlipper->joint);
+		App->physics->GetWorld()->DestroyJoint(leftTopFlipper->joint);
+	}
 
 	App->textures->Unload(flippers);
 	App->textures->Unload(circle);
 	App->fonts->UnLoad(uiText);
 
-	delete leftFlipper;
-	delete rightFlipper;
-	delete rightTopFlipper;
-	delete leftTopFlipper;
+	// Release is defined on globals, deletes a dynamic pointer and sets it to nullptr
+	RELEASE(ballBody);
+	RELEASE(leftFlipper);
+	RELEASE(rightFlipper);
+	RELEASE(rightTopFlipper);
+	RELEASE(leftTopFlipper);
 
 	return true;
 }
@@ -204,7 +214,8 @@ void ModulePlayer::FillFlipper(Flipper* flipper, SDL_Rect rect, int x, int y, in
 
 bool ModulePlayer::OutOfBounds()
 {
-	return ballBody->GetPosition(0.0f).y > SCREEN_HEIGHT;
+	if(ballBody != nullptr)
+		return ballBody->GetPosition(0.0f).y > SCREEN_HEIGHT;
 }
 
 PhysBody* ModulePlayer::GetBall()

@@ -65,10 +65,10 @@ public:
 	SDL_Texture* flippers = nullptr;
 	SDL_Rect leftSection = { 0, 0, 81, 43 };
 
-private:
-
 	// Lifes
 	int lifes = 3;
+
+private:
 
 	//Fx related
 	int kickerFx = -1;

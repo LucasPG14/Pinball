@@ -9,6 +9,7 @@
 #include "ModulePlayer.h"
 #include "ModuleFonts.h"
 #include "ModuleAudio.h"
+#include "ModuleFadeToBlack.h"
 
 #include "chains.h"
 
@@ -27,8 +28,9 @@ bool ModuleSceneIntro::Start()
 	bool ret = true;
 
 	App->renderer->camera.x = App->renderer->camera.y = 0;
-
 	
+	App->player->Enable();
+
 	backgr = App->textures->Load("Assets/Textures/Assets/background2.png");
 	lights = App->textures->Load("Assets/Textures/Assets/LIGHTS.png");
 	roads = App->textures->Load("Assets/Textures/Assets/roads.png");
@@ -124,6 +126,8 @@ bool ModuleSceneIntro::CleanUp()
 {
 	LOG("Unloading Intro scene");
 
+	App->player->Disable();
+
 	App->textures->Unload(backgr);
 	App->textures->Unload(lights);
 	App->textures->Unload(roads);
@@ -134,331 +138,329 @@ bool ModuleSceneIntro::CleanUp()
 // Update: draw background
 update_status ModuleSceneIntro::Update()
 {
-	// Reset stuff
-	if (App->player->OutOfBounds())
+	if (App->player->GetBall() != nullptr)
 	{
-		initial->GetBody().SetActive(false);
-		initSensor = App->physics->CreateBox(450, 85, 12, 30, 0, b2_staticBody, true, SENSOR, PLAYER);
-		sensors.add(initSensor);
-		toBlitS = false;
-		toBlitK = false;
-		toBlitV = false;
-	}
-
-	if (App->player->GetBall()->Contains(littleBottomLeft->GetPosition(+10).x, littleBottomLeft->GetPosition(+10).y))
-	{
-		App->player->GetBall()->GetBody().ApplyForce(b2Vec2(10, 10), App->player->GetBall()->GetPosition(0.0f), true);
-	}
+		if (App->player->lifes == 2)
+			App->fade->Fade(this, (Module*)App->deadScene, 100);
 
 
-	// Input detection
-	if (App->input->GetKey(SDL_SCANCODE_KP_PLUS) == KEY_DOWN)
-		App->audio->VolumeControl(4);
-
-	if (App->input->GetKey(SDL_SCANCODE_KP_MINUS) == KEY_DOWN)
-		App->audio->VolumeControl(-4);
-
-	// Sensor detection and changing between levels
-	p2List_item<PhysBody*>* s = sensors.getFirst();
-	while (s != NULL)
-	{
-		if (s->data->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y))
+		// Reset stuff
+		if (App->player->OutOfBounds())
 		{
-			if (!initial->GetBody().IsActive() && initSensor->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y))
-			{
-				initial->GetBody().SetActive(true);
-				App->physics->GetWorld()->DestroyBody(&initSensor->GetBody());
-				deleteInitSensor = true;
-				s = s->next;
-				continue;
-			}
-
-			if (limitM->GetBody().IsActive() && middleLimitSensor->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y))
-			{
-				limitM->GetBody().SetActive(false);
-				midLimitTimer = SDL_GetTicks();
-			}
-
-			isOnExtraLevel = true;
-			if (extraDownMiddleSensor->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y))
-			{
-				extraLevelMid = true;
-				playerFilter.categoryBits = PLAYER;
-				playerFilter.maskBits = SENSOR | BOX | CHAIN;
-				App->player->GetBall()->GetBody().GetFixtureList()->SetFilterData(playerFilter);
-			}
-			if (extraUpRightSensor->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y))
-				extraLevelUp = true;
-			ChangeChains();
+			initial->GetBody().SetActive(false);
+			initSensor = App->physics->CreateBox(450, 85, 12, 30, 0, b2_staticBody, true, SENSOR, PLAYER);
+			sensors.add(initSensor);
+			toBlitS = false;
+			toBlitK = false;
+			toBlitV = false;
 		}
-		s = s->next;
-	}
 
-	if (deleteInitSensor)
-	{
-		sensors.del(sensors.findNode(initSensor));
-		initSensor = NULL;
-		deleteInitSensor = false;
-	}
-
-	// Draw Background && UI elements
-	App->renderer->Blit(backgr, 0, 0, NULL);
-
-	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
-	{
-		SDL_Rect rect = { 486, 0, 31, 21 };
-		App->renderer->Blit(lights, 208 / 1.25f, 862 / 1.25f, &rect);
-	}
-
-	if (leftHitSensor->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y))
-	{
-		b2Vec2 force(75, -75);
-		App->player->GetBall()->ApplyForce(force);
-	}
-
-	if (rightHitSensor->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y))
-	{
-		b2Vec2 force(-75, -75);
-		App->player->GetBall()->ApplyForce(force);
-	}
-
-	// Sensor detection, blitting lighted textures, and adding score
-	int lrtCounter = 0, rlrtCounter = 0, lwtCounter = 0, rwtCounter = 0, wfeCounter = 0, rfeCounter = 0;
-	p2List_item<LightSensor*>* t = lightSensors.getFirst();
-	while (t != NULL)
-	{
-		if (t->data->sensor->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y) && t->data->light == false)
+		if (App->player->GetBall()->Contains(littleBottomLeft->GetPosition(+10).x, littleBottomLeft->GetPosition(+10).y))
 		{
-			if (t->data->type == LightSensor::Type::whiteFlipperEntrance || t->data->type == LightSensor::Type::redFlipperEntrance)
-			{
-				t->data->light = true;
-				t->data->initTime = SDL_GetTicks();
-				if (t->data->type == LightSensor::Type::whiteFlipperEntrance) App->player->score += 50;
-				else App->player->score += 100;
-			}
+			App->player->GetBall()->GetBody().ApplyForce(b2Vec2(10, 10), App->player->GetBall()->GetPosition(0.0f), true);
+		}
 
-			// Prepare to blit s/k/v sensors
-			else if ((t->data->type == LightSensor::Type::s || t->data->type == LightSensor::Type::k || t->data->type == LightSensor::Type::v) && App->player->GetBall()->GetBody().GetLinearVelocity().y > 0)
+
+		// Input detection
+		if (App->input->GetKey(SDL_SCANCODE_KP_PLUS) == KEY_DOWN)
+			App->audio->VolumeControl(4);
+
+		if (App->input->GetKey(SDL_SCANCODE_KP_MINUS) == KEY_DOWN)
+			App->audio->VolumeControl(-4);
+
+		// Sensor detection and changing between levels
+		p2List_item<PhysBody*>* s = sensors.getFirst();
+		while (s != NULL)
+		{
+			if (s->data->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y))
 			{
-				switch (t->data->type)
+				if (!initial->GetBody().IsActive() && initSensor->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y))
 				{
-				case (LightSensor::Type::s):
-
-					if (toBlitS == false) toBlitS = true;
-					limitT->GetBody().SetActive(false);
-					topLimitTimer = SDL_GetTicks();
-
-					break;
-
-				case (LightSensor::Type::k):
-
-					if (toBlitK == false) toBlitK = true;
-					limitT->GetBody().SetActive(false);
-					topLimitTimer = SDL_GetTicks();
-
-					break;
-
-				case (LightSensor::Type::v):
-
-					if (toBlitV == false) toBlitV = true;
-					limitT->GetBody().SetActive(false);
-					topLimitTimer = SDL_GetTicks();
-
-					break;
-
-				default:
-					break;
+					initial->GetBody().SetActive(true);
+					App->physics->GetWorld()->DestroyBody(&initSensor->GetBody());
+					deleteInitSensor = true;
+					s = s->next;
+					continue;
 				}
-			}
 
-			else if (App->player->GetBall()->GetBody().GetLinearVelocity().y < 0)
-			{
-				if(added == false) t->data->light = true;
-				t->data->initTime = SDL_GetTicks();
-			}
-		}
-
-		if (t->data->light == true)
-		{
-			int currentTime = SDL_GetTicks();
-			if (currentTime - t->data->initTime < TIMELIMIT)
-			{
-				SDL_Rect rect;
-				switch (t->data->type)
+				if (limitM->GetBody().IsActive() && middleLimitSensor->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y))
 				{
-				case (LightSensor::Type::leftRedTriangle):
-					rect = { 209, 0, 10, 21 };
-					App->renderer->Blit(lights, t->data->sensor->GetPosition(-6.0f).x, t->data->sensor->GetPosition(-21.0f).y, &rect);
-					lrtCounter++;
-					if (lrtCounter == 3 && added == false)
-					{
-						App->player->score += 20;
-						added = true;
-					}
-					break;
-
-				case (LightSensor::Type::rotatedLeftRedTriangle):
-					rect = { 237, 0, 11, 21 };
-					App->renderer->Blit(lights, t->data->sensor->GetPosition(-7.0f).x, t->data->sensor->GetPosition(-23.0f).y, &rect);
-					rlrtCounter++;
-					if (rlrtCounter == 3 && added == false)
-					{
-						App->player->score += 20;
-						added = true;
-					}
-					break;
-
-				case (LightSensor::Type::leftWhiteTriangle):
-					rect = { 196, 0, 10, 21 };
-					App->renderer->Blit(lights, t->data->sensor->GetPosition(-7.0f).x, t->data->sensor->GetPosition(-23.0f).y, &rect);
-					lwtCounter++;
-					if (lwtCounter == 3 && added == false)
-					{
-						App->player->score += 20;
-						added = true;
-					}
-					break;
-
-				case (LightSensor::Type::rightWhiteTriangle):
-					rect = { 223, 0, 10, 21 };
-					App->renderer->Blit(lights, t->data->sensor->GetPosition(-17.0f).x, t->data->sensor->GetPosition(-23.0f).y, &rect);
-					rwtCounter++;
-					if (rwtCounter == 3 && added == false)
-					{
-						App->player->score += 20;
-						added = true;
-					}
-					break;
-
-				case (LightSensor::Type::whiteFlipperEntrance):
-					rect = { 579, 0, 9, 15 };
-					App->renderer->Blit(lights, t->data->sensor->GetPosition(-8.0f).x, t->data->sensor->GetPosition(-46.0f).y, &rect);
-					wfeCounter++;
-					if (wfeCounter == 3 && added == false)
-					{
-						App->player->score += 20;
-						added = true;
-					}
-					break;
-
-				case (LightSensor::Type::redFlipperEntrance):
-					rect = { 566, 0, 9, 15 };
-					App->renderer->Blit(lights, t->data->sensor->GetPosition(-9.0f).x, t->data->sensor->GetPosition(-46.0f).y, &rect);
-					rfeCounter++;
-					if (rfeCounter == 3 && added == false)
-					{
-						App->player->score += 20;
-						added = true;
-					}
-					break;
-
-				default:
-					break;
+					limitM->GetBody().SetActive(false);
+					midLimitTimer = SDL_GetTicks();
 				}
+
+				isOnExtraLevel = true;
+				if (extraDownMiddleSensor->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y))
+				{
+					extraLevelMid = true;
+					playerFilter.categoryBits = PLAYER;
+					playerFilter.maskBits = SENSOR | BOX | CHAIN;
+					App->player->GetBall()->GetBody().GetFixtureList()->SetFilterData(playerFilter);
+				}
+				if (extraUpRightSensor->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y))
+					extraLevelUp = true;
+				ChangeChains();
 			}
-
-			else
-			{
-				t->data->light = false;
-				t->data->initTime = 0;
-				if (added == true && lrtCounter < 3 && rlrtCounter < 3 && lwtCounter < 3 && rwtCounter < 3 && wfeCounter < 3 && rfeCounter < 3) added = false;
-			}
+			s = s->next;
 		}
 
-		// Blit s/k/v sensors
-		if (toBlitS == true && t->data->type == LightSensor::Type::s)
+		if (deleteInitSensor)
 		{
-			SDL_Rect rect = { 0, 0, 7, 15 };
-			App->renderer->Blit(lights, t->data->sensor->GetPosition(-9.0f).x, t->data->sensor->GetPosition(-48.0f).y, &rect);
+			sensors.del(sensors.findNode(initSensor));
+			initSensor = NULL;
+			deleteInitSensor = false;
 		}
 
-		if (toBlitK == true && t->data->type == LightSensor::Type::k)
+
+		// Draw section ==============================================
+
+
+		// Draw Background && UI elements
+		App->renderer->Blit(backgr, 0, 0, NULL);
+
+		if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
 		{
-			SDL_Rect rect = { 11, 0, 7, 15 };
-			App->renderer->Blit(lights, t->data->sensor->GetPosition(-11.0f).x, t->data->sensor->GetPosition(-48.0f).y, &rect);
+			SDL_Rect rect = { 486, 0, 31, 21 };
+			App->renderer->Blit(lights, 208 / 1.25f, 862 / 1.25f, &rect);
 		}
 
-		if (toBlitV == true && t->data->type == LightSensor::Type::v)
+		if (leftHitSensor->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y))
 		{
-			SDL_Rect rect = { 22, 0, 7, 15 };
-			App->renderer->Blit(lights, t->data->sensor->GetPosition(-13.0f).x, t->data->sensor->GetPosition(-48.0f).y, &rect);
+			b2Vec2 force(75, -75);
+			App->player->GetBall()->ApplyForce(force);
 		}
 
-		// Extra points if s, k, v are all activated
-		if (toBlitS == true && toBlitK == true && toBlitV == true && extraAdded == false)
+		if (rightHitSensor->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y))
 		{
-			App->player->score += 500;
-			extraTime = SDL_GetTicks();
-			extraAdded = true;
+			b2Vec2 force(-75, -75);
+			App->player->GetBall()->ApplyForce(force);
 		}
 
-		// Deactivate s, k, v sensors
-		if (extraAdded == true)
-		{
-			int currentTime = SDL_GetTicks();
-			if (currentTime - extraTime >= 2* TIMELIMIT)
-			{
-				toBlitS = false;
-				toBlitK = false;
-				toBlitV = false;
-				extraAdded = false;
-			}
-		}
-
-		if (limitT->GetBody().IsActive() == false)
-		{
-			int currentTime = SDL_GetTicks();
-			if (currentTime - topLimitTimer > 350)
-			{
-				limitT->GetBody().SetActive(true);
-				topLimitTimer = 0;
-			}
-		}
-
-		if (limitM->GetBody().IsActive() == false)
-		{
-			int currentTime = SDL_GetTicks();
-			if (currentTime - midLimitTimer > 350)
-			{
-				limitM->GetBody().SetActive(true);
-				midLimitTimer = 0;
-			}
-		}
-
-		t = t->next;
-	}
-
-	Points();
-
-	/*if (App->input->GetKey(SDL_SCANCODE_1) == KEY_REPEAT)
-	{
+		// Sensor detection, blitting lighted textures, and adding score
+		int lrtCounter = 0, rlrtCounter = 0, lwtCounter = 0, rwtCounter = 0, wfeCounter = 0, rfeCounter = 0;
 		p2List_item<LightSensor*>* t = lightSensors.getFirst();
-		SDL_Rect rect;
-		rect = { 22, 0, 7, 15 };
 		while (t != NULL)
 		{
-			App->renderer->Blit(lights, t->data->sensor->GetPosition(-13.0f).x, t->data->sensor->GetPosition(-48.0f).y, &rect);
+			if (t->data->sensor->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y) && t->data->light == false)
+			{
+				if (t->data->type == LightSensor::Type::whiteFlipperEntrance || t->data->type == LightSensor::Type::redFlipperEntrance)
+				{
+					t->data->light = true;
+					t->data->initTime = SDL_GetTicks();
+					if (t->data->type == LightSensor::Type::whiteFlipperEntrance) App->player->score += 50;
+					else App->player->score += 100;
+				}
+
+				// Prepare to blit s/k/v sensors
+				else if ((t->data->type == LightSensor::Type::s || t->data->type == LightSensor::Type::k || t->data->type == LightSensor::Type::v) && App->player->GetBall()->GetBody().GetLinearVelocity().y > 0)
+				{
+					switch (t->data->type)
+					{
+					case (LightSensor::Type::s):
+
+						if (toBlitS == false) toBlitS = true;
+						limitT->GetBody().SetActive(false);
+						topLimitTimer = SDL_GetTicks();
+
+						break;
+
+					case (LightSensor::Type::k):
+
+						if (toBlitK == false) toBlitK = true;
+						limitT->GetBody().SetActive(false);
+						topLimitTimer = SDL_GetTicks();
+
+						break;
+
+					case (LightSensor::Type::v):
+
+						if (toBlitV == false) toBlitV = true;
+						limitT->GetBody().SetActive(false);
+						topLimitTimer = SDL_GetTicks();
+
+						break;
+
+					default:
+						break;
+					}
+				}
+
+				else if (App->player->GetBall()->GetBody().GetLinearVelocity().y < 0)
+				{
+					if (added == false) t->data->light = true;
+					t->data->initTime = SDL_GetTicks();
+				}
+			}
+
+			if (t->data->light == true)
+			{
+				int currentTime = SDL_GetTicks();
+				if (currentTime - t->data->initTime < TIMELIMIT)
+				{
+					SDL_Rect rect;
+					switch (t->data->type)
+					{
+					case (LightSensor::Type::leftRedTriangle):
+						rect = { 209, 0, 10, 21 };
+						App->renderer->Blit(lights, t->data->sensor->GetPosition(-6.0f).x, t->data->sensor->GetPosition(-21.0f).y, &rect);
+						lrtCounter++;
+						if (lrtCounter == 3 && added == false)
+						{
+							App->player->score += 20;
+							added = true;
+						}
+						break;
+
+					case (LightSensor::Type::rotatedLeftRedTriangle):
+						rect = { 237, 0, 11, 21 };
+						App->renderer->Blit(lights, t->data->sensor->GetPosition(-7.0f).x, t->data->sensor->GetPosition(-23.0f).y, &rect);
+						rlrtCounter++;
+						if (rlrtCounter == 3 && added == false)
+						{
+							App->player->score += 20;
+							added = true;
+						}
+						break;
+
+					case (LightSensor::Type::leftWhiteTriangle):
+						rect = { 196, 0, 10, 21 };
+						App->renderer->Blit(lights, t->data->sensor->GetPosition(-7.0f).x, t->data->sensor->GetPosition(-23.0f).y, &rect);
+						lwtCounter++;
+						if (lwtCounter == 3 && added == false)
+						{
+							App->player->score += 20;
+							added = true;
+						}
+						break;
+
+					case (LightSensor::Type::rightWhiteTriangle):
+						rect = { 223, 0, 10, 21 };
+						App->renderer->Blit(lights, t->data->sensor->GetPosition(-17.0f).x, t->data->sensor->GetPosition(-23.0f).y, &rect);
+						rwtCounter++;
+						if (rwtCounter == 3 && added == false)
+						{
+							App->player->score += 20;
+							added = true;
+						}
+						break;
+
+					case (LightSensor::Type::whiteFlipperEntrance):
+						rect = { 579, 0, 9, 15 };
+						App->renderer->Blit(lights, t->data->sensor->GetPosition(-8.0f).x, t->data->sensor->GetPosition(-46.0f).y, &rect);
+						wfeCounter++;
+						if (wfeCounter == 3 && added == false)
+						{
+							App->player->score += 20;
+							added = true;
+						}
+						break;
+
+					case (LightSensor::Type::redFlipperEntrance):
+						rect = { 566, 0, 9, 15 };
+						App->renderer->Blit(lights, t->data->sensor->GetPosition(-9.0f).x, t->data->sensor->GetPosition(-46.0f).y, &rect);
+						rfeCounter++;
+						if (rfeCounter == 3 && added == false)
+						{
+							App->player->score += 20;
+							added = true;
+						}
+						break;
+
+					default:
+						break;
+					}
+				}
+
+				else
+				{
+					t->data->light = false;
+					t->data->initTime = 0;
+					if (added == true && lrtCounter < 3 && rlrtCounter < 3 && lwtCounter < 3 && rwtCounter < 3 && wfeCounter < 3 && rfeCounter < 3) added = false;
+				}
+			}
+
+			// Blit s/k/v sensors
+			if (toBlitS == true && t->data->type == LightSensor::Type::s)
+			{
+				SDL_Rect rect = { 0, 0, 7, 15 };
+				App->renderer->Blit(lights, t->data->sensor->GetPosition(-9.0f).x, t->data->sensor->GetPosition(-48.0f).y, &rect);
+			}
+
+			if (toBlitK == true && t->data->type == LightSensor::Type::k)
+			{
+				SDL_Rect rect = { 11, 0, 7, 15 };
+				App->renderer->Blit(lights, t->data->sensor->GetPosition(-11.0f).x, t->data->sensor->GetPosition(-48.0f).y, &rect);
+			}
+
+			if (toBlitV == true && t->data->type == LightSensor::Type::v)
+			{
+				SDL_Rect rect = { 22, 0, 7, 15 };
+				App->renderer->Blit(lights, t->data->sensor->GetPosition(-13.0f).x, t->data->sensor->GetPosition(-48.0f).y, &rect);
+			}
+
+			// Extra points if s, k, v are all activated
+			if (toBlitS == true && toBlitK == true && toBlitV == true && extraAdded == false)
+			{
+				App->player->score += 500;
+				extraTime = SDL_GetTicks();
+				extraAdded = true;
+			}
+
+			// Deactivate s, k, v sensors
+			if (extraAdded == true)
+			{
+				int currentTime = SDL_GetTicks();
+				if (currentTime - extraTime >= 2 * TIMELIMIT)
+				{
+					toBlitS = false;
+					toBlitK = false;
+					toBlitV = false;
+					extraAdded = false;
+				}
+			}
+
+			if (limitT->GetBody().IsActive() == false)
+			{
+				int currentTime = SDL_GetTicks();
+				if (currentTime - topLimitTimer > 350)
+				{
+					limitT->GetBody().SetActive(true);
+					topLimitTimer = 0;
+				}
+			}
+
+			if (limitM->GetBody().IsActive() == false)
+			{
+				int currentTime = SDL_GetTicks();
+				if (currentTime - midLimitTimer > 350)
+				{
+					limitM->GetBody().SetActive(true);
+					midLimitTimer = 0;
+				}
+			}
+
 			t = t->next;
 		}
-	}*/
 
-	App->renderer->Blit(App->player->flippers, App->player->leftTopFlipper->bodyJointed->GetPosition(-10.0f).x, App->player->leftTopFlipper->bodyJointed->GetPosition(-13.0f).y, &App->player->leftSection, 0, App->player->leftTopFlipper->flipper->GetRotation() + 180 - JOINTLIMIT, 10, 13);
+		Points();
 
-	SDL_Rect rect = { 0, 0, 87, 346 };
-	App->renderer->Blit(roads, 150 / 1.25f, 55 / 1.25f, &rect); // middle
+		App->renderer->Blit(App->player->flippers, App->player->leftTopFlipper->bodyJointed->GetPosition(-10.0f).x, App->player->leftTopFlipper->bodyJointed->GetPosition(-13.0f).y, &App->player->leftSection, 0, App->player->leftTopFlipper->flipper->GetRotation() + 180 - JOINTLIMIT, 10, 13);
 
-	App->renderer->Blit(App->player->circle, App->player->GetBall()->GetPosition(-10.0f).x , App->player->GetBall()->GetPosition(-10.0f).y, 0, 1.0f, App->player->GetBall()->GetRotation());
-
-	if (isOnExtraLevel == false || extraLevelUp == true)
-	{
 		SDL_Rect rect = { 0, 0, 87, 346 };
 		App->renderer->Blit(roads, 150 / 1.25f, 55 / 1.25f, &rect); // middle
-		rect = { 88, 0, 99, 142 };
-		App->renderer->Blit(roads, 54 / 1.25f, 444 / 1.25f, &rect); // left
-		rect = { 188, 0, 60, 123 };
-		App->renderer->Blit(roads, 348 / 1.25f, 477 / 1.25f, &rect); // right
-	}
 
+		App->renderer->Blit(App->player->circle, App->player->GetBall()->GetPosition(-10.0f).x, App->player->GetBall()->GetPosition(-10.0f).y, 0, 1.0f, App->player->GetBall()->GetRotation());
+
+		if (isOnExtraLevel == false || extraLevelUp == true)
+		{
+			SDL_Rect rect = { 0, 0, 87, 346 };
+			App->renderer->Blit(roads, 150 / 1.25f, 55 / 1.25f, &rect); // middle
+			rect = { 88, 0, 99, 142 };
+			App->renderer->Blit(roads, 54 / 1.25f, 444 / 1.25f, &rect); // left
+			rect = { 188, 0, 60, 123 };
+			App->renderer->Blit(roads, 348 / 1.25f, 477 / 1.25f, &rect); // right
+		}
+	}
 	return UPDATE_CONTINUE;
 }
 
