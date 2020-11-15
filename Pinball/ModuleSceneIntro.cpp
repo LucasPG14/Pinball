@@ -521,7 +521,7 @@ void ModuleSceneIntro::CreateStartSensors()
 	sensors.add(extraUpLeftSensor);
 	extraDownMiddleSensor = App->physics->CreateBox(205, 411, 12, 12, 0, b2_staticBody, true, SENSOR, PLAYER);
 	sensors.add(extraDownMiddleSensor);
-	extraUpMiddleSensor = App->physics->CreateBox(316, 77, 12, 10, 0, b2_staticBody, true, SENSOR, PLAYER);
+	extraUpMiddleSensor = App->physics->CreateBox(295, 77, 12, 10, 0, b2_staticBody, true, SENSOR, PLAYER);
 	sensors.add(extraUpMiddleSensor);
 	initSensor = App->physics->CreateBox(450, 85, 12, 30, 0, b2_staticBody, true, SENSOR, PLAYER);
 	sensors.add(initSensor);
