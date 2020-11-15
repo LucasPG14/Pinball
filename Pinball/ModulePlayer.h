@@ -67,6 +67,9 @@ public:
 
 private:
 
+	// Lifes
+	int lifes = 3;
+
 	//Fx related
 	int kickerFx = -1;
 	int gameOverFx = -1;

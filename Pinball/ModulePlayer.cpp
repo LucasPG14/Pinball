@@ -7,6 +7,7 @@
 #include "ModuleTextures.h"
 #include "ModuleInput.h"
 #include "ModuleAudio.h"
+#include "ModuleFadeToBlack.h"
 
 ModulePlayer::ModulePlayer(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
@@ -20,6 +21,9 @@ bool ModulePlayer::Start()
 {
 	LOG("Loading player");
 
+	lifes = 3;
+	
+
 	circle = App->textures->Load("Assets/Textures/Assets/ball4.png");
 	flippers = App->textures->Load("Assets/Textures/Assets/Flippers3.png");
 	kickerFx = App->audio->LoadFx("Assets/Sounds/Fx/kicker.wav");
@@ -28,7 +32,7 @@ bool ModulePlayer::Start()
 
 
 	// Ball Start-up
-	ballStartPosition = b2Vec2(485, 865);
+	ballStartPosition = b2Vec2(486, 865);
 	ballBody = App->physics->CreateCircle(ballStartPosition.x, ballStartPosition.y, 14, b2_dynamicBody, PLAYER, TOPLEFTFLIPPER | SENSOR | BOX | CHAIN);
 
 
@@ -64,20 +68,27 @@ update_status ModulePlayer::Update()
 {
 	if (OutOfBounds())
 	{
+		--lifes;
+		
 		int x = PIXEL_TO_METERS(ballStartPosition.x);
 		int y = PIXEL_TO_METERS(ballStartPosition.y);
 		score = 0;
 		b2Vec2 v(x, y);
 		ballBody->GetBody().SetLinearVelocity(b2Vec2(0, 0));
-		ballBody->GetBody().SetTransform(b2Vec2(x - 1.3f, y - 3), 0);
+
+		ballBody->GetBody().SetFixedRotation(true);
+		ballBody->GetBody().SetTransform(b2Vec2(x - 1.2f, y - 3), 0);
+		ballBody->GetBody().SetFixedRotation(false);
+
 		ballLaunched = false;
 		App->audio->PlayFx(gameOverFx);
+		
 	}
 
 	if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN && ballLaunched == false)
 	{
 		ballLaunched = true;
-		b2Vec2 force(0, -250);
+		b2Vec2 force(0, -190.3f);
 		ballBody->ApplyForce(force);
 
 		App->audio->PlayFx(kickerFx, 0);

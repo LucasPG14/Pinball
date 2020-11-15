@@ -146,8 +146,14 @@ update_status ModuleSceneIntro::Update()
 		toBlitV = false;
 	}
 
+	if (App->player->GetBall()->Contains(littleBottomLeft->GetPosition(+10).x, littleBottomLeft->GetPosition(+10).y))
+	{
+		
+		App->player->GetBall()->GetBody().ApplyForce(b2Vec2(10, 10), App->player->GetBall()->GetPosition(0.0f), true);
+	}
+
+
 	// Input detection
-	
 	if (App->input->GetKey(SDL_SCANCODE_KP_PLUS) == KEY_DOWN)
 		App->audio->VolumeControl(4);
 
@@ -199,7 +205,6 @@ update_status ModuleSceneIntro::Update()
 
 	// Draw Background && UI elements
 	App->renderer->Blit(backgr, 0, 0, NULL);
-
 
 	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
 	{
@@ -498,6 +503,8 @@ void ModuleSceneIntro::CreateStartSensors()
 	sensors.add(initSensor);
 	middleLimitSensor = App->physics->CreateBox(310, 450, 35, 10, 0, b2_staticBody, true, SENSOR, PLAYER);
 	sensors.add(middleLimitSensor);
+
+
 }
 
 
