@@ -43,7 +43,6 @@ bool ModuleSceneIntro::Start()
 	// Sensors creation
 	CreateStartSensors();
 
-
 	// Light sensors creation (groups of 3 are separeted by the same distance between each element)
 	leftRedTriangle1.sensor = App->physics->CreateBox(185, 815, 10, 10, 0, b2_staticBody, true, SENSOR, PLAYER);
 	leftRedTriangle1.type = leftRedTriangle1.leftRedTriangle;
@@ -148,7 +147,6 @@ update_status ModuleSceneIntro::Update()
 
 	if (App->player->GetBall()->Contains(littleBottomLeft->GetPosition(+10).x, littleBottomLeft->GetPosition(+10).y))
 	{
-		
 		App->player->GetBall()->GetBody().ApplyForce(b2Vec2(10, 10), App->player->GetBall()->GetPosition(0.0f), true);
 	}
 
@@ -212,6 +210,17 @@ update_status ModuleSceneIntro::Update()
 		App->renderer->Blit(lights, 208 / 1.25f, 862 / 1.25f, &rect);
 	}
 
+	if (leftHitSensor->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y))
+	{
+		b2Vec2 force(75, -75);
+		App->player->GetBall()->ApplyForce(force);
+	}
+
+	if (rightHitSensor->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y))
+	{
+		b2Vec2 force(-75, -75);
+		App->player->GetBall()->ApplyForce(force);
+	}
 
 	// Sensor detection, blitting lighted textures, and adding score
 	int lrtCounter = 0, rlrtCounter = 0, lwtCounter = 0, rwtCounter = 0, wfeCounter = 0, rfeCounter = 0;
@@ -504,7 +513,8 @@ void ModuleSceneIntro::CreateStartSensors()
 	middleLimitSensor = App->physics->CreateBox(310, 450, 35, 10, 0, b2_staticBody, true, SENSOR, PLAYER);
 	sensors.add(middleLimitSensor);
 
-
+	leftHitSensor = App->physics->CreateBox(160, 800, 25, 5, -30, b2_staticBody, true, SENSOR, PLAYER);
+	rightHitSensor = App->physics->CreateBox(345, 800, 25, 5, 30, b2_staticBody, true, SENSOR, PLAYER);
 }
 
 

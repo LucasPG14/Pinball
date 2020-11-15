@@ -73,7 +73,8 @@ private:
 	//Fx related
 	int kickerFx = -1;
 	int gameOverFx = -1;
-	int flipperFx = -1;
+	int flipperUpFx = -1;
+	int flipperDownFx = -1;
 
 	// Font related
 	int uiText;

@@ -95,6 +95,8 @@ private:
 	PhysBody* extraDownMiddleSensor = nullptr;
 	PhysBody* initSensor = nullptr;
 	PhysBody* middleLimitSensor = nullptr;
+	PhysBody* leftHitSensor = nullptr;
+	PhysBody* rightHitSensor = nullptr;
 
 	p2List<LightSensor*> lightSensors;
 	LightSensor leftRedTriangle1;

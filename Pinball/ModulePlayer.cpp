@@ -23,18 +23,16 @@ bool ModulePlayer::Start()
 
 	lifes = 3;
 	
-
 	circle = App->textures->Load("Assets/Textures/Assets/ball4.png");
 	flippers = App->textures->Load("Assets/Textures/Assets/Flippers3.png");
 	kickerFx = App->audio->LoadFx("Assets/Sounds/Fx/kicker.wav");
 	gameOverFx = App->audio->LoadFx("Assets/Sounds/Fx/game_over.wav");
-	flipperFx = App->audio->LoadFx("Assets/Sounds/Fx/flipper.wav");
-
+	flipperUpFx = App->audio->LoadFx("Assets/Sounds/Fx/flipper_up.wav");
+	flipperDownFx = App->audio->LoadFx("Assets/Sounds/Fx/flipper_down.wav");
 
 	// Ball Start-up
 	ballStartPosition = b2Vec2(486, 865);
 	ballBody = App->physics->CreateCircle(ballStartPosition.x, ballStartPosition.y, 14, b2_dynamicBody, PLAYER, TOPLEFTFLIPPER | SENSOR | BOX | CHAIN);
-
 
 	leftFlipper = new Flipper;
 	rightFlipper = new Flipper;
@@ -99,7 +97,7 @@ update_status ModulePlayer::Update()
 		leftFlipper->joint->EnableMotor(true);
 		leftFlipper->joint->SetMaxMotorTorque(100.0f);
 		leftFlipper->joint->SetMotorSpeed(80.0f);
-		App->audio->PlayFx(flipperFx);
+		App->audio->PlayFx(flipperUpFx);
 	}
 
 	if (App->input->GetKey(SDL_SCANCODE_D) == KEY_DOWN && rightFlipper->joint->IsMotorEnabled() == false)
@@ -107,7 +105,7 @@ update_status ModulePlayer::Update()
 		rightFlipper->joint->EnableMotor(true);
 		rightFlipper->joint->SetMaxMotorTorque(100.0f);
 		rightFlipper->joint->SetMotorSpeed(-80.0f);
-		App->audio->PlayFx(flipperFx);
+		App->audio->PlayFx(flipperUpFx);
 	}
 
 	if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_DOWN && leftFlipper->joint->IsMotorEnabled() == false)
@@ -115,7 +113,7 @@ update_status ModulePlayer::Update()
 		leftTopFlipper->joint->EnableMotor(true);
 		leftTopFlipper->joint->SetMaxMotorTorque(100.0f);
 		leftTopFlipper->joint->SetMotorSpeed(80.0f);
-		App->audio->PlayFx(flipperFx);
+		App->audio->PlayFx(flipperUpFx);
 	}
 
 	if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_DOWN && leftFlipper->joint->IsMotorEnabled() == false)
@@ -123,27 +121,31 @@ update_status ModulePlayer::Update()
 		rightTopFlipper->joint->EnableMotor(true);
 		rightTopFlipper->joint->SetMaxMotorTorque(100.0f);
 		rightTopFlipper->joint->SetMotorSpeed(-80.0f);
-		App->audio->PlayFx(flipperFx);
+		App->audio->PlayFx(flipperUpFx);
 	}
 
 	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_UP)
 	{
 		leftFlipper->joint->EnableMotor(false);
+		App->audio->PlayFx(flipperDownFx);
 	}
 
 	if (App->input->GetKey(SDL_SCANCODE_D) == KEY_UP)
 	{
 		rightFlipper->joint->EnableMotor(false);
+		App->audio->PlayFx(flipperDownFx);
 	}
 
 	if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_UP)
 	{
 		leftTopFlipper->joint->EnableMotor(false);
+		App->audio->PlayFx(flipperDownFx);
 	}
 
 	if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_UP)
 	{
 		rightTopFlipper->joint->EnableMotor(false);
+		App->audio->PlayFx(flipperDownFx);
 	}
 
 	// Convert from int to string, so we can blit the text
