@@ -5,15 +5,14 @@ Consists of a 2D Pinball, using Box2D as the main Physics Engine.
 ## Controls
 - Use LEFT ARROW or RIGHT ARROW to move the flippers. Above and below move simultaneously.
 - Use DOWN ARROW to kick the ball at the beggining.
-- '+' and '-' keys to control volume.
+- Keypad '+' and '-' keys to control volume.
 
 ### Differences
-- Original game uses 2 buttons, we use 4.
 - Controls are adapted to keyboard.
 
 ## Debug Keys
 - F1 to see the chains, boxes and circles that handle the collisions.
-- Mouse joint by clicking LEFT MOUSE BUTTON.
+- Mouse joint by clicking LEFT MOUSE BUTTON while F1 is active.
 
 ## Score
 - Group of 3 triangles lighted = 20 points.
