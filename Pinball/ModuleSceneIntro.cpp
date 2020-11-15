@@ -140,9 +140,6 @@ update_status ModuleSceneIntro::Update()
 		initial->GetBody().SetActive(false);
 		initSensor = App->physics->CreateBox(450, 85, 12, 30, 0, b2_staticBody, true, SENSOR, PLAYER);
 		sensors.add(initSensor);
-		toBlitS = false;
-		toBlitK = false;
-		toBlitV = false;
 	}
 
 	if (App->player->GetBall()->Contains(littleBottomLeft->GetPosition(+10).x, littleBottomLeft->GetPosition(+10).y))
@@ -204,7 +201,7 @@ update_status ModuleSceneIntro::Update()
 	// Draw Background && UI elements
 	App->renderer->Blit(backgr, 0, 0, NULL);
 
-	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
+	if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
 	{
 		SDL_Rect rect = { 486, 0, 31, 21 };
 		App->renderer->Blit(lights, 208 / 1.25f, 862 / 1.25f, &rect);

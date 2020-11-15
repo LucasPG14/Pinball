@@ -5,6 +5,7 @@
 #include "ModulePhysics.h"
 #include "ModuleTextures.h"
 #include "ModuleSceneIntro.h"
+#include "ModulePlayer.h"
 #include "math.h"
 
 #include "Box2D/Box2D/Box2D.h"
@@ -38,9 +39,7 @@ bool ModulePhysics::Start()
 	
 	b2BodyDef bd;
 	
-	b2Body* b = world->CreateBody(&bd);
-	
-	ground = new PhysBody(b);
+	ground = world->CreateBody(&bd);
 
 	// big static circle as "ground" in the middle of the screen
 	int x = 200;
@@ -51,14 +50,14 @@ bool ModulePhysics::Start()
 	body.type = b2_staticBody;
 	body.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
 
-	b2Body* big_ball = world->CreateBody(&body);
+	b2Body* bigBall = world->CreateBody(&body);
 
 	b2CircleShape shape;
 	shape.m_radius = PIXEL_TO_METERS(diameter) * 0.5f;
 
 	b2FixtureDef fixture;
 	fixture.shape = &shape;
-	big_ball->CreateFixture(&fixture);
+	bigBall->CreateFixture(&fixture);
 
 
 	return true;
@@ -152,55 +151,51 @@ update_status ModulePhysics::PostUpdate()
 				}
 				break;
 			}
-
-
-			if (App->input->GetKey(SDL_BUTTON_LEFT) == KEY_DOWN && jointFlag == false)
-			{
-				// test if the current body contains mouse position
-
-				jointBody = new PhysBody(NULL);
-
-				jointBody->SetBody(b);
-				b->SetUserData(jointBody);
-
-				int mx = (App->input->GetMouseX());
-				int my = (App->input->GetMouseY());
-
-				if (jointBody->Contains(mx, my) == true)
-				{
-					mx = PIXEL_TO_METERS(mx);
-					my = PIXEL_TO_METERS(my);
-
-					b2MouseJointDef def;
-					def.bodyA = 
-					def.bodyB = &jointBody->GetBody();
-					def.target = b2Vec2(mx, my);
-					def.dampingRatio = 0.5f;
-					def.frequencyHz = 2.0f;
-					
-					def.maxForce = 100.0f * jointBody->GetBody().GetMass();
-
-					mouseJoint = (b2MouseJoint*)world->CreateJoint(&def);
-					jointFlag = true;
-				}
-
-			}
 		}
 	}
 	
-	if (App->input->GetKey(SDL_BUTTON_LEFT) == KEY_REPEAT && jointFlag == true)
+	if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN && jointFlag == false)
+	{
+		// test if the current body contains mouse position
+
+		pb = new PhysBody;
+
+		pb = App->player->ballBody;
+
+		int mx = App->input->GetMouseX();
+		int my = App->input->GetMouseY();
+
+		if (pb->Contains(mx, my) == true)
+		{
+			mx = PIXEL_TO_METERS(mx);
+			my = PIXEL_TO_METERS(my);
+
+			b2MouseJointDef def;
+			def.bodyA = ground;
+			def.bodyB = pb->body;
+			def.target = b2Vec2(mx, my);
+			def.dampingRatio = 0.5f;
+			def.frequencyHz = 2.0f;
+			def.maxForce = 100.0f * pb->body->GetMass();
+
+			mouseJoint = (b2MouseJoint*)world->CreateJoint(&def);
+			jointFlag = true;
+		}
+	}
+
+	if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT && jointFlag == true)
 	{
 		b2Vec2 target(PIXEL_TO_METERS(App->input->GetMouseX()), PIXEL_TO_METERS(App->input->GetMouseY()));
 		mouseJoint->SetTarget(target);
 
-		b2Vec2 anchor = jointBody->GetBody().GetPosition();
+		b2Vec2 anchor = pb->body->GetPosition();
 		anchor.x = METERS_TO_PIXELS(anchor.x);
 		anchor.y = METERS_TO_PIXELS(anchor.y);
 
 		App->renderer->DrawLine((anchor.x), (anchor.y), (App->input->GetMouseX()), (App->input->GetMouseY()), 255, 0, 0);
 	}
 
-	if (App->input->GetKey(SDL_BUTTON_LEFT) == KEY_UP && jointFlag == true)
+	if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_UP && jointFlag == true)
 	{
 		world->DestroyJoint(mouseJoint);
 		mouseJoint = nullptr;

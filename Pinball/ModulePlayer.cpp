@@ -8,6 +8,7 @@
 #include "ModuleInput.h"
 #include "ModuleAudio.h"
 #include "ModuleFadeToBlack.h"
+#include "ModuleSceneIntro.h"
 
 ModulePlayer::ModulePlayer(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
@@ -68,9 +69,25 @@ update_status ModulePlayer::Update()
 	{
 		--lifes;
 		
+		if (lifes == 0)
+		{
+			if (score > maxScore)
+			{
+				maxScore = score;				
+			}
+			prevScore = score;
+			score = 0;
+
+			App->scene_intro->toBlitS = false;
+			App->scene_intro->toBlitK = false;
+			App->scene_intro->toBlitV = false;
+
+			lifes = 3;
+		}
+
 		int x = PIXEL_TO_METERS(ballStartPosition.x);
 		int y = PIXEL_TO_METERS(ballStartPosition.y);
-		score = 0;
+		
 		b2Vec2 v(x, y);
 		ballBody->GetBody().SetLinearVelocity(b2Vec2(0, 0));
 
@@ -83,7 +100,7 @@ update_status ModulePlayer::Update()
 		
 	}
 
-	if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN && ballLaunched == false)
+	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_DOWN && ballLaunched == false)
 	{
 		ballLaunched = true;
 		b2Vec2 force(0, -190.5f);
@@ -92,27 +109,16 @@ update_status ModulePlayer::Update()
 		App->audio->PlayFx(kickerFx, 0);
 	}
 
-	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_DOWN && leftFlipper->joint->IsMotorEnabled() == false)
-	{
-		leftFlipper->joint->EnableMotor(true);
-		leftFlipper->joint->SetMaxMotorTorque(100.0f);
-		leftFlipper->joint->SetMotorSpeed(80.0f);
-		App->audio->PlayFx(flipperUpFx);
-	}
-
-	if (App->input->GetKey(SDL_SCANCODE_D) == KEY_DOWN && rightFlipper->joint->IsMotorEnabled() == false)
-	{
-		rightFlipper->joint->EnableMotor(true);
-		rightFlipper->joint->SetMaxMotorTorque(100.0f);
-		rightFlipper->joint->SetMotorSpeed(-80.0f);
-		App->audio->PlayFx(flipperUpFx);
-	}
-
 	if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_DOWN && leftFlipper->joint->IsMotorEnabled() == false)
 	{
 		leftTopFlipper->joint->EnableMotor(true);
 		leftTopFlipper->joint->SetMaxMotorTorque(100.0f);
 		leftTopFlipper->joint->SetMotorSpeed(80.0f);
+		App->audio->PlayFx(flipperUpFx);
+
+		leftFlipper->joint->EnableMotor(true);
+		leftFlipper->joint->SetMaxMotorTorque(100.0f);
+		leftFlipper->joint->SetMotorSpeed(80.0f);
 		App->audio->PlayFx(flipperUpFx);
 	}
 
@@ -122,23 +128,19 @@ update_status ModulePlayer::Update()
 		rightTopFlipper->joint->SetMaxMotorTorque(100.0f);
 		rightTopFlipper->joint->SetMotorSpeed(-80.0f);
 		App->audio->PlayFx(flipperUpFx);
-	}
 
-	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_UP)
-	{
-		leftFlipper->joint->EnableMotor(false);
-		App->audio->PlayFx(flipperDownFx);
-	}
-
-	if (App->input->GetKey(SDL_SCANCODE_D) == KEY_UP)
-	{
-		rightFlipper->joint->EnableMotor(false);
-		App->audio->PlayFx(flipperDownFx);
+		rightFlipper->joint->EnableMotor(true);
+		rightFlipper->joint->SetMaxMotorTorque(100.0f);
+		rightFlipper->joint->SetMotorSpeed(-80.0f);
+		App->audio->PlayFx(flipperUpFx);
 	}
 
 	if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_UP)
 	{
 		leftTopFlipper->joint->EnableMotor(false);
+		App->audio->PlayFx(flipperDownFx);
+
+		leftFlipper->joint->EnableMotor(false);
 		App->audio->PlayFx(flipperDownFx);
 	}
 
@@ -146,13 +148,24 @@ update_status ModulePlayer::Update()
 	{
 		rightTopFlipper->joint->EnableMotor(false);
 		App->audio->PlayFx(flipperDownFx);
+
+		rightFlipper->joint->EnableMotor(false);
+		App->audio->PlayFx(flipperDownFx);
 	}
 
 	// Convert from int to string, so we can blit the text
 	sprintf_s(scoreText, 10, "%i", score);
+	sprintf_s(maxScoreText, 10, "%i", maxScore);
+	sprintf_s(prevScoreText, 10, "%i", prevScore);
 
-	App->fonts->BlitText(0, 942 / 1.25f, uiText, "SCORE ");
-	App->fonts->BlitText(265, 942 / 1.25f, uiText, scoreText);
+	App->fonts->BlitText(420, 0, uiText, "SCORE ");
+	App->fonts->BlitText(420, 50, uiText, scoreText);
+
+	App->fonts->BlitText(420, 150, uiText, "PREV SCORE ");
+	App->fonts->BlitText(420, 200, uiText, prevScoreText);
+
+	App->fonts->BlitText(420, 300, uiText, "MAX SCORE ");
+	App->fonts->BlitText(420, 350, uiText, maxScoreText);
 
 	// Flippers blit
 	// We add JOINTLIMIT to the angle to fix the displacement between the sprite (drawn at 21.5�) and rotation (21.5f�), this makes the sprite look like its rotated (21.5 * 2�))
@@ -160,7 +173,11 @@ update_status ModulePlayer::Update()
 	App->renderer->Blit(flippers, rightFlipper->flipper->GetPosition(-32.0f).x, rightFlipper->flipper->GetPosition(-20.0f).y, &rightSection, 0, rightFlipper->flipper->GetRotation() + JOINTLIMIT, 32, 20);
 	App->renderer->Blit(flippers, rightTopFlipper->flipper->GetPosition(-28.0f).x, rightTopFlipper->flipper->GetPosition(-20.0f).y, &rightSection, 0, rightTopFlipper->flipper->GetRotation() + JOINTLIMIT, 28, 20);
 
-
+	for (int i = 0, j = 0; i < lifes; ++i, j += 30)
+	{
+		App->renderer->Blit(circle, 420 + j, 450);
+	}
+	
 	return UPDATE_CONTINUE;
 }
 

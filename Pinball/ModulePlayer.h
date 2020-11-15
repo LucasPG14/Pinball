@@ -56,6 +56,8 @@ public:
 	PhysBody* GetBall();
 
 	int score = 0;
+	int maxScore = 0;
+	int prevScore = 0;
 
 	// Ball related
 	b2Vec2 ballStartPosition;
@@ -64,6 +66,8 @@ public:
 	Flipper* leftTopFlipper = nullptr;
 	SDL_Texture* flippers = nullptr;
 	SDL_Rect leftSection = { 0, 0, 81, 43 };
+
+	PhysBody* ballBody = nullptr;
 
 private:
 
@@ -79,13 +83,13 @@ private:
 	// Font related
 	int uiText;
 	char scoreText[10] = { "\0" };
+	char maxScoreText[10] = { "\0" };
+	char prevScoreText[10] = { "\0" };
 
 	// Stops ball from being launched multiple times pressing space
 	bool ballLaunched = false;
 
-	// Flippers related
-	PhysBody* ballBody = nullptr;
-	
+	// Flippers related	
 	Flipper* leftFlipper = nullptr;
 	Flipper* rightFlipper = nullptr;
 	Flipper* rightTopFlipper = nullptr;

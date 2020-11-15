@@ -16,13 +16,9 @@ class SDL_Texture;
 
 class PhysBody
 {
-private:
-	b2Body* body;
-	b2Shape* bodyShape;
-
 public:
 	PhysBody(b2Body* b);
-
+	PhysBody() : listener(NULL), body(NULL) {}
 	const b2Vec2& GetPosition(float offset);
 	const double& GetRotation();
 	bool Contains(int x, int y) const;
@@ -34,6 +30,10 @@ public:
 		return *body;
 	}
 	void ApplyForce(b2Vec2 force);
+
+public:
+	b2Body* body;
+	Module* listener;
 };
 
 
@@ -63,9 +63,10 @@ private:
 	bool debug;
 	b2World* world;
 
+	// Mouse joint
+	bool jointFlag = false;
+	PhysBody* pb;
 	b2MouseJoint* mouseJoint;
-	bool jointFlag;
-	PhysBody* ground;
-	PhysBody* jointBody;
+	b2Body* ground;
 
 };

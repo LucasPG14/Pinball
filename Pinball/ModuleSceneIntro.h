@@ -52,6 +52,12 @@ public:
 
 	void Points();
 
+public:
+
+	bool toBlitS = false;
+	bool toBlitK = false;
+	bool toBlitV = false;
+
 	SDL_Texture* lights = nullptr;
 
 	bool isOnExtraLevel = false;
@@ -72,10 +78,6 @@ private:
 	bool topAdded = false;
 	bool bottomAdded = false;
 	bool extraAdded = false;
-
-	bool toBlitS = false;
-	bool toBlitK = false;
-	bool toBlitV = false;
 
 	bool leftPlayed = false;
 	bool rightPlayed = false;
