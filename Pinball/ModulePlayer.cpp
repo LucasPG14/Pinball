@@ -122,7 +122,7 @@ update_status ModulePlayer::Update()
 		App->audio->PlayFx(flipperUpFx);
 	}
 
-	if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_DOWN && leftFlipper->joint->IsMotorEnabled() == false)
+	if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_DOWN && rightFlipper->joint->IsMotorEnabled() == false)
 	{
 		rightTopFlipper->joint->EnableMotor(true);
 		rightTopFlipper->joint->SetMaxMotorTorque(100.0f);
