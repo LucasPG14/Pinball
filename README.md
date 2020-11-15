@@ -3,24 +3,24 @@ This is a project for the Physics II subject, at CITM (UPC, Terrassa).
 Consists of a 2D Pinball, using Box2D as the main Physics Engine.
 
 ## Controls
-- Use LEFT ARROW or RIGHT ARROW to move the flippers. Above and below move simultaneously 
-- Use DOWN ARROW to kick the ball at the beggining
-- '+' and '-' keys to control volume
+- Use LEFT ARROW or RIGHT ARROW to move the flippers. Above and below move simultaneously.
+- Use DOWN ARROW to kick the ball at the beggining.
+- '+' and '-' keys to control volume.
 
 ### Differences
-- Original game uses 2 buttons, we use 4
-- Controls are adapted to keyboard
+- Original game uses 2 buttons, we use 4.
+- Controls are adapted to keyboard.
 
 ## Debug Keys
-- F1 to see the chains, boxes and circles that handle the collisions
-- Mouse joint by clicking LEFT MOUSE BUTTON
+- F1 to see the chains, boxes and circles that handle the collisions.
+- Mouse joint by clicking LEFT MOUSE BUTTON.
 
 ## Score
-- Group of 3 triangles lighted = 20 points
-- Enter flippers through side rails (white entrance) = 50 points
-- Enter flippers through side rails (red entrance) = 100 points
-- Enter middle or top rails = 50 points
-- Bonus: Complete the word SKY = 500 points
+- Group of 3 triangles lighted = 20 points.
+- Enter flippers through side rails (white entrance) = 50 points.
+- Enter flippers through side rails (red entrance) = 100 points.
+- Enter middle or top rails = 50 points.
+- Bonus: Complete the word SKY = 500 points.
 
 ## Developers
 - [Denis Deconinck](https://github.com/Denisdrk6) - Coder & VFX
@@ -28,7 +28,7 @@ Consists of a 2D Pinball, using Box2D as the main Physics Engine.
 - [David González](https://github.com/MagiX7) - Coder & QA
 
 ## Links
-- Original Game:
+- Download original game:
 	- [Option1](http://dedomil.net/games/3118/screen/2)
 	- [Option2](https://ru.phoneky.com/games/?id=j0j136322)
 
