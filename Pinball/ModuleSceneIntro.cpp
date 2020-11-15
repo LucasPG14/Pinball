@@ -35,7 +35,9 @@ bool ModuleSceneIntro::Start()
 
 	App->audio->PlayMusic("Assets/Sounds/Music/music.ogg", 0.0f);
 	pointsFx = App->audio->LoadFx("Assets/Sounds/Fx/points.wav");
-
+	letterFx = App->audio->LoadFx("Assets/Sounds/Fx/letter_fx.wav");
+	bonusFx = App->audio->LoadFx("Assets/Sounds/Fx/bonus_fx.wav");
+	collisionFx = App->audio->LoadFx("Assets/Sounds/Fx/collision_fx.wav");
 
 	// Chains Creation
 	CreateStartChains();
@@ -209,12 +211,14 @@ update_status ModuleSceneIntro::Update()
 
 	if (leftHitSensor->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y))
 	{
+		App->audio->PlayFx(collisionFx);
 		b2Vec2 force(75, -75);
 		App->player->GetBall()->ApplyForce(force);
 	}
 
 	if (rightHitSensor->Contains(App->player->GetBall()->GetPosition(0.0f).x, App->player->GetBall()->GetPosition(0.0f).y))
 	{
+		App->audio->PlayFx(collisionFx);
 		b2Vec2 force(-75, -75);
 		App->player->GetBall()->ApplyForce(force);
 	}
@@ -241,7 +245,12 @@ update_status ModuleSceneIntro::Update()
 				{
 				case (LightSensor::Type::s):
 
-					if (toBlitS == false) toBlitS = true;
+					if (toBlitS == false)
+					{
+						toBlitS = true;
+						App->audio->PlayFx(letterFx);
+					}
+
 					limitT->GetBody().SetActive(false);
 					topLimitTimer = SDL_GetTicks();
 
@@ -249,7 +258,11 @@ update_status ModuleSceneIntro::Update()
 
 				case (LightSensor::Type::k):
 
-					if (toBlitK == false) toBlitK = true;
+					if (toBlitK == false)
+					{
+						toBlitK = true;
+						App->audio->PlayFx(letterFx);
+					}
 					limitT->GetBody().SetActive(false);
 					topLimitTimer = SDL_GetTicks();
 
@@ -257,7 +270,11 @@ update_status ModuleSceneIntro::Update()
 
 				case (LightSensor::Type::v):
 
-					if (toBlitV == false) toBlitV = true;
+					if (toBlitV == false)
+					{
+						toBlitV = true;
+						App->audio->PlayFx(letterFx);
+					}
 					limitT->GetBody().SetActive(false);
 					topLimitTimer = SDL_GetTicks();
 
@@ -364,7 +381,7 @@ update_status ModuleSceneIntro::Update()
 
 		// Blit s/k/v sensors
 		if (toBlitS == true && t->data->type == LightSensor::Type::s)
-		{
+		{			
 			SDL_Rect rect = { 0, 0, 7, 15 };
 			App->renderer->Blit(lights, t->data->sensor->GetPosition(-9.0f).x, t->data->sensor->GetPosition(-48.0f).y, &rect);
 		}
@@ -385,6 +402,7 @@ update_status ModuleSceneIntro::Update()
 		if (toBlitS == true && toBlitK == true && toBlitV == true && extraAdded == false)
 		{
 			App->player->score += 500;
+			App->audio->PlayFx(bonusFx);
 			extraTime = SDL_GetTicks();
 			extraAdded = true;
 		}

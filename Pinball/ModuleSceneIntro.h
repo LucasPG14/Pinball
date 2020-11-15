@@ -69,6 +69,9 @@ private:
 	int extraTime = 0;
 	int topLimitTimer = 0;
 	int midLimitTimer = 0;
+	int letterFx = -1;
+	int bonusFx = -1;
+	int collisionFx = -1;
 
 	bool extraLevelMid = false;
 	bool extraLevelUp = false;

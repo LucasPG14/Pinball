@@ -103,7 +103,7 @@ update_status ModulePlayer::Update()
 	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_DOWN && ballLaunched == false)
 	{
 		ballLaunched = true;
-		b2Vec2 force(0, -190.5f);
+		b2Vec2 force(0, -190.3f);
 		ballBody->ApplyForce(force);
 
 		App->audio->PlayFx(kickerFx, 0);
